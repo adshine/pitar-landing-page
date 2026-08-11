@@ -1924,7 +1924,16 @@ export function App() {
 
           .legacy-footer-prompt-form input {
             padding: 0 12px;
-            font-size: 0.92rem;
+            font-size: 16px;
+          }
+
+          .legacy-page {
+            overflow-x: clip;
+          }
+
+          .legacy-mobile-nav-links:not(.is-open) {
+            visibility: hidden;
+            pointer-events: none;
           }
 
           .legacy-footer-prompt-form button {
