@@ -1655,7 +1655,7 @@ export function App() {
 
         .legacy-footer-visual {
           position: relative;
-          height: clamp(300px, 34vw, 500px);
+          height: clamp(220px, 24vw, 340px);
           overflow: hidden;
           border-top: 1px solid var(--line);
           background: #020503;
@@ -1744,7 +1744,7 @@ export function App() {
           }
 
           .legacy-footer-visual {
-            height: 300px;
+            height: 220px;
           }
 
           .legacy-footer-visual-copy {
