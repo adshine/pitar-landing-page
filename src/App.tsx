@@ -550,8 +550,8 @@ export function App() {
           display: flex;
           flex: 1;
           flex-direction: column;
-          justify-content: center;
-          gap: 8px;
+          justify-content: flex-start;
+          gap: 4px;
           padding: 24px 0;
         }
 
@@ -560,17 +560,19 @@ export function App() {
           width: 100%;
           justify-content: flex-start;
           text-align: left;
-          font-size: 1.06rem;
-          line-height: 1.1;
-          font-weight: 700;
-          padding: 14px 10px;
-          min-height: 44px;
+          font-family: var(--sans);
+          font-size: 3.3rem;
+          line-height: 0.88;
+          font-weight: 600;
+          letter-spacing: -0.045em;
+          padding: 10px 0;
+          min-height: 64px;
         }
 
         .legacy-mobile-nav-links .legacy-signin {
-          justify-content: center;
+          justify-content: flex-start;
           border: 1px solid var(--muted);
-          padding: 12px 14px;
+          padding: 10px 14px;
         }
 
         .legacy-nav--fixed {
