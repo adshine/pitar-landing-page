@@ -1563,7 +1563,7 @@ export function App() {
         }
 
         .legacy-footer-prompt::before {
-          content: "";
+          content: none;
           position: absolute;
           inset: 7% 8%;
           z-index: 0;
