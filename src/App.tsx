@@ -414,8 +414,8 @@ export function App() {
 
         .legacy-hamburger {
           display: none;
-          width: 36px;
-          height: 28px;
+          width: 44px;
+          height: 44px;
           margin-left: auto;
           border: 1px solid var(--line);
           border-radius: 0;
@@ -425,7 +425,7 @@ export function App() {
           flex-direction: column;
           justify-content: center;
           gap: 5px;
-          padding: 5px;
+          padding: 9px;
         }
 
         .legacy-hamburger span {
@@ -453,13 +453,14 @@ export function App() {
 
         .legacy-mobile-nav-links {
           position: fixed;
-          top: 56px;
+          top: 60px;
+          left: 12px;
           right: 12px;
           z-index: 21;
           display: flex;
           flex-direction: column;
-          width: min(78vw, 320px);
-          padding: 14px;
+          width: auto;
+          padding: 16px;
           gap: 10px;
           border: 1px solid var(--line);
           background: color-mix(in oklch, var(--paper) 86%, transparent);
@@ -484,10 +485,11 @@ export function App() {
           width: 100%;
           justify-content: flex-start;
           text-align: left;
-          font-size: 1rem;
+          font-size: 1.06rem;
           line-height: 1.1;
           font-weight: 700;
-          padding: 12px 4px;
+          padding: 14px 10px;
+          min-height: 44px;
         }
 
         .legacy-mobile-nav-links .legacy-signin {
@@ -1194,10 +1196,16 @@ export function App() {
           .legacy-nav--fixed {
             left: 12px;
             right: 12px;
-            width: auto;
+            width: calc(100% - 24px);
             top: 4px;
+            transform: none;
             backdrop-filter: blur(16px) saturate(1.15);
             -webkit-backdrop-filter: blur(16px) saturate(1.15);
+          }
+
+          .legacy-nav--fixed .legacy-hamburger {
+            height: 44px;
+            width: 44px;
           }
 
           .legacy-nav .legacy-brand-stack b {
@@ -1207,6 +1215,15 @@ export function App() {
           .legacy-nav .legacy-brand-stack span {
             font-size: 0.48rem;
             letter-spacing: 0.1em;
+          }
+
+          .legacy-nav--fixed .legacy-brand-mark {
+            width: 16px;
+            height: 16px;
+          }
+
+          .legacy-nav .legacy-brand {
+            min-height: 44px;
           }
 
           .legacy-hero {
