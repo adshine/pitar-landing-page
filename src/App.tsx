@@ -1550,8 +1550,8 @@ export function App() {
           position: relative;
           display: grid;
           place-items: center;
-          min-height: clamp(520px, 52vw, 660px);
-          padding: clamp(72px, 9vw, 128px) clamp(24px, 6vw, 88px);
+          min-height: clamp(390px, 42vw, 500px);
+          padding: clamp(58px, 6.5vw, 84px) clamp(24px, 6vw, 88px);
           overflow: hidden;
           border-bottom: 1px solid var(--line);
           background:
@@ -1619,14 +1619,16 @@ export function App() {
           font-weight: 600;
           letter-spacing: -0.045em;
           line-height: 1;
+          text-wrap: balance;
         }
 
         .legacy-footer-prompt-copy {
-          max-width: 48ch;
+          max-width: 44ch;
           margin: 18px auto 0;
           color: var(--muted);
           font-size: clamp(0.95rem, 1.25vw, 1.12rem);
           line-height: 1.55;
+          text-wrap: balance;
         }
 
         .legacy-footer-prompt-form {
@@ -1873,8 +1875,8 @@ export function App() {
           }
 
           .legacy-footer-prompt {
-            min-height: 500px;
-            padding: 72px 18px;
+            min-height: 390px;
+            padding: 54px 18px;
             background-size: auto, auto, 22px 22px, auto;
           }
 
