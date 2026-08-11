@@ -1550,46 +1550,80 @@ export function App() {
           position: relative;
           display: grid;
           place-items: center;
-          min-height: clamp(360px, 42vw, 540px);
+          min-height: clamp(520px, 52vw, 660px);
           padding: clamp(72px, 9vw, 128px) clamp(24px, 6vw, 88px);
           overflow: hidden;
           border-bottom: 1px solid var(--line);
           background:
-            radial-gradient(circle at 50% 48%, rgba(255, 255, 255, 0.08), transparent 7%),
-            radial-gradient(ellipse at 50% 52%, rgba(32, 255, 79, 0.055), transparent 38%),
-            radial-gradient(circle, rgba(233, 229, 218, 0.12) 0 1px, transparent 1.3px) 0 0 / 28px 28px,
-            #050706;
+            radial-gradient(ellipse at 50% 43%, rgba(255, 255, 255, 0.075), transparent 16%),
+            radial-gradient(ellipse at 50% 55%, rgba(32, 255, 79, 0.04), transparent 34%),
+            radial-gradient(circle, rgba(233, 229, 218, 0.1) 0 1px, transparent 1.25px) 0 0 / 28px 28px,
+            radial-gradient(ellipse at center, #0b0e0c 0%, #060807 58%, #030403 100%);
           isolation: isolate;
         }
 
         .legacy-footer-prompt::before {
           content: "";
           position: absolute;
-          inset: 10% 8%;
-          z-index: -1;
+          inset: 7% 8%;
+          z-index: 0;
           border: 1px solid rgba(233, 229, 218, 0.1);
-          background: linear-gradient(135deg, rgba(255, 255, 255, 0.025), transparent 42%);
-          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035), 0 40px 100px rgba(0, 0, 0, 0.35);
+          background: linear-gradient(145deg, rgba(255, 255, 255, 0.025), transparent 38%);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035), 0 42px 110px rgba(0, 0, 0, 0.42);
+        }
+
+        .legacy-footer-prompt::after {
+          content: "";
+          position: absolute;
+          top: 7%;
+          left: 50%;
+          z-index: 0;
+          width: min(58%, 620px);
+          height: 45%;
+          background: conic-gradient(from 146deg at 50% 0%, transparent 0 31%, rgba(255, 255, 255, 0.055) 42%, rgba(255, 255, 255, 0.015) 49%, rgba(255, 255, 255, 0.055) 56%, transparent 69% 100%);
+          filter: blur(18px);
+          opacity: 0.9;
+          transform: translateX(-50%);
+          mask-image: linear-gradient(to bottom, #000, rgba(0, 0, 0, 0.78) 55%, transparent 100%);
         }
 
         .legacy-footer-prompt-content {
+          position: relative;
+          z-index: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
           width: min(100%, 760px);
           text-align: center;
         }
 
+        .legacy-footer-prompt-content::before {
+          content: "";
+          position: absolute;
+          top: 34px;
+          left: 50%;
+          z-index: -1;
+          width: 76%;
+          height: 150px;
+          border-radius: 50%;
+          background: radial-gradient(ellipse, rgba(255, 255, 255, 0.115), rgba(255, 255, 255, 0.025) 42%, transparent 72%);
+          filter: blur(28px);
+          transform: translateX(-50%);
+        }
+
         .legacy-footer-prompt h2 {
-          max-width: 13ch;
-          margin: 0 auto;
+          max-width: 18ch;
+          margin: clamp(64px, 8vw, 92px) auto 0;
           font-family: var(--sans);
-          font-size: clamp(2.4rem, 5.2vw, 5.25rem);
+          font-size: clamp(2rem, 3.5vw, 3.35rem);
           font-weight: 600;
           letter-spacing: -0.045em;
-          line-height: 0.95;
+          line-height: 1;
         }
 
         .legacy-footer-prompt-copy {
           max-width: 48ch;
-          margin: 24px auto 0;
+          margin: 18px auto 0;
           color: var(--muted);
           font-size: clamp(0.95rem, 1.25vw, 1.12rem);
           line-height: 1.55;
@@ -1598,13 +1632,14 @@ export function App() {
         .legacy-footer-prompt-form {
           display: flex;
           align-items: center;
-          width: min(100%, 650px);
+          width: min(88%, 650px);
           min-height: 64px;
-          margin: clamp(34px, 5vw, 54px) auto 0;
+          margin: 0 auto;
           padding: 7px;
           border: 1px solid rgba(233, 229, 218, 0.28);
+          border-radius: 999px;
           background: rgba(16, 18, 17, 0.84);
-          box-shadow: 0 18px 64px rgba(0, 0, 0, 0.46), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.72), 0 24px 70px rgba(0, 0, 0, 0.54), inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.75);
           -webkit-backdrop-filter: blur(16px);
           backdrop-filter: blur(16px);
         }
@@ -1636,11 +1671,13 @@ export function App() {
           height: 48px;
           place-items: center;
           border: 0;
+          border-radius: 50%;
           background: var(--ink);
           color: #080a09;
           font-size: 1.35rem;
           cursor: pointer;
-          transition: background 180ms ease, transform 180ms ease;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.62), inset 0 1px 0 rgba(255, 255, 255, 0.65);
+          transition: background 180ms ease, transform 180ms ease, box-shadow 180ms ease;
         }
 
         .legacy-footer-prompt-form button:hover,
@@ -1648,6 +1685,33 @@ export function App() {
           background: #20ff4f;
           outline: none;
           transform: translateY(-2px);
+          box-shadow: 0 7px 20px rgba(32, 255, 79, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+        }
+
+        .legacy-footer-prompt-result {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 24px;
+          width: min(72%, 560px);
+          min-height: 58px;
+          margin-top: 34px;
+          padding: 12px 16px;
+          border: 1px solid rgba(233, 229, 218, 0.16);
+          background: rgba(8, 10, 9, 0.92);
+          color: color-mix(in oklch, var(--ink) 78%, transparent);
+          font-family: var(--mono);
+          font-size: 0.68rem;
+          letter-spacing: 0.04em;
+          text-align: left;
+          box-shadow: 0 8px 0 -3px #070908, 0 9px 0 -3px rgba(233, 229, 218, 0.12), 0 16px 0 -7px #060806, 0 17px 0 -7px rgba(233, 229, 218, 0.08), 0 30px 44px rgba(0, 0, 0, 0.58);
+        }
+
+        .legacy-footer-prompt-result span:last-child {
+          flex: 0 0 auto;
+          color: #20ff4f;
+          text-transform: uppercase;
         }
 
         .legacy-footer-main {
@@ -1834,7 +1898,7 @@ export function App() {
           }
 
           .legacy-footer-prompt {
-            min-height: 420px;
+            min-height: 500px;
             padding: 72px 18px;
             background-size: auto, auto, 22px 22px, auto;
           }
@@ -1844,7 +1908,8 @@ export function App() {
           }
 
           .legacy-footer-prompt h2 {
-            font-size: clamp(2.65rem, 13vw, 3.7rem);
+            margin-top: 64px;
+            font-size: clamp(2.2rem, 10vw, 3rem);
           }
 
           .legacy-footer-prompt-copy {
@@ -1854,7 +1919,7 @@ export function App() {
 
           .legacy-footer-prompt-form {
             min-height: 60px;
-            margin-top: 34px;
+            width: 100%;
           }
 
           .legacy-footer-prompt-form input {
@@ -1865,6 +1930,13 @@ export function App() {
           .legacy-footer-prompt-form button {
             width: 44px;
             height: 44px;
+          }
+
+          .legacy-footer-prompt-result {
+            width: 86%;
+            margin-top: 28px;
+            gap: 12px;
+            font-size: 0.58rem;
           }
 
           .legacy-footer-main {
@@ -2161,8 +2233,6 @@ export function App() {
         <div className="legacy-footer-frame">
           <section className="legacy-footer-prompt" aria-labelledby="footer-prompt-title">
             <div className="legacy-footer-prompt-content">
-              <h2 id="footer-prompt-title">Ask what your records know.</h2>
-              <p className="legacy-footer-prompt-copy">One question in. One clear answer out, with the exact page that proves it.</p>
               <form
                 className="legacy-footer-prompt-form"
                 onSubmit={(event) => {
@@ -2173,6 +2243,12 @@ export function App() {
                 <input type="text" aria-label="Ask Pitar a question" placeholder="Ask a question about your records..." />
                 <button type="submit" aria-label="Start asking">↑</button>
               </form>
+              <div className="legacy-footer-prompt-result" aria-hidden="true">
+                <span>What changed in the renewal terms?</span>
+                <span>Source found ↗</span>
+              </div>
+              <h2 id="footer-prompt-title">Ask what your records know.</h2>
+              <p className="legacy-footer-prompt-copy">One question in. One clear answer out, with the exact page that proves it.</p>
             </div>
           </section>
           <div className="legacy-footer-main">
