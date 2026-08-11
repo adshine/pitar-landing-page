@@ -1,0 +1,16 @@
+{
+  "admitted": true,
+  "reasons": [],
+  "provenance": {
+    "viewpoint": "front",
+    "sourcePath": "/Users/adebimpeomolaso/Documents/Pitar-landing-page/artifacts/img2threejs-orb/reference.png",
+    "width": 1254,
+    "height": 1254,
+    "foregroundCoverage": 0.4437,
+    "largestComponentFraction": 1.0,
+    "pHash": 18352448345674524712,
+    "duplicateOfHash": null,
+    "technicalSuitability": "pass",
+    "warnings": []
+  }
+}

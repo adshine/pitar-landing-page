@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pitar — Split Hero Concept</title>
+    <style>
+      :root {
+        --black: #000;
+        --white: #fff;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        border-radius: 0 !important;
+      }
+
+      html,
+      body {
+        min-height: 100%;
+      }
+
+      body {
+        margin: 0;
+        min-width: 320px;
+        color: var(--black);
+        background: var(--white);
+        font-family: "Courier New", Courier, monospace;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      button,
+      input {
+        color: inherit;
+        font: inherit;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-rows: 64px minmax(0, 1fr);
+        min-height: 100svh;
+      }
+
+      .hero__body {
+        display: grid;
+        grid-template-columns: minmax(0, 62fr) minmax(22rem, 38fr);
+        min-height: 0;
+      }
+
+      .hero__left {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        border-right: 1px solid var(--black);
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 64px;
+        padding: 0 clamp(1.5rem, 4vw, 4.5rem);
+        border-bottom: 1px solid var(--black);
+      }
+
+      .brand {
+        font-size: 0.9rem;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+      }
+
+      .nav__links {
+        display: flex;
+        align-items: center;
+        gap: clamp(1rem, 2.5vw, 2.5rem);
+        font-size: 0.64rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .hero__copy {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-end;
+        padding: clamp(2rem, 5vw, 5.5rem) clamp(1.5rem, 4vw, 4.5rem);
+      }
+
+      h1 {
+        max-width: 12ch;
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(3.25rem, 5.8vw, 7rem);
+        font-weight: 400;
+        letter-spacing: -0.075em;
+        line-height: 0.88;
+      }
+
+      .subtitle {
+        max-width: 39rem;
+        margin: clamp(1.5rem, 3vh, 2.75rem) 0 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(1rem, 1.3vw, 1.25rem);
+        line-height: 1.5;
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+        margin-top: clamp(1.5rem, 3vh, 2.5rem);
+      }
+
+      .button {
+        min-height: 42px;
+        padding: 0 1.25rem;
+        border: 1px solid var(--black);
+        background: var(--white);
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        cursor: pointer;
+      }
+
+      .button--primary {
+        background: var(--black);
+        color: var(--white);
+      }
+
+      .button:hover,
+      .button:focus-visible {
+        background: var(--black);
+        color: var(--white);
+        outline: 0;
+      }
+
+      .button--primary:hover,
+      .button--primary:focus-visible {
+        background: var(--white);
+        color: var(--black);
+      }
+
+      .answer-panel {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        min-width: 0;
+        background: var(--black);
+        color: var(--white);
+      }
+
+      .archive-demo {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        min-height: 610px;
+        overflow: hidden;
+        background: #000;
+      }
+
+      .archive-demo::after {
+        position: absolute;
+        inset: 0;
+        z-index: 8;
+        pointer-events: none;
+        content: "";
+        opacity: 0.14;
+        background-image: repeating-linear-gradient(0deg, transparent 0 3px, rgba(255,255,255,.1) 3px 4px);
+        mix-blend-mode: screen;
+      }
+
+      .archive-canvas {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .demo-chrome {
+        position: absolute;
+        z-index: 10;
+        top: 18px;
+        right: 18px;
+        left: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        pointer-events: none;
+      }
+
+      .demo-kicker,
+      .demo-status,
+      .source-node,
+      .demo-control {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+      }
+
+      .demo-status { opacity: .55; }
+
+      .demo-control {
+        position: absolute;
+        z-index: 12;
+        right: 18px;
+        bottom: 18px;
+        min-height: 30px;
+        padding: 0 10px;
+        border: 1px solid rgba(255,255,255,.55);
+        background: #000;
+        color: #fff;
+        cursor: pointer;
+      }
+
+      .demo-control:hover,
+      .demo-control:focus-visible { background: #fff; color: #000; outline: 0; }
+
+      .source-node {
+        position: absolute;
+        z-index: 3;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 9px;
+        border: 1px solid rgba(255,255,255,.38);
+        background: #000;
+        color: rgba(255,255,255,.68);
+        opacity: 0;
+        transform: translateY(8px);
+        transition: opacity .55s linear, transform .7s cubic-bezier(.2,.8,.2,1), color .3s, border-color .3s;
+      }
+
+      .source-glyph { width:14px; height:14px; flex:0 0 auto; color:currentColor; }
+
+      .archive-demo[data-phase="sources"] .source-node,
+      .archive-demo[data-phase="connect"] .source-node,
+      .archive-demo[data-phase="activate"] .source-node { opacity: 1; transform: none; }
+      .archive-demo[data-phase="collapse"] .source-node {
+        opacity: 0;
+        transform: translate(var(--collapse-x), var(--collapse-y)) scale(.2);
+      }
+      .archive-demo[data-phase="activate"] .source-node { color:#fff; border-color:#fff; }
+
+      .source-node:nth-of-type(2) { top: 13%; left: 7%; }
+      .source-node:nth-of-type(3) { top: 15%; right: 7%; transition-delay: 80ms; }
+      .source-node:nth-of-type(4) { top: 31%; left: 3%; transition-delay: 160ms; }
+      .source-node:nth-of-type(5) { top: 34%; right: 3%; transition-delay: 240ms; }
+      .source-node:nth-of-type(6) { top: 49%; left: 6%; transition-delay: 320ms; }
+      .source-node:nth-of-type(7) { top: 52%; right: 6%; transition-delay: 400ms; }
+      .source-node:nth-of-type(8) { top: 65%; left: 50%; translate: -50% 0; transition-delay: 480ms; }
+
+      .orb-button {
+        position: absolute;
+        z-index: 4;
+        top: 35%;
+        left: 50%;
+        width: clamp(118px, 14vw, 178px);
+        aspect-ratio: 1;
+        padding: 0;
+        translate: -50% -50%;
+        border: 1px solid rgba(255,255,255,.68);
+        border-radius: 46% 54% 41% 59% / 55% 43% 57% 45% !important;
+        background: rgba(0,0,0,.78);
+        color: #fff;
+        cursor: pointer;
+        transition: background .35s, color .35s, scale .55s, opacity .45s;
+        animation: core-breathe 4.8s ease-in-out infinite alternate;
+      }
+
+      .orb-button::before,
+      .orb-button::after {
+        position:absolute;
+        inset:-12px -8px -10px -15px;
+        border:1px solid rgba(255,255,255,.22);
+        border-radius: 58% 42% 55% 45% / 44% 61% 39% 56% !important;
+        content:"";
+      }
+      .orb-button::after { inset:-25px -19px -21px -29px; opacity:.45; border-radius:43% 57% 38% 62% / 61% 39% 58% 42% !important; }
+      @keyframes core-breathe { to { border-radius:57% 43% 55% 45% / 40% 58% 42% 60%; transform:rotate(2deg) scale(1.025); } }
+      .orb-button:hover,
+      .orb-button:focus-visible,
+      .archive-demo[data-phase="activate"] .orb-button { background:#fff; color:#000; outline:0; scale:1.04; }
+      .archive-demo[data-phase="collapse"] .orb-button,
+      .archive-demo[data-phase="ask"] .orb-button,
+      .archive-demo[data-phase="thinking"] .orb-button,
+      .archive-demo[data-phase="answer"] .orb-button,
+      .archive-demo[data-phase="hold"] .orb-button { opacity:0; scale:.18; pointer-events:none; }
+      .pitar-mark { width: 25%; height: auto; }
+
+      .ask-console {
+        position: absolute;
+        z-index: 5;
+        right: clamp(18px, 4vw, 42px);
+        bottom: clamp(54px, 7vh, 74px);
+        left: clamp(18px, 4vw, 42px);
+        opacity: 0;
+        transform: translate(var(--orb-to-console-x, 0px), var(--orb-to-console-y, -120px)) scale(.06);
+        transform-origin:50% 0;
+        transition: opacity .5s, transform .55s cubic-bezier(.2,.8,.2,1);
+      }
+      .archive-demo[data-phase="ask"] .ask-console,
+      .archive-demo[data-phase="thinking"] .ask-console,
+      .archive-demo[data-phase="answer"] .ask-console,
+      .archive-demo[data-phase="hold"] .ask-console { opacity:1; transform:none; }
+      .ask-console::before { position:absolute; left:50%; bottom:100%; width:1px; height:var(--console-bridge, 0px); background:rgba(255,255,255,.38); content:""; opacity:0; transform-origin:bottom; transition:opacity .25s; }
+      .archive-demo[data-phase="ask"] .ask-console::before { opacity:1; }
+
+      .search {
+        display:grid;
+        grid-template-columns:1fr auto;
+        min-height:44px;
+        border:1px solid #fff;
+        background:#000;
+      }
+      .search.is-demo-focused { outline:2px solid #fff; outline-offset:3px; }
+      .search input { min-width:0; padding:0 12px; border:0; outline:0; background:#000; color:#fff; font-size:11px; }
+      .search button { padding:0 14px; border:0; border-left:1px solid #fff; background:#fff; color:#000; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; }
+
+      .answer-card {
+        display:grid;
+        grid-template-rows:0fr;
+        margin-top: 8px;
+        overflow: hidden;
+        border: 0 solid #fff;
+        background:#fff;
+        color:#000;
+        transition:grid-template-rows .55s ease, border-width .2s;
+      }
+      .archive-demo[data-phase="answer"] .answer-card,
+      .archive-demo[data-phase="hold"] .answer-card { grid-template-rows:1fr; border-width:1px; }
+      .answer-card__inner { min-height:0; overflow:hidden; padding:0 14px; transition:padding .35s; }
+      .archive-demo[data-phase="answer"] .answer-card__inner,
+      .archive-demo[data-phase="hold"] .answer-card__inner { padding:14px; }
+      .answer-card__meta { display:flex; justify-content:space-between; margin:0 0 10px; font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; }
+      .answer-line { margin:0; font-family:Georgia,"Times New Roman",serif; font-size:clamp(14px,1.35vw,19px); line-height:1.25; opacity:0; transform:translateY(4px); transition:.25s; }
+      .archive-demo[data-line="1"] .answer-line:nth-child(-n+1),
+      .archive-demo[data-line="2"] .answer-line:nth-child(-n+2),
+      .archive-demo[data-line="3"] .answer-line:nth-child(-n+3),
+      .archive-demo[data-line="4"] .answer-line { opacity:1; transform:none; }
+      .answer-card__source { margin:10px 0 0; padding-top:8px; border-top:1px solid #000; font-size:10px; font-weight:700; letter-spacing:.06em; opacity:0; text-transform:uppercase; transition:opacity .3s; }
+      .archive-demo[data-citation="true"] .answer-card__source { opacity:1; }
+
+      .demo-cursor {
+        position:absolute;
+        z-index:9;
+        top:0;
+        left:0;
+        width:17px;
+        height:23px;
+        opacity:0;
+        pointer-events:none;
+        filter:drop-shadow(0 1px 0 #000);
+        transition:transform .7s cubic-bezier(.2,.8,.2,1), opacity .2s;
+      }
+      .demo-cursor svg { display:block; width:100%; height:100%; }
+      .demo-cursor.is-visible { opacity:1; }
+      .demo-cursor.is-clicking { scale:.78; }
+
+      .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
+      @media (max-height: 720px) and (min-width: 801px) {
+        .archive-demo { min-height: 540px; }
+        .orb-button { top:32%; width:112px; }
+        .source-node { padding:5px 7px; font-size:9px; }
+        .source-node:nth-of-type(6) { top:46%; }
+        .source-node:nth-of-type(7) { top:48%; }
+        .source-node:nth-of-type(8) { top:60%; }
+      }
+
+      @media (max-width: 800px) {
+        .hero__body {
+          grid-template-columns: 1fr;
+        }
+
+        .hero__left {
+          min-height: 78svh;
+          border-right: 0;
+        }
+
+        .nav__links a:nth-child(-n + 2) {
+          display: none;
+        }
+
+        .answer-panel {
+          min-height: 70svh;
+        }
+
+        .archive-demo { min-height:680px; }
+        .source-node { padding:5px 6px; font-size:9px; }
+        .source-node:nth-of-type(2) { top:11%; left:4%; }
+        .source-node:nth-of-type(3) { top:12%; right:4%; }
+        .source-node:nth-of-type(4) { top:25%; left:2%; }
+        .source-node:nth-of-type(5) { top:27%; right:2%; }
+        .source-node:nth-of-type(6) { top:42%; left:3%; }
+        .source-node:nth-of-type(7) { top:44%; right:3%; }
+        .source-node:nth-of-type(8) { top:57%; }
+        .orb-button { top:34%; width:112px; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation: none !important; transition-duration: 0.01ms !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <nav class="nav" aria-label="Primary navigation">
+          <a class="brand" href="#">Pitar</a>
+          <div class="nav__links">
+            <a href="#product">Product</a>
+            <a href="#sources">Sources</a>
+            <a href="#signin">Sign in</a>
+          </div>
+        </nav>
+
+        <div class="hero__body">
+          <div class="hero__left">
+          <div class="hero__copy">
+            <h1 id="hero-title">Get answers you can trust from every file you own.</h1>
+            <p class="subtitle">
+              Search emails, contracts, scans, and cloud drives in one place. Get a concise answer, then open the exact page it came from.
+            </p>
+            <div class="actions">
+              <button class="button button--primary" type="button">Open Pitar</button>
+              <button class="button" type="button">See how it works</button>
+            </div>
+          </div>
+          </div>
+
+          <aside class="answer-panel" aria-label="Animated demonstration of Pitar searching connected sources">
+            <div class="archive-demo" data-phase="idle" data-line="0" data-citation="false">
+              <canvas class="archive-canvas" aria-hidden="true"></canvas>
+              <div class="demo-chrome" aria-hidden="true">
+                <span class="demo-kicker">Your archive / connected</span>
+                <span class="demo-status">Waiting</span>
+              </div>
+
+              <div class="source-node"><svg class="source-glyph" viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 3.5h13v9h-13zM2 4l6 5 6-5" fill="none" stroke="currentColor"/></svg>Gmail</div>
+              <div class="source-node"><svg class="source-glyph" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 1.5h4L15 10l-2 3.5H3L1 10 6 1.5Zm0 0 4.8 8.5M15 10H6" fill="none" stroke="currentColor"/></svg>Google Drive</div>
+              <div class="source-node"><svg class="source-glyph" viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="2.5" width="9" height="11" fill="none" stroke="currentColor"/><path d="M5 5h9.5v8H5m.5-6.5 4 3 4-3" fill="none" stroke="currentColor"/></svg>Outlook</div>
+              <div class="source-node"><svg class="source-glyph" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 12.5H13a2.5 2.5 0 0 0 .2-5A4.5 4.5 0 0 0 4.6 6 3.25 3.25 0 0 0 5 12.5Z" fill="none" stroke="currentColor"/></svg>OneDrive</div>
+              <div class="source-node"><svg class="source-glyph" viewBox="0 0 16 16" aria-hidden="true"><circle cx="6" cy="5" r="3" fill="none" stroke="currentColor"/><circle cx="10.5" cy="10.5" r="3.5" fill="none" stroke="currentColor"/><path d="M4 8.5v5h4" fill="none" stroke="currentColor"/></svg>SharePoint</div>
+              <div class="source-node"><svg class="source-glyph" viewBox="0 0 16 16" aria-hidden="true"><path d="m4 2 4 2.5L4 7 0 4.5 4 2Zm8 0 4 2.5L12 7 8 4.5 12 2ZM4 8l4 2.5L4 13 0 10.5 4 8Zm8 0 4 2.5-4 2.5-4-2.5L12 8Z" fill="currentColor"/></svg>Dropbox</div>
+              <div class="source-node"><svg class="source-glyph" viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 4.5h13v8h-13zM5 4.5v-2h6v2M6 8.5h4" fill="none" stroke="currentColor"/></svg>Box</div>
+
+              <button class="orb-button" type="button" aria-label="Run the Pitar search demonstration">
+                <svg class="pitar-mark" viewBox="0 0 104 212" fill="none" aria-hidden="true">
+                  <path d="M52 8C44 26 58 34 46 48C36 62 52 74 44 92C38 108 50 120 44 140C40 158 48 170 43 204C52 168 46 152 52 136C58 118 48 106 54 90C60 72 46 62 54 46C62 32 48 24 52 8Z" fill="currentColor" />
+                  <path d="M48 56C78 54 96 74 94 92C92 112 74 124 50 121C70 116 84 104 85 88C86 72 72 60 48 56Z" fill="currentColor" />
+                </svg>
+              </button>
+
+              <div class="ask-console">
+                <form class="search">
+                  <input type="text" aria-label="Ask Pitar" autocomplete="off" placeholder="Ask across every source..." />
+                  <button type="submit">Ask &rarr;</button>
+                </form>
+                <article class="answer-card">
+                  <div class="answer-card__inner">
+                    <p class="answer-card__meta"><span>Answer 01</span><span>7 sources searched</span></p>
+                    <div class="answer-card__copy">
+                      <p class="answer-line">The agreement renews automatically.</p>
+                      <p class="answer-line">Written notice is required at least</p>
+                      <p class="answer-line">30 days before the current term ends.</p>
+                    </div>
+                    <p class="answer-card__source">Master services agreement / page 14 &nearr;</p>
+                  </div>
+                </article>
+              </div>
+
+              <div class="demo-cursor" aria-hidden="true">
+                <svg viewBox="0 0 18 24"><path d="M1 1L16 14H9L6 22L2.5 20.5L5 13H1V1Z" fill="white" stroke="black"/></svg>
+              </div>
+              <p class="sr-only" id="demo-a11y-status" aria-live="polite"></p>
+              <button class="demo-control" type="button" aria-label="Pause animation">Pause</button>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+    <script>
+      (() => {
+        const demo = document.querySelector('.archive-demo');
+        const canvas = demo.querySelector('.archive-canvas');
+        const ctx = canvas.getContext('2d');
+        const orb = demo.querySelector('.orb-button');
+        const form = demo.querySelector('.search');
+        const askConsole = demo.querySelector('.ask-console');
+        const answerCard = demo.querySelector('.answer-card');
+        const input = form.querySelector('input');
+        const ask = form.querySelector('button');
+        const cursor = demo.querySelector('.demo-cursor');
+        const control = demo.querySelector('.demo-control');
+        const status = demo.querySelector('.demo-status');
+        const a11yStatus = demo.querySelector('#demo-a11y-status');
+        const nodes = [...demo.querySelectorAll('.source-node')];
+        const reducedQuery = matchMedia('(prefers-reduced-motion: reduce)');
+        const query = 'Where is the renewal clause?';
+        const duration = 16000;
+        const labels = {idle:'Waiting',sources:'Sources online',connect:'Indexing sources',activate:'Pitar ready',collapse:'Opening search',ask:'Composing question',thinking:'Searching 7 sources',answer:'Answer found',hold:'Cited answer'};
+        let width=0, height=0, dpr=1, geometry=null, raf=0, lastPhase='';
+        let elapsed=0, lastTick=performance.now(), userPaused=false, inViewport=true, documentVisible=!document.hidden;
+        let inputFocused=false, inputDirty=false, automatedInput=false, manualPending=false;
+        let dprWatcher;
+
+        const phaseAt=t=>t<800?'idle':t<2200?'sources':t<3800?'connect':t<4700?'activate':t<5600?'collapse':t<8200?'ask':t<9400?'thinking':t<13000?'answer':'hold';
+        const isRunnable=()=>!reducedQuery.matches&&!userPaused&&inViewport&&documentVisible;
+        const center=(el,root)=>{const a=el.getBoundingClientRect(),b=root.getBoundingClientRect();return{x:a.left-b.left+a.width/2,y:a.top-b.top+a.height/2};};
+
+        function cacheGeometry(){
+          const orbCenter=center(orb,demo);
+          const consoleCenter=center(askConsole,demo);
+          geometry={orb:orbCenter,input:center(input,demo),ask:center(ask,demo),console:consoleCenter,nodes:nodes.map(n=>center(n,demo))};
+          askConsole.style.setProperty('--orb-to-console-x',`${orbCenter.x-consoleCenter.x}px`);
+          askConsole.style.setProperty('--orb-to-console-y',`${orbCenter.y-consoleCenter.y}px`);
+          askConsole.style.setProperty('--console-bridge',`${Math.max(0,consoleCenter.y-orbCenter.y)}px`);
+          nodes.forEach((node,i)=>{node.style.setProperty('--collapse-x',`${orbCenter.x-geometry.nodes[i].x}px`);node.style.setProperty('--collapse-y',`${orbCenter.y-geometry.nodes[i].y}px`);});
+        }
+
+        function resize(){
+          const r=demo.getBoundingClientRect(); width=r.width;height=r.height;dpr=Math.min(devicePixelRatio||1,2);
+          canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);canvas.style.width=`${width}px`;canvas.style.height=`${height}px`;
+          ctx.setTransform(dpr,0,0,dpr,0,0); requestAnimationFrame(cacheGeometry);
+        }
+
+        function moveCursor(point,click=false){cursor.classList.add('is-visible');cursor.classList.toggle('is-clicking',click);cursor.style.transform=`translate(${point.x}px,${point.y}px)`;}
+        function hideCursor(){cursor.classList.remove('is-visible','is-clicking');}
+        function updateControl(){
+          const locked=reducedQuery.matches;
+          control.disabled=locked;
+          control.textContent=locked?'Static':userPaused?'Resume':'Pause';
+          control.setAttribute('aria-label',locked?'Animation disabled by reduced motion preference':userPaused?'Resume animation':'Pause animation');
+        }
+
+        function setPhase(phase){
+          if(phase===lastPhase)return;
+          demo.dataset.phase=phase;status.textContent=labels[phase];lastPhase=phase;
+          const orbAvailable=!['ask','thinking','answer','hold'].includes(phase);
+          const askAvailable=['ask','thinking','answer','hold'].includes(phase);
+          const answerAvailable=['answer','hold'].includes(phase);
+          orb.toggleAttribute('inert',!orbAvailable);orb.inert=!orbAvailable;orb.tabIndex=orbAvailable?0:-1;orb.setAttribute('aria-hidden',String(!orbAvailable));
+          askConsole.toggleAttribute('inert',!askAvailable);askConsole.inert=!askAvailable;askConsole.setAttribute('aria-hidden',String(!askAvailable));
+          answerCard.toggleAttribute('inert',!answerAvailable);answerCard.inert=!answerAvailable;answerCard.setAttribute('aria-hidden',String(!answerAvailable));
+          if(phase==='answer'&&manualPending){
+            a11yStatus.textContent='Answer ready. The agreement renews automatically unless written notice is given 30 days before the term ends.';
+            manualPending=false;
+          }
+          requestAnimationFrame(cacheGeometry);
+        }
+
+        function draw(t,phase){
+          if(!geometry)return;
+          ctx.clearRect(0,0,width,height);
+          const o=geometry.orb;
+          const disappear=phase==='collapse'||['ask','thinking','answer','hold'].includes(phase);
+          const collapseAlpha=phase==='collapse'?Math.max(0,1-(t-4700)/900):disappear?0:1;
+          const breathe=Math.sin(t/720)*3.5;
+          for(let ring=0;ring<4;ring++){
+            ctx.beginPath();const base=72+ring*23+breathe*(1-ring*.12);
+            for(let i=0;i<=120;i++){
+              const a=i/120*Math.PI*2;
+              const organic=Math.sin(a*2.15+t/1700+ring*.8)*5.5+Math.sin(a*5.2-t/2100)*2.5+Math.cos(a*1.1+ring)*3;
+              const r=base+organic*(1+ring*.18);
+              const x=o.x+Math.cos(a)*r+(ring===3?Math.sin(a*2+t/2300)*8:0);
+              const y=o.y+Math.sin(a)*r*.78+(ring===3?Math.cos(a*3-t/1900)*5:0);
+              i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+            }
+            ctx.closePath();ctx.strokeStyle=`rgba(255,255,255,${(.25-ring*.045)*collapseAlpha})`;ctx.lineWidth=ring===3?1.25:1;ctx.stroke();
+          }
+          if(['connect','activate','collapse'].includes(phase)) geometry.nodes.forEach((p,i)=>{
+            const build=Math.min(1,Math.max(0,(t-2200-i*55)/650));const alpha=build*collapseAlpha;
+            ctx.beginPath();ctx.moveTo(p.x,p.y);const bend=(i%2?1:-1)*20;ctx.quadraticCurveTo((p.x+o.x)/2+bend,(p.y+o.y)/2,o.x,o.y);
+            ctx.strokeStyle=`rgba(255,255,255,${.52*alpha})`;ctx.lineWidth=1;ctx.stroke();
+            const q=((t/850)+i*.137)%1;ctx.fillStyle=`rgba(255,255,255,${alpha})`;ctx.fillRect(p.x+(o.x-p.x)*q-1,p.y+(o.y-p.y)*q-1,2,2);
+          });
+        }
+
+        function applyTimeline(t){
+          const phase=phaseAt(t);setPhase(phase);
+          form.classList.toggle('is-demo-focused',t>=6100&&t<6650);
+          if(!inputDirty&&!inputFocused){
+            automatedInput=true;
+            if(t<6500)input.value=''; else if(t<8200)input.value=query.slice(0,Math.floor((t-6500)/58)); else input.value=query;
+            automatedInput=false;
+          }
+          if(t>=3900&&t<4550)moveCursor(geometry.orb,t>4250);
+          else if(t>=5650&&t<6450)moveCursor(geometry.input,t>6100);
+          else if(t>=7950&&t<8750)moveCursor(geometry.ask,t>8300);
+          else hideCursor();
+          demo.dataset.line=String(t<9900?0:t<10600?1:t<11300?2:4);demo.dataset.citation=String(t>=12100);
+          draw(t,phase);
+        }
+
+        function frame(now){
+          if(!isRunnable()){lastTick=now;return;}
+          if(Math.min(devicePixelRatio||1,2)!==dpr)resize();
+          elapsed=(elapsed+(now-lastTick))%duration;lastTick=now;applyTimeline(elapsed);raf=requestAnimationFrame(frame);
+        }
+        function cancelManualAnnouncement(){manualPending=false;a11yStatus.textContent='';}
+        function syncRunState(){cancelAnimationFrame(raf);lastTick=performance.now();if(!isRunnable())cancelManualAnnouncement();else raf=requestAnimationFrame(frame);updateControl();}
+        function restart(at=0,keepManual=false){if(reducedQuery.matches)return;if(!keepManual)cancelManualAnnouncement();elapsed=at;lastTick=performance.now();lastPhase='';demo.dataset.line='0';demo.dataset.citation='false';if(!inputDirty&&!inputFocused)input.value='';syncRunState();}
+        function setFinal(){cancelManualAnnouncement();cancelAnimationFrame(raf);elapsed=15000;lastPhase='';setPhase('hold');demo.dataset.line='4';demo.dataset.citation='true';status.textContent='Cited answer';if(!inputDirty)input.value=query;hideCursor();requestAnimationFrame(()=>{cacheGeometry();draw(elapsed,'hold');});updateControl();}
+
+        input.addEventListener('focus',()=>{inputFocused=true;});
+        input.addEventListener('blur',()=>{inputFocused=false;});
+        input.addEventListener('input',()=>{if(!automatedInput)inputDirty=true;});
+        orb.addEventListener('click',()=>{if(reducedQuery.matches)return;userPaused=false;restart(3800);});
+        form.addEventListener('submit',event=>{event.preventDefault();if(reducedQuery.matches)return;inputDirty=true;userPaused=false;manualPending=true;a11yStatus.textContent='Pitar is searching seven connected sources.';restart(8200,true);});
+        control.addEventListener('click',()=>{if(reducedQuery.matches)return;userPaused=!userPaused;syncRunState();});
+        new ResizeObserver(resize).observe(demo);
+        new IntersectionObserver(([entry])=>{inViewport=entry.isIntersecting;syncRunState();},{threshold:.05}).observe(demo);
+        document.addEventListener('visibilitychange',()=>{documentVisible=!document.hidden;syncRunState();});
+        reducedQuery.addEventListener('change',()=>{if(reducedQuery.matches)setFinal();else{elapsed=0;userPaused=false;syncRunState();}});
+        window.addEventListener('resize',resize,{passive:true});
+        function watchDpr(){if(dprWatcher)dprWatcher.removeEventListener('change',watchDpr);dprWatcher=matchMedia(`(resolution: ${devicePixelRatio||1}dppx)`);dprWatcher.addEventListener('change',()=>{resize();watchDpr();},{once:true});}
+        resize();watchDpr();setPhase('idle');updateControl();if(reducedQuery.matches)setFinal();else raf=requestAnimationFrame(frame);
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "world": "pitar-orb",
+  "object": {
+    "id": "pitar-black-glass-orb",
+    "name": "pitar-black-glass-orb",
+    "description": "one smooth spherical smoked-black glass orb with glossy clearcoat, strong thin silver upper-left Fresnel rim, subtle cyan lower-left refraction, deep black translucent volume, no text, no gauges, no secondary lobe, no dashboard, no extra objects",
+    "source_images": [
+      "/Users/adebimpeomolaso/Projects/Products/three-js-test/image-blaster/input/pitar-black-glass-orb-v1.png"
+    ],
+    "evidence": [
+      {
+        "image": "/Users/adebimpeomolaso/Projects/Products/three-js-test/image-blaster/input/pitar-black-glass-orb-v1.png",
+        "notes": "Direct single-image object input"
+      }
+    ],
+    "generate_as_3d_object": true,
+    "working_dir": "worlds/pitar-orb/output/pitar-black-glass-orb"
+  },
+  "updated_at": "2026-08-07T05:03:47.853Z"
+}

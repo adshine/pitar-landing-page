@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pitar — AI Document Search With Page-Level Citations</title>
+  <meta name="description" content="Search emails, PDFs, scans, and files with AI. Get concise answers with citations to the exact source page.">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #000000;
+      --muted: #000000;
+      --line: #000000;
+      --panel: #ffffff;
+      --accent: #000000;
+      --page: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--page); scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--ink);
+      background: var(--page);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    button, input { font: inherit; }
+    a { color: inherit; text-decoration: none; }
+
+    .shell {
+      width: 100%;
+      margin-inline: auto;
+    }
+
+    .nav-wrap {
+      position: fixed;
+      z-index: 20;
+      top: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: max-content;
+      max-width: calc(100% - 40px);
+    }
+
+    .nav {
+      min-height: 48px;
+      width: max-content;
+      max-width: 100%;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .brand {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px 6px 6px;
+      border: 1px solid var(--ink);
+      background: var(--panel);
+      font-weight: 700;
+      letter-spacing: -.03em;
+    }
+    .brand svg {
+      width: 34px;
+      height: 34px;
+      padding: 7px;
+      color: var(--accent);
+      border: 0;
+    }
+    .nav-links { display: flex; align-items: center; gap: 20px; color: var(--muted); font-size: 12px; }
+    .nav-links a:hover { color: var(--ink); }
+    .nav-menu {
+      min-height: 48px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      border: 1px solid var(--ink);
+      background: var(--panel);
+    }
+    .nav-action {
+      min-height: 46px;
+      padding: 0 11px;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--ink);
+      border-radius: 0;
+      background: var(--ink);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .hero {
+      position: relative;
+      width: min(1200px, calc(100% - 40px));
+      min-height: 100svh;
+      margin-inline: auto;
+      overflow: hidden;
+      display: grid;
+      align-items: center;
+      padding: 128px 0 150px;
+      border: 1px solid var(--ink);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      left: 50%;
+      width: 100vw;
+      transform: translateX(-50%);
+      bottom: 154px;
+      border-top: 1px solid var(--ink);
+      pointer-events: none;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      top: 104px;
+      left: 50%;
+      width: 100vw;
+      transform: translateX(-50%);
+      border-top: 1px solid var(--ink);
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #answer {
+      width: min(760px, 100%);
+      text-align: center;
+    }
+
+    .eyebrow {
+      margin: 0 0 22px;
+      color: var(--accent);
+      font: 600 12px/1.3 Arial, Helvetica, sans-serif;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 690px;
+      margin: 0 auto;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: clamp(48px, 5.2vw, 72px);
+      font-weight: 400;
+      line-height: .94;
+      letter-spacing: -.055em;
+    }
+    .lede {
+      max-width: 520px;
+      margin: 30px auto 0;
+      color: var(--muted);
+      font: 14px/1.55 Arial, Helvetica, sans-serif;
+    }
+
+    .prompt-dock {
+      position: absolute;
+      z-index: 10;
+      left: 50%;
+      bottom: 28px;
+      transform: translateX(-50%);
+      width: min(760px, calc(100% - 40px));
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      filter: none;
+      overflow: hidden;
+    }
+
+    .bracket {
+      width: 28px;
+      flex: 0 0 28px;
+      border-block: 2px solid var(--accent);
+    }
+    .bracket.left { border-left: 2px solid var(--accent); }
+    .bracket.right { border-right: 2px solid var(--accent); }
+
+    .prompt-inner {
+      min-width: 0;
+      flex: 1;
+      padding: 0;
+      border-block: 1px solid var(--line);
+      background: #ffffff;
+      overflow: hidden;
+    }
+    .prompt-main {
+      min-width: 0;
+      padding: 9px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      overflow: hidden;
+    }
+    .prompt-mark { color: var(--accent); font: 700 17px Arial, Helvetica, sans-serif; }
+    .prompt-inner input {
+      min-width: 0;
+      flex: 1;
+      height: 48px;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--ink);
+      font: 14px Arial, Helvetica, sans-serif;
+    }
+    .prompt-inner input::placeholder { color: #000000; opacity: 1; }
+    .dock-label {
+      min-height: 42px;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      border-top: 1px solid var(--ink);
+      color: #000000;
+      font: 12px Arial, Helvetica, sans-serif;
+    }
+    .dock-label a { border-bottom: 1px solid var(--ink); }
+
+    @media (max-width: 800px) {
+      .shell { width: min(100% - 28px, 1200px); }
+      .nav-wrap { top: 14px; width: max-content; max-width: calc(100% - 28px); }
+      .nav { min-height: 48px; border-radius: 0; }
+      .nav-links { display: none; }
+      .hero { width: 100%; align-items: start; padding: 138px 0 140px; }
+      .hero::before { top: 86px; }
+      .hero::after { bottom: 126px; }
+      h1 { font-size: clamp(42px, 13vw, 58px); }
+      .lede { margin-top: 24px; font-size: 14px; }
+      .prompt-dock { position: fixed; width: calc(100% - 20px); bottom: 14px; }
+      .bracket { width: 15px; flex-basis: 15px; }
+      .prompt-main { padding-inline: 10px; }
+      .prompt-mark { display: none; }
+      .dock-label { min-height: 36px; padding-inline: 10px; gap: 12px; font-size: 10px; }
+    }
+
+  </style>
+</head>
+<body>
+  <header class="nav-wrap shell">
+    <nav class="nav" aria-label="Primary navigation">
+      <a class="brand" href="#top" aria-label="Pitar home">
+        <svg viewBox="0 0 104 212" fill="none" aria-hidden="true">
+          <path d="M52 8C44 26 58 34 46 48C36 62 52 74 44 92C38 108 50 120 44 140C40 158 48 170 43 204C52 168 46 152 52 136C58 118 48 106 54 90C60 72 46 62 54 46C62 32 48 24 52 8Z" fill="currentColor"/>
+          <path d="M48 56C78 54 96 74 94 92C92 112 74 124 50 121C70 116 84 104 85 88C86 72 72 60 48 56Z" fill="currentColor"/>
+        </svg>
+        <span>Pitar</span>
+      </a>
+      <div class="nav-menu">
+        <div class="nav-links">
+          <a href="#answer">Sourced answers</a>
+          <a href="#sources">Sources</a>
+          <a href="#origin">Origin</a>
+        </div>
+      </div>
+      <a class="nav-action" href="#ask">Open Pitar →</a>
+    </nav>
+  </header>
+
+  <main class="hero" id="top">
+    <div class="hero-grid shell">
+      <section id="answer">
+        <p class="eyebrow">// Ask your files. Check every answer.</p>
+        <h1>Get answers you can trust<br>from every file you own.</h1>
+        <p class="lede">Your emails, contracts, scans, and files are all in one place. Ask a question, get a short answer, and open the page it came from.</p>
+      </section>
+
+    </div>
+
+    <form class="prompt-dock" id="ask">
+      <span class="bracket left" aria-hidden="true"></span>
+      <div class="prompt-inner">
+        <div class="prompt-main">
+          <span class="prompt-mark" aria-hidden="true">&gt;_</span>
+          <input aria-label="Ask Pitar a question" placeholder="" autocomplete="off">
+        </div>
+        <div class="dock-label" id="origin">
+          <a href="#origin">How the citation is enforced</a>
+          <span>Your records stay yours.</span>
+        </div>
+      </div>
+      <span class="bracket right" aria-hidden="true"></span>
+    </form>
+  </main>
+
+  <script>
+    const questionInput = document.querySelector('#ask input');
+    const exampleQuestions = [
+      'Which agreements reference the Kaduna warehouse?',
+      'Which letters mention the house in Enugu?',
+      'What changed between the 2016 and 2019 versions?'
+    ];
+    const wait = (milliseconds) => new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+
+    async function animatePlaceholder() {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        questionInput.placeholder = exampleQuestions[0];
+        return;
+      }
+
+      let questionIndex = 0;
+      while (true) {
+        if (document.activeElement === questionInput || questionInput.value) {
+          await wait(250);
+          continue;
+        }
+
+        const question = exampleQuestions[questionIndex];
+        for (let characterIndex = 1; characterIndex <= question.length; characterIndex += 1) {
+          if (document.activeElement === questionInput || questionInput.value) break;
+          questionInput.placeholder = question.slice(0, characterIndex);
+          await wait(42);
+        }
+
+        if (document.activeElement !== questionInput && !questionInput.value) {
+          await wait(1500);
+          for (let characterIndex = question.length; characterIndex >= 0; characterIndex -= 1) {
+            if (document.activeElement === questionInput || questionInput.value) break;
+            questionInput.placeholder = question.slice(0, characterIndex);
+            await wait(20);
+          }
+          questionIndex = (questionIndex + 1) % exampleQuestions.length;
+          await wait(250);
+        }
+      }
+    }
+
+    animatePlaceholder();
+
+    document.querySelector('.prompt-dock').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const input = this.querySelector('input');
+      if (!input.value.trim()) return input.focus();
+      input.value = 'Searching your sources…';
+      window.setTimeout(() => { input.value = ''; input.blur(); }, 900);
+    });
+  </script>
+</body>
+</html>

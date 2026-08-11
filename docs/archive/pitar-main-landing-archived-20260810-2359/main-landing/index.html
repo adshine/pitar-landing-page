@@ -1,0 +1,951 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#e9e5da" />
+    <title>Stop searching your notes. Start asking them. — Northline</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+        }
+      }
+    </script>
+    <style>
+      :root {
+        --paper: #e9e5da;
+        --paper-deep: #dcd7c9;
+        --ink: #20241e;
+        --muted: #74776b;
+        --line: rgba(32, 36, 30, 0.2);
+        --acid: #d3ee67;
+        --night: #1b1f1a;
+        --serif: "Instrument Serif", Georgia, serif;
+        --sans: "DM Sans", Arial, sans-serif;
+        --mono: "Space Mono", monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        background: var(--paper);
+      }
+
+      body {
+        min-width: 320px;
+        margin: 0;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 17% 14%, rgba(255, 255, 255, 0.48), transparent 23rem),
+          var(--paper);
+        font-family: var(--sans);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      body::before {
+        position: fixed;
+        z-index: 10;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.15;
+        content: "";
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.38'/%3E%3C/svg%3E");
+        mix-blend-mode: multiply;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      button {
+        color: inherit;
+        font: inherit;
+      }
+
+      .page {
+        position: relative;
+        isolation: isolate;
+        width: 100%;
+        height: 100svh;
+        min-height: 100svh;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+
+      .hero {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 20px;
+        width: 100%;
+        max-width: none;
+        height: 100%;
+        min-height: 100svh;
+        padding: 24px;
+        box-sizing: border-box;
+      }
+
+      .hero-main {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        gap: clamp(20px, 3vh, 32px);
+        flex: 1 1 auto;
+        align-self: stretch;
+        width: 100%;
+        max-width: none;
+        min-width: 0;
+        min-height: 0;
+        margin-left: 0;
+        margin-right: 0;
+        padding: 8px 0 0;
+        animation: rise-in 0.85s 120ms ease both;
+      }
+
+      .hero-stage {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        order: -1;
+        flex: 0 0 auto;
+        width: 100%;
+        max-width: none;
+        min-width: 0;
+        min-height: 0;
+      }
+
+      .hero-top {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        flex: 0 0 auto;
+        gap: 18px 28px;
+        margin: 0;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 30px;
+        height: 30px;
+        place-items: center;
+        border: 1px solid var(--ink);
+        border-radius: 50%;
+        font-family: var(--serif);
+        font-size: 1.3rem;
+        font-weight: 400;
+        line-height: 1;
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: clamp(16px, 2.5vw, 32px);
+        font-family: var(--mono);
+        font-size: 0.59rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .nav a {
+        position: relative;
+        color: var(--muted);
+        transition: color 180ms ease;
+      }
+
+      .nav a::after {
+        position: absolute;
+        right: 0;
+        bottom: -8px;
+        left: 0;
+        height: 1px;
+        content: "";
+        background: var(--ink);
+        transform: scaleX(0);
+        transform-origin: right;
+        transition: transform 180ms ease;
+      }
+
+      .nav a:hover,
+      .nav a:focus-visible {
+        color: var(--ink);
+      }
+
+      .nav a:hover::after,
+      .nav a:focus-visible::after {
+        transform: scaleX(1);
+        transform-origin: left;
+      }
+
+      .hero-copy {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: clamp(28px, 5vw, 80px);
+        flex: 1 1 auto;
+        width: 100%;
+        max-width: none;
+        margin: 0;
+      }
+
+      .hero-copy h1 {
+        flex: 0 1 auto;
+        min-width: 0;
+      }
+
+      .hero-aside {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-end;
+        align-self: stretch;
+        flex: 1 1 0;
+        height: 100%;
+        min-width: 0;
+        max-width: 480px;
+      }
+
+      .eyebrow,
+      .visual-kicker,
+      .meta {
+        font-family: var(--mono);
+        font-size: 0.59rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 28px;
+        color: var(--muted);
+      }
+
+      .eyebrow::before {
+        width: 28px;
+        height: 1px;
+        content: "";
+        background: var(--ink);
+      }
+
+      h1 {
+        max-width: 13ch;
+        margin: 0;
+        font-family: var(--sans);
+        font-size: clamp(3.3rem, 4.8vw, 5.2rem);
+        font-weight: 600;
+        letter-spacing: -0.085em;
+        line-height: 0.88;
+      }
+
+      h1 span {
+        display: block;
+      }
+
+      h1 em {
+        display: inline;
+        padding-left: 0;
+        color: var(--muted);
+        font-style: normal;
+      }
+
+      .hero-description {
+        max-width: 440px;
+        margin: 0;
+        color: var(--muted);
+        font-size: clamp(0.92rem, 1.15vw, 1.08rem);
+        line-height: 1.55;
+      }
+
+      .hero-footer {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 18px;
+        margin-top: clamp(24px, 3.5vh, 40px);
+      }
+
+      .connector-marquee {
+        position: relative;
+        flex: 0 0 auto;
+        width: min(100%, calc(min(42svh, 420px) * 735 / 413));
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+      }
+
+      .connector-marquee-track {
+        display: flex;
+        width: max-content;
+        gap: 0;
+        animation: connector-scroll var(--marquee-duration, 22s) linear infinite;
+        will-change: transform;
+      }
+
+      .connector-marquee:hover .connector-marquee-track,
+      .connector-marquee:focus-within .connector-marquee-track {
+        animation-play-state: paused;
+      }
+
+      .connector-group {
+        display: flex;
+        flex-shrink: 0;
+        align-items: center;
+        gap: 4px;
+        padding-right: 4px;
+      }
+
+      .connector-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0;
+        height: 44px;
+        max-width: 44px;
+        padding: 0 11px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 0;
+        background: rgba(233, 229, 218, 0.96);
+        color: var(--ink);
+        white-space: nowrap;
+        cursor: default;
+        transition:
+          max-width 280ms ease,
+          gap 280ms ease,
+          padding 280ms ease,
+          border-color 180ms ease,
+          background 180ms ease;
+      }
+
+      .connector-chip:hover,
+      .connector-chip:focus-visible {
+        max-width: 220px;
+        gap: 10px;
+        padding: 0 14px 0 11px;
+        border-color: rgba(32, 36, 30, 0.4);
+        background: #fff;
+        outline: none;
+      }
+
+      .connector-icon {
+        display: grid;
+        flex: 0 0 auto;
+        width: 22px;
+        height: 22px;
+        place-items: center;
+      }
+
+      .connector-icon img {
+        width: 22px;
+        height: 22px;
+        display: block;
+        object-fit: contain;
+      }
+
+      .connector-name {
+        max-width: 0;
+        overflow: hidden;
+        opacity: 0;
+        font-family: var(--mono);
+        font-size: 0.58rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        transition: max-width 280ms ease, opacity 200ms ease;
+      }
+
+      .connector-chip:hover .connector-name,
+      .connector-chip:focus-visible .connector-name {
+        max-width: 160px;
+        opacity: 1;
+      }
+
+      @keyframes connector-scroll {
+        from {
+          transform: translateX(0);
+        }
+        to {
+          /* total track is 2× themed set → seamless loop */
+          transform: translateX(-50%);
+        }
+      }
+
+      .primary-button {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        padding: 16px 22px;
+        border: 1px solid var(--ink);
+        background: var(--ink);
+        color: var(--paper);
+        cursor: pointer;
+        font-family: var(--mono);
+        font-size: 0.63rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        transition: box-shadow 180ms ease, transform 180ms ease;
+      }
+
+      .primary-button .button-arrow {
+        position: absolute;
+        top: 50%;
+        right: 14px;
+        display: grid;
+        width: 20px;
+        height: 20px;
+        place-items: center;
+        border: 1px solid rgba(233, 229, 218, 0.6);
+        border-radius: 50%;
+        font-size: 0.8rem;
+        transform: translateY(-50%);
+      }
+
+      .primary-button:hover,
+      .primary-button:focus-visible {
+        box-shadow: 5px 5px 0 var(--acid);
+        transform: translate(-2px, -2px);
+      }
+
+      .meta {
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .hero-visual {
+        position: relative;
+        flex: 0 0 auto;
+        width: min(100%, calc(min(42svh, 420px) * 735 / 413));
+        aspect-ratio: 735 / 413;
+        min-height: 0;
+        height: min(42svh, 420px);
+        overflow: hidden;
+        border-radius: 6px;
+        background: #100301;
+      }
+
+      .hero-visual canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      .visual-art {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 62% 36%, rgba(255, 255, 255, 0.08) 0 4%, transparent 18%),
+          radial-gradient(ellipse at 28% 82%, rgba(255, 255, 255, 0.08) 0 5%, transparent 20%),
+          linear-gradient(130deg, #242424 0%, #0d0d0d 46%, #000000 100%);
+      }
+
+      .visual-art::before,
+      .visual-art::after {
+        position: absolute;
+        content: "";
+      }
+
+      .visual-art::before {
+        top: -18%;
+        right: 7%;
+        width: 68%;
+        height: 132%;
+        border-radius: 50%;
+        background: linear-gradient(100deg, transparent 0 34%, rgba(222, 241, 129, 0.32) 34.2% 35%, transparent 35.3% 43%, rgba(229, 239, 167, 0.2) 43.3% 44%, transparent 44.3% 61%, rgba(213, 234, 116, 0.3) 61.3% 62%, transparent 62.3%);
+        transform: rotate(30deg);
+      }
+
+      .visual-art::after {
+        right: -20%;
+        bottom: -31%;
+        width: 82%;
+        height: 72%;
+        border: 1px solid rgba(227, 242, 153, 0.44);
+        border-radius: 50%;
+        box-shadow: 0 0 0 30px rgba(227, 242, 153, 0.09), 0 0 0 60px rgba(227, 242, 153, 0.06);
+        transform: rotate(-14deg);
+      }
+
+      .visual-glow {
+        position: absolute;
+        top: 18%;
+        left: 31%;
+        width: 26%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: #ffffff;
+        box-shadow: 0 0 90px 35px rgba(255, 255, 255, 0.14);
+        filter: blur(22px);
+        opacity: 0.24;
+        animation: breathe 7s ease-in-out infinite;
+      }
+
+      .visual-copy {
+        position: absolute;
+        z-index: 2;
+        top: 7%;
+        right: 7%;
+        left: 7%;
+        display: flex;
+        justify-content: space-between;
+        color: rgba(233, 229, 218, 0.82);
+      }
+
+      .visual-kicker {
+        color: var(--acid);
+      }
+
+      .visual-index {
+        font-family: var(--mono);
+        font-size: 0.62rem;
+      }
+
+      .orbit {
+        position: absolute;
+        z-index: 2;
+        top: 28%;
+        left: 20%;
+        width: 53%;
+        aspect-ratio: 1;
+        border: 1px solid rgba(211, 238, 103, 0.48);
+        border-radius: 50%;
+        transform: rotate(-24deg) skewX(-9deg);
+        animation: drift 12s ease-in-out infinite;
+      }
+
+      .orbit::before,
+      .orbit::after {
+        position: absolute;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        content: "";
+        background: var(--acid);
+        box-shadow: 0 0 17px var(--acid);
+      }
+
+      .orbit::before {
+        top: 8%;
+        left: 15%;
+      }
+
+      .orbit::after {
+        right: 4%;
+        bottom: 25%;
+      }
+
+      .visual-caption {
+        position: absolute;
+        z-index: 3;
+        bottom: 7%;
+        left: 7%;
+        max-width: 18ch;
+        color: rgba(233, 229, 218, 0.78);
+        font-family: var(--serif);
+        font-size: clamp(1.7rem, 3vw, 3.5rem);
+        letter-spacing: -0.04em;
+        line-height: 0.9;
+      }
+
+      .visual-caption em {
+        color: var(--acid);
+      }
+
+      .visual-control {
+        position: absolute;
+        z-index: 4;
+        right: 6%;
+        bottom: 6%;
+        display: grid;
+        width: 46px;
+        height: 46px;
+        place-items: center;
+        border: 1px solid rgba(233, 229, 218, 0.58);
+        border-radius: 50%;
+        background: transparent;
+        color: var(--paper);
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: color 180ms ease, background 180ms ease, transform 180ms ease;
+      }
+
+      .visual-control:hover,
+      .visual-control:focus-visible {
+        color: var(--night);
+        background: var(--acid);
+        transform: scale(1.08);
+      }
+
+      .visual-footer {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 4%;
+        display: flex;
+        justify-content: space-between;
+        padding-top: 13px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+      }
+
+      .visual-footer span:last-child {
+        color: var(--ink);
+      }
+
+      .menu-toggle {
+        display: none;
+      }
+
+      .is-paused .visual-art {
+        filter: saturate(0.52) brightness(0.82);
+      }
+
+      .is-paused .visual-glow,
+      .is-paused .orbit {
+        animation-play-state: paused;
+      }
+
+      @keyframes rise-in {
+        from {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes reveal-visual {
+        from {
+          opacity: 0;
+          clip-path: inset(0 100% 0 0 round 5px 5px 22px 22px);
+          transform: translateX(24px);
+        }
+        to {
+          opacity: 1;
+          clip-path: inset(0 0 0 0 round 5px 5px 22px 22px);
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes breathe {
+        0%,
+        100% {
+          transform: scale(0.92);
+          opacity: 0.42;
+        }
+        50% {
+          transform: scale(1.14);
+          opacity: 0.68;
+        }
+      }
+
+      @keyframes drift {
+        0%,
+        100% {
+          transform: rotate(-24deg) skewX(-9deg) translate(0, 0);
+        }
+        50% {
+          transform: rotate(-17deg) skewX(-9deg) translate(9px, -13px);
+        }
+      }
+
+      @media (max-width: 920px) {
+        .hero-copy {
+          flex-direction: column;
+          align-items: flex-start;
+          justify-content: flex-start;
+          gap: 0;
+        }
+
+        .hero-aside {
+          flex: none;
+          width: 100%;
+          max-width: none;
+        }
+
+        .hero-description {
+          margin-top: clamp(28px, 4vh, 48px);
+        }
+
+        h1 {
+          font-size: clamp(3.4rem, 8vw, 5.3rem);
+        }
+
+        .hero-visual {
+          width: min(100%, calc(min(38svh, 360px) * 735 / 413));
+          min-height: 0;
+          height: min(38svh, 360px);
+        }
+      }
+
+      @media (max-width: 680px) {
+        .page {
+          height: auto;
+          min-height: 100svh;
+          overflow: visible;
+        }
+
+        .hero {
+          min-height: 100svh;
+        }
+
+        .hero-main {
+          flex: 1 1 auto;
+          align-self: stretch;
+          width: 100%;
+          max-width: none;
+          margin-left: 0;
+          padding: 4px 4px 12px;
+        }
+
+        .hero-top {
+          margin-bottom: 0;
+        }
+
+        h1 {
+          max-width: 8ch;
+          font-size: clamp(3.9rem, 15vw, 5.8rem);
+        }
+
+        .hero-description {
+          max-width: 100%;
+          margin-top: 32px;
+        }
+
+        .hero-footer {
+          margin-top: 28px;
+        }
+
+        .hero-visual {
+          width: 100%;
+          min-height: 0;
+          height: auto;
+          aspect-ratio: 735 / 413;
+        }
+
+        .visual-caption {
+          font-size: clamp(2rem, 10vw, 3.4rem);
+        }
+
+        .visual-footer {
+          left: 5%;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+
+        .connector-marquee-track {
+          animation: none;
+          flex-wrap: wrap;
+          width: 100%;
+          justify-content: center;
+        }
+
+        .connector-group[aria-hidden="true"] {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero" id="top" aria-labelledby="hero-title">
+        <div class="hero-main">
+          <header class="hero-top">
+            <a class="brand" href="#top" aria-label="Northline home">
+              <span class="brand-mark" aria-hidden="true">N</span>
+              <span>Northline</span>
+            </a>
+            <nav class="nav" aria-label="Primary">
+              <a href="#work">Product</a>
+              <a href="#approach">Sources</a>
+              <a href="#contact">Contact</a>
+            </nav>
+          </header>
+
+          <div class="hero-copy">
+            <h1 id="hero-title">
+              <span>Ask anything.</span>
+              <span>Know <em>instantly.</em></span>
+            </h1>
+
+            <div class="hero-aside">
+              <p class="hero-description">
+                One sentence answers from your mail, drives, contracts, scans, and whatever else you already hold. Every answer shows the page.
+              </p>
+
+              <div class="hero-footer">
+                <button class="primary-button" type="button" data-scroll-target="#work">
+                  Start asking
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-stage">
+          <div class="hero-visual" id="work" aria-label="Featured Northline visual"></div>
+          <div class="connector-marquee" aria-label="Possible connectors">
+            <div class="connector-marquee-track">
+              <div class="connector-group">
+                <button class="connector-chip" type="button" aria-label="Gmail">
+                  <span class="connector-icon" aria-hidden="true"><img src="logos/gmail.svg" alt="" width="22" height="22" /></span>
+                  <span class="connector-name">Gmail</span>
+                </button>
+                <button class="connector-chip" type="button" aria-label="Google Drive">
+                  <span class="connector-icon" aria-hidden="true"><img src="logos/googledrive.svg" alt="" width="22" height="22" /></span>
+                  <span class="connector-name">Google Drive</span>
+                </button>
+                <button class="connector-chip" type="button" aria-label="Dropbox">
+                  <span class="connector-icon" aria-hidden="true"><img src="logos/dropbox.svg" alt="" width="22" height="22" /></span>
+                  <span class="connector-name">Dropbox</span>
+                </button>
+                <button class="connector-chip" type="button" aria-label="OneDrive">
+                  <span class="connector-icon" aria-hidden="true"><img src="logos/onedrive.svg" alt="" width="22" height="22" /></span>
+                  <span class="connector-name">OneDrive</span>
+                </button>
+                <button class="connector-chip" type="button" aria-label="Outlook">
+                  <span class="connector-icon" aria-hidden="true"><img src="logos/outlook.svg" alt="" width="22" height="22" /></span>
+                  <span class="connector-name">Outlook</span>
+                </button>
+                <button class="connector-chip" type="button" aria-label="SharePoint">
+                  <span class="connector-icon" aria-hidden="true"><img src="logos/sharepoint.svg" alt="" width="22" height="22" /></span>
+                  <span class="connector-name">SharePoint</span>
+                </button>
+                <button class="connector-chip" type="button" aria-label="Box">
+                  <span class="connector-icon" aria-hidden="true"><img src="logos/box.svg" alt="" width="22" height="22" /></span>
+                  <span class="connector-name">Box</span>
+                </button>
+                <button class="connector-chip" type="button" aria-label="Folder upload">
+                  <span class="connector-icon" aria-hidden="true"><img src="logos/folder.svg" alt="" width="22" height="22" /></span>
+                  <span class="connector-name">Folder upload</span>
+                </button>
+                <button class="connector-chip" type="button" aria-label="Mobile capture">
+                  <span class="connector-icon" aria-hidden="true"><img src="logos/mobile.svg" alt="" width="22" height="22" /></span>
+                  <span class="connector-name">Mobile capture</span>
+                </button>
+              </div>
+              <div class="connector-group" aria-hidden="true">
+                <button class="connector-chip" type="button" tabindex="-1">
+                  <span class="connector-icon" aria-hidden="true"><img src="logos/gmail.svg" alt="" width="22" height="22" /></span>
+                  <span class="connector-name">Gmail</span>
+                </button>
+                <button class="connector-chip" type="button" tabindex="-1">
+                  <span class="connector-icon" aria-hidden="true"><img src="logos/googledrive.svg" alt="" width="22" height="22" /></span>
+                  <span class="connector-name">Google Drive</span>
+                </button>
+                <button class="connector-chip" type="button" tabindex="-1">
+                  <span class="connector-icon" aria-hidden="true"><img src="logos/dropbox.svg" alt="" width="22" height="22" /></span>
+                  <span class="connector-name">Dropbox</span>
+                </button>
+                <button class="connector-chip" type="button" tabindex="-1">
+                  <span class="connector-icon" aria-hidden="true"><img src="logos/onedrive.svg" alt="" width="22" height="22" /></span>
+                  <span class="connector-name">OneDrive</span>
+                </button>
+                <button class="connector-chip" type="button" tabindex="-1">
+                  <span class="connector-icon" aria-hidden="true"><img src="logos/outlook.svg" alt="" width="22" height="22" /></span>
+                  <span class="connector-name">Outlook</span>
+                </button>
+                <button class="connector-chip" type="button" tabindex="-1">
+                  <span class="connector-icon" aria-hidden="true"><img src="logos/sharepoint.svg" alt="" width="22" height="22" /></span>
+                  <span class="connector-name">SharePoint</span>
+                </button>
+                <button class="connector-chip" type="button" tabindex="-1">
+                  <span class="connector-icon" aria-hidden="true"><img src="logos/box.svg" alt="" width="22" height="22" /></span>
+                  <span class="connector-name">Box</span>
+                </button>
+                <button class="connector-chip" type="button" tabindex="-1">
+                  <span class="connector-icon" aria-hidden="true"><img src="logos/folder.svg" alt="" width="22" height="22" /></span>
+                  <span class="connector-name">Folder upload</span>
+                </button>
+                <button class="connector-chip" type="button" tabindex="-1">
+                  <span class="connector-icon" aria-hidden="true"><img src="logos/mobile.svg" alt="" width="22" height="22" /></span>
+                  <span class="connector-name">Mobile capture</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="approach" hidden></section>
+      <section id="contact" hidden></section>
+    </main>
+
+    <script>
+      const scrollButtons = document.querySelectorAll("[data-scroll-target]");
+
+      scrollButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          document.querySelector(button.dataset.scrollTarget)?.scrollIntoView({ behavior: "smooth" });
+        });
+      });
+
+      (function () {
+        const marquee = document.querySelector(".connector-marquee");
+        const track = marquee?.querySelector(".connector-marquee-track");
+        const template = track?.querySelector('.connector-group[aria-hidden="true"]');
+        if (!marquee || !track || !template) return;
+
+        let totalWidth = track.scrollWidth;
+        while (totalWidth < marquee.clientWidth * 2) {
+          const clone = template.cloneNode(true);
+          track.appendChild(clone);
+          totalWidth += template.offsetWidth;
+        }
+
+        const groupCount = track.children.length;
+        if (groupCount % 2 !== 0) {
+          track.appendChild(template.cloneNode(true));
+        }
+
+        const halfWidth = track.scrollWidth / 2;
+        const pxPerSec = 18;
+        track.style.setProperty("--marquee-duration", `${(halfWidth / pxPerSec).toFixed(1)}s`);
+      })();
+    </script>
+    <script type="module" src="./wave-ascii.js"></script>
+  </body>
+</html>

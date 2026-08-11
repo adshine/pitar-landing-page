@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "kind": "2d",
+  "index": 0,
+  "provider": "fal-ai/nano-banana-2/edit",
+  "endpoint": "fal-ai/nano-banana-2/edit",
+  "status": "completed",
+  "request_id": "019fda9b-269f-7f93-a707-c42e32bf73b4",
+  "submitted_at": "2026-08-07T05:03:47.859Z",
+  "completed_at": "2026-08-07T05:04:05.264Z",
+  "prompt": "Isolate the one smooth spherical smoked-black glass orb from this image. Reproduce this single atomic orb exactly as shown -- same spherical proportions, deep black translucent glass volume, glossy clearcoat, strong thin silver upper-left Fresnel rim, and subtle cyan lower-left refraction. White background, centered, tight crop, studio lighting. No other objects, no scene, no people, no text, no gauges, no dashboard, no secondary lobe, no adjacent or duplicate orb, and no shadows on the ground. Isolate the object and remove all clustered, adjacent, overlapping, or items resting on the target object. Create a clean render of that one single orb that is true to the source image.",
+  "input_files": [
+    "/Users/adebimpeomolaso/Projects/Products/three-js-test/image-blaster/input/pitar-black-glass-orb-v1.png"
+  ],
+  "output_files": [
+    "worlds/pitar-orb/output/pitar-black-glass-orb/0-pitar-black-glass-orb.png"
+  ],
+  "downloaded_files": [
+    {
+      "label": "images-1",
+      "path": "worlds/pitar-orb/output/pitar-black-glass-orb/0-pitar-black-glass-orb.png",
+      "source": {
+        "url": "https://v3b.fal.media/files/b/0aa5571e/JPlDB2TMdcIyHePCqa_Ug_Rxuye3Hr.png",
+        "content_type": "image/png",
+        "file_name": "JPlDB2TMdcIyHePCqa_Ug_Rxuye3Hr.png",
+        "file_size": null,
+        "width": null,
+        "height": null
+      }
+    }
+  ],
+  "result": {
+    "images": [
+      {
+        "url": "https://v3b.fal.media/files/b/0aa5571e/JPlDB2TMdcIyHePCqa_Ug_Rxuye3Hr.png",
+        "content_type": "image/png",
+        "file_name": "JPlDB2TMdcIyHePCqa_Ug_Rxuye3Hr.png",
+        "file_size": null,
+        "width": null,
+        "height": null
+      }
+    ],
+    "description": ""
+  },
+  "error": null,
+  "updated_at": "2026-08-07T05:04:05.265Z"
+}
