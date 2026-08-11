@@ -1210,6 +1210,24 @@ export function App() {
           gap: 14px;
         }
 
+        .legacy-how-copy {
+          display: grid;
+          align-content: start;
+          gap: 14px;
+        }
+
+        @media (min-width: 901px) {
+          #how-it-works > div {
+            grid-template-columns: minmax(0, 0.9fr) minmax(440px, 1.1fr);
+            align-items: start;
+            gap: clamp(64px, 9vw, 144px);
+          }
+
+          #how-it-works .legacy-story-accordion {
+            padding-top: 2px;
+          }
+        }
+
         .legacy-story p {
           margin: 0;
           max-width: 64ch;
@@ -2120,9 +2138,11 @@ export function App() {
 
       <section className="legacy-story" id="how-it-works" aria-label="How Pitar works">
         <div>
-          <p>How it works</p>
-          <h2>Everything you keep. Any question you have.</h2>
-          <p>Answers come with source evidence. No answer without trace.</p>
+          <div className="legacy-how-copy">
+            <p>How it works</p>
+            <h2>Everything you keep. Any question you have.</h2>
+            <p>Answers come with source evidence. No answer without trace.</p>
+          </div>
           <div className="legacy-story-accordion">
             {howItWorksSteps.map(({ step, title, copy }, index) => (
               <details className="legacy-story-details" key={step} open={index === 0}>
