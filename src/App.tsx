@@ -1504,6 +1504,246 @@ export function App() {
           max-width: 58ch;
         }
 
+        .legacy-footer {
+          position: relative;
+          overflow: hidden;
+          border-top: 1px solid var(--line);
+          background: #050505;
+          color: var(--ink);
+        }
+
+        .legacy-footer-frame {
+          width: calc(100% - (var(--section-inline) * 2));
+          max-width: 1180px;
+          margin-inline: auto;
+          border-inline: 1px solid var(--line);
+        }
+
+        .legacy-footer-main {
+          display: grid;
+          grid-template-columns: minmax(280px, 1.45fr) repeat(3, minmax(130px, 0.72fr));
+          gap: clamp(42px, 6vw, 96px);
+          min-height: clamp(430px, 43vw, 610px);
+          padding: clamp(64px, 8vw, 112px) clamp(28px, 4vw, 64px) 48px;
+        }
+
+        .legacy-footer-intro {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          max-width: 390px;
+        }
+
+        .legacy-footer .legacy-brand {
+          color: var(--ink);
+        }
+
+        .legacy-footer-tagline {
+          max-width: 27ch;
+          margin: 32px 0 0;
+          color: color-mix(in oklch, var(--ink) 72%, transparent);
+          font-size: clamp(1.25rem, 2vw, 1.75rem);
+          line-height: 1.38;
+          letter-spacing: -0.025em;
+        }
+
+        .legacy-footer-principle {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          margin-top: auto;
+          padding-top: 48px;
+          color: var(--muted);
+          font-family: var(--mono);
+          font-size: 0.62rem;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+        }
+
+        .legacy-footer-principle::before {
+          content: "";
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: #20ff4f;
+          box-shadow: 0 0 14px rgba(32, 255, 79, 0.72);
+        }
+
+        .legacy-footer-column {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 18px;
+        }
+
+        .legacy-footer-column h2 {
+          margin: 0 0 8px;
+          color: var(--muted);
+          font-family: var(--mono);
+          font-size: 0.58rem;
+          font-weight: 500;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+        }
+
+        .legacy-footer-column a,
+        .legacy-footer-column button {
+          padding: 0;
+          border: 0;
+          background: transparent;
+          color: color-mix(in oklch, var(--ink) 78%, transparent);
+          font: 500 clamp(0.92rem, 1.2vw, 1.06rem)/1.35 var(--sans);
+          letter-spacing: -0.015em;
+          text-align: left;
+          text-decoration: none;
+          cursor: pointer;
+          transition: color 180ms ease, transform 180ms ease;
+        }
+
+        .legacy-footer-column a:hover,
+        .legacy-footer-column a:focus-visible,
+        .legacy-footer-column button:hover,
+        .legacy-footer-column button:focus-visible {
+          color: #20ff4f;
+          outline: none;
+          transform: translateX(4px);
+        }
+
+        .legacy-footer-rail {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 24px;
+          min-height: 76px;
+          padding: 18px clamp(28px, 4vw, 64px);
+          border-top: 1px solid var(--line);
+          color: var(--muted);
+          font-family: var(--mono);
+          font-size: 0.6rem;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+
+        .legacy-footer-cta {
+          display: inline-flex;
+          align-items: center;
+          gap: 12px;
+          color: var(--ink);
+          text-decoration: none;
+        }
+
+        .legacy-footer-cta::after {
+          content: "→";
+          color: #20ff4f;
+          font-size: 1rem;
+          transition: transform 180ms ease;
+        }
+
+        .legacy-footer-cta:hover::after,
+        .legacy-footer-cta:focus-visible::after {
+          transform: translateX(5px);
+        }
+
+        .legacy-footer-visual {
+          position: relative;
+          height: clamp(300px, 34vw, 500px);
+          overflow: hidden;
+          border-top: 1px solid var(--line);
+          background: #020503;
+        }
+
+        .legacy-footer-visual video {
+          display: block;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center 54%;
+          filter: grayscale(1) sepia(1) saturate(6) hue-rotate(72deg) contrast(1.08) brightness(0.72);
+          transform: scale(1.04);
+        }
+
+        .legacy-footer-visual::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background:
+            linear-gradient(to bottom, #050505 0%, rgba(5, 5, 5, 0.94) 9%, rgba(5, 5, 5, 0.38) 34%, transparent 62%),
+            linear-gradient(to right, rgba(5, 5, 5, 0.38), transparent 32%, transparent 72%, rgba(5, 5, 5, 0.28));
+          pointer-events: none;
+        }
+
+        .legacy-footer-visual-copy {
+          position: absolute;
+          z-index: 1;
+          top: clamp(52px, 7vw, 94px);
+          left: clamp(28px, 4vw, 64px);
+          max-width: 30ch;
+          margin: 0;
+          color: color-mix(in oklch, var(--ink) 74%, transparent);
+          font-family: var(--mono);
+          font-size: 0.62rem;
+          letter-spacing: 0.12em;
+          line-height: 1.55;
+          text-transform: uppercase;
+        }
+
+        @media (max-width: 900px) {
+          .legacy-footer-main {
+            grid-template-columns: minmax(0, 1.3fr) repeat(2, minmax(120px, 0.7fr));
+          }
+
+          .legacy-footer-column:last-child {
+            grid-column: 2;
+          }
+        }
+
+        @media (max-width: 700px) {
+          .legacy-footer-frame {
+            width: calc(100% - (var(--section-inline) * 2));
+          }
+
+          .legacy-footer-main {
+            grid-template-columns: 1fr 1fr;
+            gap: 48px 28px;
+            min-height: 0;
+            padding: 56px 18px 44px;
+          }
+
+          .legacy-footer-intro {
+            grid-column: 1 / -1;
+            max-width: none;
+          }
+
+          .legacy-footer-tagline {
+            max-width: 24ch;
+            font-size: 1.35rem;
+          }
+
+          .legacy-footer-principle {
+            margin-top: 36px;
+            padding-top: 0;
+          }
+
+          .legacy-footer-column:last-child {
+            grid-column: auto;
+          }
+
+          .legacy-footer-rail {
+            align-items: flex-start;
+            flex-direction: column-reverse;
+            padding: 22px 18px;
+          }
+
+          .legacy-footer-visual {
+            height: 300px;
+          }
+
+          .legacy-footer-visual-copy {
+            left: 18px;
+            max-width: 24ch;
+          }
+        }
+
         @media (prefers-reduced-motion: reduce) {
           #our-story > div {
             transform: none !important;
@@ -1749,6 +1989,56 @@ export function App() {
           </div>
         </div>
       </section>
+
+      <footer className="legacy-footer" id="footer" aria-label="Pitar footer">
+        <div className="legacy-footer-frame">
+          <div className="legacy-footer-main">
+            <div className="legacy-footer-intro">
+              <a className="legacy-brand" href="#top" aria-label="Pitar home">
+                <span className="legacy-brand-lockup">
+                  <span className="legacy-brand-mark" aria-hidden="true">
+                    <img src={`${import.meta.env.BASE_URL}logos/pitar-mark.svg`} alt="" />
+                  </span>
+                  <span className="legacy-brand-stack"><b>itar</b></span>
+                </span>
+              </a>
+              <p className="legacy-footer-tagline">Ask your records anything. Get one clear answer, with the page that proves it.</p>
+              <span className="legacy-footer-principle">Source-backed by design</span>
+            </div>
+
+            <nav className="legacy-footer-column" aria-label="Product">
+              <h2>Product</h2>
+              <a href="#how-it-works">How it works</a>
+              <button type="button" onClick={() => setOpenPanel("connections")}>Sources</button>
+              <button type="button" onClick={() => setOpenPanel("trust")}>Trust</button>
+            </nav>
+
+            <nav className="legacy-footer-column" aria-label="Company">
+              <h2>Company</h2>
+              <a href="#our-story">Our story</a>
+              <a href="#top">Why Pitar</a>
+              <button type="button" onClick={() => setOpenPanel("auth")}>Sign in</button>
+            </nav>
+
+            <div className="legacy-footer-column" aria-label="Principles">
+              <h2>Principles</h2>
+              <span>Answers with evidence</span>
+              <span>Your sources stay yours</span>
+              <span>Built to be checked</span>
+            </div>
+          </div>
+
+          <div className="legacy-footer-rail">
+            <span>© 2026 Pitar</span>
+            <a className="legacy-footer-cta" href="#top">Start asking</a>
+          </div>
+
+          <div className="legacy-footer-visual" aria-hidden="true">
+            <video src={`${import.meta.env.BASE_URL}videos/hero.mp4`} autoPlay loop muted playsInline />
+            <p className="legacy-footer-visual-copy">Your knowledge, still moving. Every answer returns to the record.</p>
+          </div>
+        </div>
+      </footer>
     </main>
   )
 }
