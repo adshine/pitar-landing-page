@@ -417,7 +417,7 @@ export function App() {
           width: 44px;
           height: 44px;
           margin-left: auto;
-          border: 1px solid var(--line);
+          border: 0;
           border-radius: 0;
           background: color-mix(in oklch, var(--paper) 74%, transparent);
           color: inherit;
@@ -513,6 +513,10 @@ export function App() {
           box-shadow: 0 12px 34px rgba(0, 0, 0, 0.25);
           transform: translateX(-50%);
           justify-content: space-between;
+        }
+
+        .legacy-mobile-nav .legacy-brand-divider {
+          display: none;
         }
 
         .legacy-panel-backdrop {
@@ -1194,13 +1198,22 @@ export function App() {
           }
 
           .legacy-nav--fixed {
-            left: 12px;
-            right: 12px;
-            width: calc(100% - 24px);
+            left: 16px;
+            right: 16px;
+            width: calc(100% - 32px);
             top: 4px;
             transform: none;
             backdrop-filter: blur(16px) saturate(1.15);
             -webkit-backdrop-filter: blur(16px) saturate(1.15);
+          }
+
+          .legacy-brand-divider {
+            display: none;
+          }
+
+          .legacy-mobile-nav-links {
+            left: 16px;
+            right: 16px;
           }
 
           .legacy-nav--fixed .legacy-hamburger {
