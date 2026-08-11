@@ -1528,6 +1528,110 @@ export function App() {
           border-inline: 1px solid var(--line);
         }
 
+        .legacy-footer-prompt {
+          position: relative;
+          display: grid;
+          place-items: center;
+          min-height: clamp(360px, 42vw, 540px);
+          padding: clamp(72px, 9vw, 128px) clamp(24px, 6vw, 88px);
+          overflow: hidden;
+          border-bottom: 1px solid var(--line);
+          background:
+            radial-gradient(circle at 50% 48%, rgba(255, 255, 255, 0.08), transparent 7%),
+            radial-gradient(ellipse at 50% 52%, rgba(32, 255, 79, 0.055), transparent 38%),
+            radial-gradient(circle, rgba(233, 229, 218, 0.12) 0 1px, transparent 1.3px) 0 0 / 28px 28px,
+            #050706;
+          isolation: isolate;
+        }
+
+        .legacy-footer-prompt::before {
+          content: "";
+          position: absolute;
+          inset: 10% 8%;
+          z-index: -1;
+          border: 1px solid rgba(233, 229, 218, 0.1);
+          background: linear-gradient(135deg, rgba(255, 255, 255, 0.025), transparent 42%);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035), 0 40px 100px rgba(0, 0, 0, 0.35);
+        }
+
+        .legacy-footer-prompt-content {
+          width: min(100%, 760px);
+          text-align: center;
+        }
+
+        .legacy-footer-prompt h2 {
+          max-width: 13ch;
+          margin: 0 auto;
+          font-family: var(--sans);
+          font-size: clamp(2.4rem, 5.2vw, 5.25rem);
+          font-weight: 600;
+          letter-spacing: -0.045em;
+          line-height: 0.95;
+        }
+
+        .legacy-footer-prompt-copy {
+          max-width: 48ch;
+          margin: 24px auto 0;
+          color: var(--muted);
+          font-size: clamp(0.95rem, 1.25vw, 1.12rem);
+          line-height: 1.55;
+        }
+
+        .legacy-footer-prompt-form {
+          display: flex;
+          align-items: center;
+          width: min(100%, 650px);
+          min-height: 64px;
+          margin: clamp(34px, 5vw, 54px) auto 0;
+          padding: 7px;
+          border: 1px solid rgba(233, 229, 218, 0.28);
+          background: rgba(16, 18, 17, 0.84);
+          box-shadow: 0 18px 64px rgba(0, 0, 0, 0.46), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+          -webkit-backdrop-filter: blur(16px);
+          backdrop-filter: blur(16px);
+        }
+
+        .legacy-footer-prompt-form:focus-within {
+          border-color: rgba(233, 229, 218, 0.7);
+          box-shadow: 0 20px 72px rgba(0, 0, 0, 0.52), 0 0 36px rgba(32, 255, 79, 0.08);
+        }
+
+        .legacy-footer-prompt-form input {
+          min-width: 0;
+          flex: 1;
+          padding: 0 18px;
+          border: 0;
+          outline: 0;
+          background: transparent;
+          color: var(--ink);
+          font: 500 1rem/1.3 var(--sans);
+        }
+
+        .legacy-footer-prompt-form input::placeholder {
+          color: color-mix(in oklch, var(--ink) 42%, transparent);
+        }
+
+        .legacy-footer-prompt-form button {
+          display: grid;
+          flex: 0 0 auto;
+          width: 48px;
+          height: 48px;
+          place-items: center;
+          border: 0;
+          background: var(--ink);
+          color: #080a09;
+          font-size: 1.35rem;
+          cursor: pointer;
+          transition: background 180ms ease, transform 180ms ease;
+        }
+
+        .legacy-footer-prompt-form button:hover,
+        .legacy-footer-prompt-form button:focus-visible {
+          background: #20ff4f;
+          outline: none;
+          transform: translateY(-2px);
+        }
+
         .legacy-footer-main {
           display: grid;
           grid-template-columns: minmax(280px, 1.45fr) repeat(3, minmax(130px, 0.72fr));
@@ -1709,6 +1813,40 @@ export function App() {
         @media (max-width: 700px) {
           .legacy-footer-frame {
             width: calc(100% - (var(--section-inline) * 2));
+          }
+
+          .legacy-footer-prompt {
+            min-height: 420px;
+            padding: 72px 18px;
+            background-size: auto, auto, 22px 22px, auto;
+          }
+
+          .legacy-footer-prompt::before {
+            inset: 24px 12px;
+          }
+
+          .legacy-footer-prompt h2 {
+            font-size: clamp(2.65rem, 13vw, 3.7rem);
+          }
+
+          .legacy-footer-prompt-copy {
+            margin-top: 20px;
+            font-size: 0.95rem;
+          }
+
+          .legacy-footer-prompt-form {
+            min-height: 60px;
+            margin-top: 34px;
+          }
+
+          .legacy-footer-prompt-form input {
+            padding: 0 12px;
+            font-size: 0.92rem;
+          }
+
+          .legacy-footer-prompt-form button {
+            width: 44px;
+            height: 44px;
           }
 
           .legacy-footer-main {
@@ -2001,6 +2139,22 @@ export function App() {
 
       <footer className="legacy-footer" id="footer" aria-label="Pitar footer">
         <div className="legacy-footer-frame">
+          <section className="legacy-footer-prompt" aria-labelledby="footer-prompt-title">
+            <div className="legacy-footer-prompt-content">
+              <h2 id="footer-prompt-title">Ask what your records know.</h2>
+              <p className="legacy-footer-prompt-copy">One question in. One clear answer out, with the exact page that proves it.</p>
+              <form
+                className="legacy-footer-prompt-form"
+                onSubmit={(event) => {
+                  event.preventDefault()
+                  document.getElementById("work")?.scrollIntoView({ behavior: "smooth", block: "start" })
+                }}
+              >
+                <input type="text" aria-label="Ask Pitar a question" placeholder="Ask a question about your records..." />
+                <button type="submit" aria-label="Start asking">↑</button>
+              </form>
+            </div>
+          </section>
           <div className="legacy-footer-main">
             <div className="legacy-footer-intro">
               <a className="legacy-brand" href="#top" aria-label="Pitar home">
