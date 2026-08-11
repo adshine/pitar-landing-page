@@ -414,7 +414,7 @@ export function App() {
         .legacy-nav {
           display: flex;
           align-items: center;
-          justify-content: space-between;
+          justify-content: flex-start;
           gap: clamp(16px, 2.5vw, 32px);
           flex-wrap: nowrap;
           font-family: "Helvetica Neue", Helvetica, sans-serif;
@@ -425,8 +425,16 @@ export function App() {
 
         .legacy-nav-links {
           display: flex;
+          flex: 0 0 auto;
           align-items: center;
           gap: clamp(16px, 2.5vw, 32px);
+        }
+
+        .legacy-nav .legacy-brand,
+        .legacy-nav .legacy-navlink,
+        .legacy-nav .legacy-signin {
+          flex: 0 0 auto;
+          white-space: nowrap;
         }
 
         .legacy-nav a {
@@ -580,7 +588,8 @@ export function App() {
           top: 8px;
           left: 50%;
           z-index: 20;
-          width: min(100% - 16px, 1180px);
+          width: max-content;
+          max-width: calc(100% - 16px);
           padding: 10px 14px 10px 14px;
           background: color-mix(in oklch, var(--paper) 74%, transparent);
           border: 1px solid var(--line);
@@ -589,7 +598,7 @@ export function App() {
           -webkit-backdrop-filter: blur(18px) saturate(1.25);
           box-shadow: 0 12px 34px rgba(0, 0, 0, 0.25);
           transform: translateX(-50%);
-          justify-content: space-between;
+          justify-content: flex-start;
         }
 
         .legacy-mobile-nav .legacy-brand-divider {
