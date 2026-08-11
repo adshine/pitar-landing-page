@@ -571,8 +571,8 @@ export function App() {
 
         .legacy-mobile-nav-links .legacy-signin {
           justify-content: flex-start;
-          border: 1px solid var(--muted);
-          padding: 10px 14px;
+          border: 0;
+          padding: 10px 0;
         }
 
         .legacy-nav--fixed {
