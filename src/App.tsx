@@ -1613,7 +1613,7 @@ export function App() {
 
         .legacy-footer-prompt h2 {
           max-width: 18ch;
-          margin: clamp(64px, 8vw, 92px) auto 0;
+          margin: 0 auto;
           font-family: var(--sans);
           font-size: clamp(2rem, 3.5vw, 3.35rem);
           font-weight: 600;
@@ -1634,7 +1634,7 @@ export function App() {
           align-items: center;
           width: min(88%, 650px);
           min-height: 64px;
-          margin: 0 auto;
+          margin: clamp(34px, 5vw, 48px) auto 0;
           padding: 7px;
           border: 1px solid rgba(233, 229, 218, 0.28);
           border-radius: 999px;
@@ -1908,7 +1908,7 @@ export function App() {
           }
 
           .legacy-footer-prompt h2 {
-            margin-top: 64px;
+            margin-top: 0;
             font-size: clamp(2.2rem, 10vw, 3rem);
           }
 
@@ -2242,6 +2242,8 @@ export function App() {
         <div className="legacy-footer-frame">
           <section className="legacy-footer-prompt" aria-labelledby="footer-prompt-title">
             <div className="legacy-footer-prompt-content">
+              <h2 id="footer-prompt-title">Ask what your records know.</h2>
+              <p className="legacy-footer-prompt-copy">One question in. One clear answer out, with the exact page that proves it.</p>
               <form
                 className="legacy-footer-prompt-form"
                 onSubmit={(event) => {
@@ -2260,8 +2262,6 @@ export function App() {
                 <span>What changed in the renewal terms?</span>
                 <span>Source found ↗</span>
               </div>
-              <h2 id="footer-prompt-title">Ask what your records know.</h2>
-              <p className="legacy-footer-prompt-copy">One question in. One clear answer out, with the exact page that proves it.</p>
             </div>
           </section>
           <div className="legacy-footer-main">
