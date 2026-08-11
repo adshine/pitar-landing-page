@@ -1688,31 +1688,6 @@ export function App() {
           box-shadow: 0 7px 20px rgba(32, 255, 79, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.7);
         }
 
-        .legacy-footer-prompt-result {
-          position: relative;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 24px;
-          width: min(72%, 560px);
-          min-height: 58px;
-          margin-top: 34px;
-          padding: 12px 16px;
-          border: 1px solid rgba(233, 229, 218, 0.16);
-          background: rgba(8, 10, 9, 0.92);
-          color: color-mix(in oklch, var(--ink) 78%, transparent);
-          font-family: var(--mono);
-          font-size: 0.68rem;
-          letter-spacing: 0.04em;
-          text-align: left;
-          box-shadow: 0 8px 0 -3px #070908, 0 9px 0 -3px rgba(233, 229, 218, 0.12), 0 16px 0 -7px #060806, 0 17px 0 -7px rgba(233, 229, 218, 0.08), 0 30px 44px rgba(0, 0, 0, 0.58);
-        }
-
-        .legacy-footer-prompt-result span:last-child {
-          flex: 0 0 auto;
-          color: #20ff4f;
-          text-transform: uppercase;
-        }
 
         .legacy-footer-main {
           display: grid;
@@ -1941,12 +1916,6 @@ export function App() {
             height: 44px;
           }
 
-          .legacy-footer-prompt-result {
-            width: 86%;
-            margin-top: 28px;
-            gap: 12px;
-            font-size: 0.58rem;
-          }
 
           .legacy-footer-main {
             grid-template-columns: 1fr 1fr;
@@ -2258,10 +2227,6 @@ export function App() {
                   </svg>
                 </button>
               </form>
-              <div className="legacy-footer-prompt-result" aria-hidden="true">
-                <span>What changed in the renewal terms?</span>
-                <span>Source found ↗</span>
-              </div>
             </div>
           </section>
           <div className="legacy-footer-main">
