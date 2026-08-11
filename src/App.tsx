@@ -1260,7 +1260,7 @@ export function App() {
 
           .legacy-nav {
             transform: none;
-            padding: 7px 8px;
+            padding: 7px 8px 7px 0;
             font-size: 0.54rem;
             letter-spacing: 0.06em;
             justify-content: space-between;
