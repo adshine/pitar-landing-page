@@ -1148,6 +1148,29 @@ export function App() {
           }
         }
 
+        @media (max-width: 700px) {
+          .legacy-scroll-hint {
+            left: clamp(18px, 5vw, 28px);
+            right: auto;
+            transform: none;
+            align-items: flex-start;
+            justify-content: flex-start;
+            text-align: left;
+            width: auto;
+            padding: 0;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+            -webkit-appearance: none;
+            appearance: none;
+          }
+
+          .legacy-scroll-hint svg {
+            align-self: flex-start;
+          }
+        }
+
         @media (prefers-reduced-motion: reduce) {
           .legacy-track {
             transform: none;
