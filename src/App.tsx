@@ -551,7 +551,7 @@ export function App() {
           flex: 1;
           flex-direction: column;
           justify-content: flex-start;
-          gap: 4px;
+          gap: 16px;
           padding: 24px 0;
         }
 
