@@ -1532,8 +1532,8 @@ export function App() {
           display: grid;
           grid-template-columns: minmax(280px, 1.45fr) repeat(3, minmax(130px, 0.72fr));
           gap: clamp(42px, 6vw, 96px);
-          min-height: clamp(430px, 43vw, 610px);
-          padding: clamp(64px, 8vw, 112px) clamp(28px, 4vw, 64px) 48px;
+        min-height: 0;
+        padding: clamp(48px, 5vw, 72px) clamp(28px, 4vw, 64px) 40px;
         }
 
         .legacy-footer-intro {
@@ -1560,8 +1560,8 @@ export function App() {
           display: inline-flex;
           align-items: center;
           gap: 10px;
-          margin-top: auto;
-          padding-top: 48px;
+        margin-top: clamp(48px, 6vw, 80px);
+        padding-top: 0;
           color: var(--muted);
           font-family: var(--mono);
           font-size: 0.62rem;
@@ -1655,7 +1655,7 @@ export function App() {
 
         .legacy-footer-visual {
           position: relative;
-          height: clamp(220px, 24vw, 340px);
+        height: clamp(180px, 18vw, 240px);
           overflow: hidden;
           border-top: 1px solid var(--line);
           background: #020503;
@@ -1713,9 +1713,9 @@ export function App() {
 
           .legacy-footer-main {
             grid-template-columns: 1fr 1fr;
-            gap: 48px 28px;
+          gap: 40px 28px;
             min-height: 0;
-            padding: 56px 18px 44px;
+          padding: 40px 18px 32px;
           }
 
           .legacy-footer-intro {
@@ -1744,7 +1744,7 @@ export function App() {
           }
 
           .legacy-footer-visual {
-            height: 220px;
+          height: 180px;
           }
 
           .legacy-footer-visual-copy {
