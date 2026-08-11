@@ -1,5 +1,9 @@
 import { type CSSProperties, type MouseEvent, useEffect, useMemo, useRef, useState } from "react"
 import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { useGSAP } from "@gsap/react"
+
+gsap.registerPlugin(ScrollTrigger, useGSAP)
 
 type Connector = {
   label: string
@@ -40,13 +44,32 @@ const connectionGroups = [
 
 const upcomingErp = ["SAP", "Oracle", "NetSuite", "Dynamics 365", "Workday", "Sage"]
 
+const howItWorksSteps = [
+  {
+    step: "01",
+    title: "Connect your sources",
+    copy: "Connect email and drive accounts first. Pitar reads only files you already own, then keeps the source for every answer.",
+  },
+  {
+    step: "02",
+    title: "Ask one question",
+    copy: "Type a short question. Pitar scans your connected sources and returns a one-sentence answer with clear, direct wording.",
+  },
+  {
+    step: "03",
+    title: "Review the evidence",
+    copy: "Every result points to the exact source document and location, so you can verify before you act.",
+  },
+]
+
 export function App() {
   const marqueeItems = useMemo(() => Array.from({ length: 4 }, () => connectors).flat(), [])
   const trackRef = useRef<HTMLDivElement>(null)
   const pausedRef = useRef(false)
   const storySectionRef = useRef<HTMLElement | null>(null)
   const storyContentRef = useRef<HTMLDivElement | null>(null)
-  const [storyRevealed, setStoryRevealed] = useState(false)
+  const panelRef = useRef<HTMLElement | null>(null)
+  const panelBackdropRef = useRef<HTMLButtonElement | null>(null)
   const [openPanel, setOpenPanel] = useState<string | null>(null)
 
   const panelTitle: Record<string, string> = {
@@ -77,6 +100,12 @@ export function App() {
     document.getElementById("our-story")?.scrollIntoView({ behavior: "smooth", block: "start" })
   }
 
+  const scrollToHowItWorks = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault()
+    setOpenPanel(null)
+    document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
+
   const openPanelFromClick = (event: MouseEvent<HTMLAnchorElement>, panel: string) => {
     event.preventDefault()
     setOpenPanel(panel)
@@ -85,6 +114,25 @@ export function App() {
   const closePanel = () => {
     setOpenPanel(null)
   }
+
+  useEffect(() => {
+    const panel = panelRef.current
+    const backdrop = panelBackdropRef.current
+    if (!panel || !backdrop) return
+
+    gsap.killTweensOf([panel, backdrop])
+
+    if (openPanel) {
+      panel.removeAttribute("inert")
+      gsap.set(panel, { visibility: "visible", xPercent: 110 })
+      gsap.to(panel, { xPercent: 0, duration: 0.34, ease: "power3.out" })
+      gsap.to(backdrop, { autoAlpha: 1, duration: 0.22, ease: "power2.out" })
+    } else {
+      panel.setAttribute("inert", "")
+      gsap.to(panel, { xPercent: 110, duration: 0.26, ease: "power2.in", onComplete: () => gsap.set(panel, { visibility: "hidden" }) })
+      gsap.to(backdrop, { autoAlpha: 0, duration: 0.2, ease: "power2.in" })
+    }
+  }, [openPanel])
 
   useEffect(() => {
     const buttons = document.querySelectorAll<HTMLButtonElement>(".legacy-primary")
@@ -96,29 +144,38 @@ export function App() {
     return () => buttons.forEach((button) => button.removeEventListener("click", handleClick))
   }, [])
 
-  useEffect(() => {
-    const section = storySectionRef.current
+  useGSAP(() => {
     const content = storyContentRef.current
-    if (!section || !content) return
+    if (!content) return
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !storyRevealed) {
-          setStoryRevealed(true)
-          gsap.fromTo(
-            content,
-            { autoAlpha: 0, y: 18 },
-            { autoAlpha: 1, y: 0, duration: 0.75, ease: "power2.out" }
-          )
-          observer.disconnect()
-        }
-      },
-      { threshold: 0.2 }
-    )
+    const children = Array.from(content.children)
 
-    observer.observe(section)
-    return () => observer.disconnect()
-  }, [storyRevealed])
+    gsap.set(children, {
+      autoAlpha: 0.4,
+      y: 48,
+      filter: "grayscale(45%) blur(8px)",
+      color: "var(--muted)",
+    })
+
+    children.forEach((child) => {
+      gsap.to(child, {
+        autoAlpha: 1,
+        y: 0,
+        filter: "grayscale(0%) blur(0px)",
+        color: "var(--ink)",
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: child,
+          start: "top 82%",
+          end: "top 52%",
+          scrub: true,
+          invalidateOnRefresh: true,
+        },
+      })
+    })
+
+    requestAnimationFrame(() => ScrollTrigger.refresh(true))
+  }, { scope: storySectionRef })
 
   useEffect(() => {
     const track = trackRef.current
@@ -182,6 +239,7 @@ export function App() {
           --muted: #bfbfbf;
           --line: rgba(242, 242, 242, 0.2);
           --acid: #d3ee67;
+          --section-inline: clamp(16px, 4.8vw, 48px);
           --serif: "Instrument Serif", Georgia, serif;
           --sans: "DM Sans", Arial, sans-serif;
           --mono: "Space Mono", monospace;
@@ -210,7 +268,7 @@ export function App() {
           align-items: stretch;
           width: 100%;
           min-height: 100svh;
-          padding: 8px 12px 24px;
+          padding: 8px var(--section-inline) 24px;
           gap: 20px;
         }
 
@@ -220,7 +278,8 @@ export function App() {
           align-items: stretch;
           justify-content: flex-start;
           gap: clamp(20px, 3vh, 32px);
-          width: 100%;
+          width: min(1180px, 100%);
+          margin-inline: auto;
           min-width: 0;
           min-height: 0;
           padding: 2px 0 0;
@@ -309,6 +368,7 @@ export function App() {
           display: flex;
           align-items: center;
           gap: clamp(16px, 2.5vw, 32px);
+          flex-wrap: nowrap;
           font-family: "Helvetica Neue", Helvetica, sans-serif;
           font-size: 0.59rem;
           letter-spacing: 0.08em;
@@ -339,10 +399,16 @@ export function App() {
           top: 8px;
           left: 50%;
           z-index: 20;
-          padding: 10px 10px 10px 14px;
-          background: var(--paper);
-          border: 1px solid var(--border);
+          width: min(100% - 16px, 1180px);
+          padding: 10px 14px 10px 14px;
+          background: color-mix(in oklch, var(--paper) 74%, transparent);
+          border: 1px solid var(--line);
+          border-radius: 0;
+          backdrop-filter: blur(18px) saturate(1.25);
+          -webkit-backdrop-filter: blur(18px) saturate(1.25);
+          box-shadow: 0 12px 34px rgba(0, 0, 0, 0.25);
           transform: translateX(-50%);
+          justify-content: space-between;
         }
 
         .legacy-panel-backdrop {
@@ -352,7 +418,6 @@ export function App() {
           background: rgba(4, 4, 4, 0.58);
           opacity: 0;
           pointer-events: none;
-          transition: opacity 240ms ease;
         }
 
         .legacy-panel-backdrop.visible {
@@ -371,7 +436,7 @@ export function App() {
           border: 1px solid var(--line);
           box-shadow: 0 24px 120px rgba(0, 0, 0, 0.48);
           transform: translateX(110%);
-          transition: transform 300ms cubic-bezier(0.22, 0.61, 0.36, 1);
+          visibility: hidden;
           display: flex;
           flex-direction: column;
           overflow: hidden;
@@ -554,7 +619,7 @@ export function App() {
           align-items: flex-start;
           justify-content: space-between;
           gap: clamp(28px, 5vw, 80px);
-          padding: 48px;
+          padding: 24px 0 0;
           width: 100%;
           min-width: 0;
         }
@@ -939,16 +1004,14 @@ export function App() {
         }
 
         .legacy-story {
-          width: min(1180px, calc(100% - 48px));
+          width: 100%;
           margin: 0 auto;
-          padding: 48px 0 110px;
+          padding: 48px var(--section-inline) 110px;
           color: var(--muted);
           opacity: 1;
         }
 
         .legacy-story > div {
-          transform: translateY(18px);
-          opacity: 0;
           display: grid;
           gap: 14px;
         }
@@ -990,6 +1053,87 @@ export function App() {
         }
 
         @media (max-width: 900px) {
+          #our-story {
+            text-align: left !important;
+            justify-items: start !important;
+          }
+
+          #our-story > div {
+            align-items: flex-start !important;
+            text-align: left !important;
+          }
+
+          #our-story h2,
+          #our-story p {
+            margin-inline: 0 !important;
+            text-align: left !important;
+          }
+
+          #our-story > div > * {
+            margin-inline: 0 !important;
+          }
+
+          .legacy-nav {
+            display: flex;
+            transform: none;
+            gap: clamp(5px, 1.7vw, 9px);
+            padding: 7px 8px;
+            font-size: 0.54rem;
+            letter-spacing: 0.06em;
+            flex-wrap: nowrap;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            justify-content: space-between;
+            scrollbar-width: none;
+          }
+
+          .legacy-nav > * {
+            flex: 0 1 auto;
+            min-width: 0;
+            white-space: nowrap;
+          }
+
+          .legacy-nav::-webkit-scrollbar {
+            display: none;
+          }
+
+          .legacy-nav > .legacy-signin {
+            text-align: center;
+            justify-content: center;
+          }
+
+          .legacy-nav .legacy-navlink {
+            text-align: center;
+            justify-content: center;
+          }
+
+          .legacy-nav--fixed {
+            left: 12px;
+            right: 12px;
+            width: auto;
+            top: 4px;
+            backdrop-filter: blur(16px) saturate(1.15);
+            -webkit-backdrop-filter: blur(16px) saturate(1.15);
+          }
+
+          .legacy-nav .legacy-brand-stack b {
+            font-size: 0.92rem;
+          }
+
+          .legacy-nav .legacy-brand-stack span {
+            font-size: 0.48rem;
+            letter-spacing: 0.1em;
+          }
+
+          .legacy-nav .legacy-navlink,
+          .legacy-nav .legacy-signin {
+            font-size: clamp(0.45rem, 2vw, 0.51rem);
+          }
+
+          .legacy-nav .legacy-signin {
+            padding: 7px clamp(8px, 2.5vw, 11px);
+          }
+
           .legacy-hero {
             min-height: auto;
           }
@@ -1028,6 +1172,139 @@ export function App() {
             transition: none;
           }
         }
+
+        #our-story {
+          min-height: 100vh;
+          padding: clamp(96px, 14vw, 180px) var(--section-inline);
+          display: grid;
+          place-items: center;
+          overflow: hidden;
+          background: radial-gradient(circle at 50% 105%, rgba(22, 255, 59, 0.07), transparent 42%), var(--paper);
+        }
+
+        #our-story > div {
+          width: min(100%, 760px);
+          margin-inline: auto;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+        }
+
+        #our-story > div > * {
+          margin-inline: auto;
+        }
+
+        #our-story h2 {
+          max-width: 14ch;
+          margin-top: 18px;
+          margin-bottom: 36px;
+          font-size: clamp(2.5rem, 5vw, 4.8rem);
+          line-height: 0.98;
+          letter-spacing: -0.045em;
+        }
+
+        #our-story p:not(:first-child) {
+          max-width: 58ch;
+          font-size: clamp(1rem, 1.3vw, 1.2rem);
+          line-height: 1.68;
+        }
+
+        #our-story p + p {
+          margin-top: 24px;
+        }
+
+        .legacy-story details {
+          width: 100%;
+          border-top: 1px solid var(--line);
+          border-bottom: 1px solid transparent;
+        }
+
+        .legacy-story-accordion {
+          display: grid;
+          width: 100%;
+          gap: 0;
+        }
+
+        .legacy-story details:last-child {
+          border-bottom-color: var(--line);
+        }
+
+        .legacy-story summary {
+          display: grid;
+          grid-template-columns: auto 1fr auto;
+          align-items: center;
+          gap: 14px;
+          padding: 18px 0;
+          min-height: 56px;
+          cursor: pointer;
+          list-style: none;
+          user-select: none;
+          font-family: var(--mono);
+          color: var(--ink);
+          font-size: 0.66rem;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          line-height: 1;
+        }
+
+        .legacy-story summary::-webkit-details-marker {
+          display: none;
+        }
+
+        .legacy-story summary::after {
+          content: "";
+          width: 14px;
+          height: 14px;
+          background:
+            linear-gradient(var(--muted), var(--muted)) center / 100% 1px no-repeat,
+            linear-gradient(var(--muted), var(--muted)) center / 1px 100% no-repeat;
+        }
+
+        .legacy-story details[open] summary::after {
+          background: linear-gradient(var(--muted), var(--muted)) center / 100% 1px no-repeat;
+        }
+
+        .legacy-story summary .legacy-story-title {
+          color: var(--ink);
+          margin: 0;
+          align-self: center;
+          font-size: 0.66rem;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          line-height: 1.2;
+          font-family: var(--mono);
+        }
+
+        .legacy-story .legacy-story-step {
+          color: var(--muted);
+          align-self: center;
+          font-size: 0.9rem;
+          margin-right: 8px;
+          font-family: var(--mono);
+        }
+
+        .legacy-story summary::after {
+          align-self: center;
+        }
+
+        .legacy-story-body {
+          margin: 0;
+          padding: 0 0 20px;
+          display: grid;
+          gap: 14px;
+          color: var(--muted);
+          font-size: 1rem;
+          line-height: 1.7;
+          max-width: 58ch;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          #our-story > div {
+            transform: none !important;
+            opacity: 1 !important;
+          }
+        }
       `}</style>
 
       <nav className="legacy-nav legacy-nav--fixed" aria-label="Primary">
@@ -1042,23 +1319,23 @@ export function App() {
             <span className="legacy-brand-divider" aria-hidden="true" />
           </span>
         </a>
-        <a className="legacy-navlink" href="#work" data-panel="sources" onClick={(event) => openPanelFromClick(event, "connections")}>
-          Connections
-        </a>
         <a className="legacy-navlink" href="#work" data-panel="provenance" onClick={(event) => openPanelFromClick(event, "trust")}>
           Trust
         </a>
         <a className="legacy-navlink" href="#our-story" data-panel="origin" onClick={scrollToStory}>
           Our Story
         </a>
+        <a className="legacy-navlink" href="#how-it-works" data-panel="how-it-works" onClick={scrollToHowItWorks}>
+          How it works
+        </a>
         <a className="legacy-navlink legacy-signin" href="#" data-panel="auth" onClick={(event) => openPanelFromClick(event, "auth")}>
           Sign in
         </a>
       </nav>
 
-      <button type="button" className={`legacy-panel-backdrop ${openPanel ? "visible" : ""}`} aria-hidden={!openPanel} onClick={closePanel} />
+      <button ref={panelBackdropRef} type="button" className={`legacy-panel-backdrop ${openPanel ? "visible" : ""}`} aria-hidden={!openPanel} onClick={closePanel} />
 
-      <aside className={`legacy-panel ${openPanel ? "visible" : ""}`} aria-hidden={!openPanel} role="dialog" aria-modal="true" aria-label="Panel">
+      <aside ref={panelRef} className={`legacy-panel ${openPanel ? "visible" : ""}`} aria-hidden={!openPanel} role="dialog" aria-modal="true" aria-label={openPanel ? panelTitle[openPanel] ?? "Panel" : "Panel"}>
         <header className="legacy-panel-header">
           <h2 className="legacy-panel-title">{openPanel ? panelTitle[openPanel] ?? "Panel" : ""}</h2>
           <button className="legacy-panel-close" type="button" onClick={closePanel} aria-label="Close panel">
@@ -1077,7 +1354,6 @@ export function App() {
                   <details className="legacy-connection-group" key={group.title} open={group.title === "Available now"}>
                     <summary><h3>{group.title}</h3></summary>
                     <div className="legacy-connection-group-body">
-                      {group.note && <p className="legacy-connection-group-note">{group.note}</p>}
                       <div className="legacy-connection-list">
                         {group.items.map(([name, description, icon]) => (
                           <div className="legacy-connection-item" key={name}>
@@ -1138,8 +1414,8 @@ export function App() {
           <div className="legacy-visual" aria-label="Background hero visual" aria-hidden="true">
             <video src={`${import.meta.env.BASE_URL}videos/hero.mp4`} autoPlay loop muted playsInline />
           </div>
-          <div className="legacy-marquee" aria-label="Possible connectors">
-            <button className="legacy-marquee-label" type="button" onClick={() => setOpenPanel("connections")}>Connections</button>
+            <div className="legacy-marquee" aria-label="Possible connectors">
+            <button className="legacy-marquee-label" type="button" onClick={() => setOpenPanel("connections")}>Sources</button>
             <div className="legacy-track" ref={trackRef}>
               <div className="legacy-track-group">
                 {marqueeItems.map((connector, index) => (
@@ -1185,7 +1461,7 @@ export function App() {
 
       <section className="legacy-story" id="our-story" ref={storySectionRef} aria-label="Pitar origin story">
         <div ref={storyContentRef}>
-          <p>Our story</p>
+          <p>How it works</p>
           <h2>The origin of Pitar.</h2>
           <p>
             My father, Peter Chukwu Emeka Nwankwo, wrote constantly. Letters, sermons, ledgers kept in a hand I can still
@@ -1199,6 +1475,25 @@ export function App() {
             If I could not check it, I did not want it. That turned out to be the general case: a finance team reconciling
             twenty years of contracts wants what a son wants, an answer and the page it came from.
           </p>
+        </div>
+      </section>
+
+      <section className="legacy-story" id="how-it-works" aria-label="How Pitar works">
+        <div>
+          <p>How it works</p>
+          <h2>Everything you keep. Any question you have.</h2>
+          <p>Answers come with source evidence. No answer without trace.</p>
+          <div className="legacy-story-accordion">
+            {howItWorksSteps.map(({ step, title, copy }, index) => (
+              <details className="legacy-story-details" key={step} open={index === 0}>
+                <summary className="legacy-story-summary">
+                  <span className="legacy-story-step">{step}</span>
+                  <h3 className="legacy-story-title">{title}</h3>
+                </summary>
+                <p className="legacy-story-body">{copy}</p>
+              </details>
+            ))}
+          </div>
         </div>
       </section>
     </main>
