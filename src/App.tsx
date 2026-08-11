@@ -71,6 +71,7 @@ export function App() {
   const panelRef = useRef<HTMLElement | null>(null)
   const panelBackdropRef = useRef<HTMLButtonElement | null>(null)
   const [openPanel, setOpenPanel] = useState<string | null>(null)
+  const [openMobileMenu, setOpenMobileMenu] = useState(false)
 
   const panelTitle: Record<string, string> = {
     connections: "Connections",
@@ -94,21 +95,28 @@ export function App() {
     ],
   }
 
+  const closeMobileMenu = () => {
+    setOpenMobileMenu(false)
+  }
+
   const scrollToStory = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault()
     setOpenPanel(null)
+    closeMobileMenu()
     document.getElementById("our-story")?.scrollIntoView({ behavior: "smooth", block: "start" })
   }
 
   const scrollToHowItWorks = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault()
     setOpenPanel(null)
+    closeMobileMenu()
     document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth", block: "start" })
   }
 
   const openPanelFromClick = (event: MouseEvent<HTMLAnchorElement>, panel: string) => {
     event.preventDefault()
     setOpenPanel(panel)
+    closeMobileMenu()
   }
 
   const closePanel = () => {
@@ -367,12 +375,19 @@ export function App() {
         .legacy-nav {
           display: flex;
           align-items: center;
+          justify-content: space-between;
           gap: clamp(16px, 2.5vw, 32px);
           flex-wrap: nowrap;
           font-family: "Helvetica Neue", Helvetica, sans-serif;
           font-size: 0.59rem;
           letter-spacing: 0.08em;
           text-transform: uppercase;
+        }
+
+        .legacy-nav-links {
+          display: flex;
+          align-items: center;
+          gap: clamp(16px, 2.5vw, 32px);
         }
 
         .legacy-nav a {
@@ -385,6 +400,9 @@ export function App() {
         .legacy-nav .legacy-navlink,
         .legacy-nav .legacy-signin {
           font-size: 0.56rem;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .legacy-nav .legacy-signin {
@@ -392,6 +410,90 @@ export function App() {
           border: 1px solid var(--muted);
           border-radius: 0;
           color: var(--ink);
+        }
+
+        .legacy-hamburger {
+          display: none;
+          width: 36px;
+          height: 28px;
+          margin-left: auto;
+          border: 1px solid var(--line);
+          border-radius: 0;
+          background: color-mix(in oklch, var(--paper) 74%, transparent);
+          color: inherit;
+          cursor: pointer;
+          flex-direction: column;
+          justify-content: center;
+          gap: 5px;
+          padding: 5px;
+        }
+
+        .legacy-hamburger span {
+          display: block;
+          width: 18px;
+          height: 2px;
+          background: var(--ink);
+          margin: 0;
+        }
+
+        .legacy-mobile-nav-backdrop {
+          position: fixed;
+          inset: 0;
+          z-index: 18;
+          border: 0;
+          background: rgba(3, 3, 3, 0.55);
+          opacity: 0;
+          pointer-events: none;
+        }
+
+        .legacy-mobile-nav-backdrop.visible {
+          opacity: 1;
+          pointer-events: auto;
+        }
+
+        .legacy-mobile-nav-links {
+          position: fixed;
+          top: 56px;
+          right: 12px;
+          z-index: 21;
+          display: flex;
+          flex-direction: column;
+          width: min(78vw, 320px);
+          padding: 14px;
+          gap: 10px;
+          border: 1px solid var(--line);
+          background: color-mix(in oklch, var(--paper) 86%, transparent);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          transform: translateX(112%);
+          opacity: 0;
+          transition:
+            transform 240ms ease,
+            opacity 240ms ease;
+          pointer-events: none;
+        }
+
+        .legacy-mobile-nav-links.is-open {
+          transform: translateX(0);
+          opacity: 1;
+          pointer-events: auto;
+        }
+
+        .legacy-mobile-nav-links .legacy-navlink,
+        .legacy-mobile-nav-links .legacy-signin {
+          width: 100%;
+          justify-content: flex-start;
+          text-align: left;
+          font-size: 1rem;
+          line-height: 1.1;
+          font-weight: 700;
+          padding: 12px 4px;
+        }
+
+        .legacy-mobile-nav-links .legacy-signin {
+          justify-content: center;
+          border: 1px solid var(--muted);
+          padding: 12px 14px;
         }
 
         .legacy-nav--fixed {
@@ -1074,37 +1176,19 @@ export function App() {
           }
 
           .legacy-nav {
-            display: flex;
             transform: none;
-            gap: clamp(5px, 1.7vw, 9px);
             padding: 7px 8px;
             font-size: 0.54rem;
             letter-spacing: 0.06em;
-            flex-wrap: nowrap;
-            overflow-x: hidden;
-            overflow-y: hidden;
             justify-content: space-between;
-            scrollbar-width: none;
           }
 
-          .legacy-nav > * {
-            flex: 0 1 auto;
-            min-width: 0;
-            white-space: nowrap;
-          }
-
-          .legacy-nav::-webkit-scrollbar {
+          .legacy-nav-links {
             display: none;
           }
 
-          .legacy-nav > .legacy-signin {
-            text-align: center;
-            justify-content: center;
-          }
-
-          .legacy-nav .legacy-navlink {
-            text-align: center;
-            justify-content: center;
+          .legacy-hamburger {
+            display: inline-flex;
           }
 
           .legacy-nav--fixed {
@@ -1123,15 +1207,6 @@ export function App() {
           .legacy-nav .legacy-brand-stack span {
             font-size: 0.48rem;
             letter-spacing: 0.1em;
-          }
-
-          .legacy-nav .legacy-navlink,
-          .legacy-nav .legacy-signin {
-            font-size: clamp(0.45rem, 2vw, 0.51rem);
-          }
-
-          .legacy-nav .legacy-signin {
-            padding: 7px clamp(8px, 2.5vw, 11px);
           }
 
           .legacy-hero {
@@ -1342,19 +1417,52 @@ export function App() {
             <span className="legacy-brand-divider" aria-hidden="true" />
           </span>
         </a>
-        <a className="legacy-navlink" href="#work" data-panel="provenance" onClick={(event) => openPanelFromClick(event, "trust")}>
-          Trust
-        </a>
-        <a className="legacy-navlink" href="#our-story" data-panel="origin" onClick={scrollToStory}>
-          Our Story
-        </a>
-        <a className="legacy-navlink" href="#how-it-works" data-panel="how-it-works" onClick={scrollToHowItWorks}>
-          How it works
-        </a>
-        <a className="legacy-navlink legacy-signin" href="#" data-panel="auth" onClick={(event) => openPanelFromClick(event, "auth")}>
-          Sign in
-        </a>
+        <button
+          type="button"
+          className={`legacy-hamburger ${openMobileMenu ? "is-open" : ""}`}
+          aria-label="Open menu"
+          aria-expanded={openMobileMenu}
+          aria-controls="mobile-nav-links"
+          onClick={() => setOpenMobileMenu((current) => !current)}
+        >
+          <span />
+          <span />
+        </button>
+        <div className="legacy-nav-links">
+          <a className="legacy-navlink" href="#work" data-panel="provenance" onClick={(event) => openPanelFromClick(event, "trust")}>
+            Trust
+          </a>
+          <a className="legacy-navlink" href="#our-story" data-panel="origin" onClick={scrollToStory}>
+            Our Story
+          </a>
+          <a className="legacy-navlink" href="#how-it-works" data-panel="how-it-works" onClick={scrollToHowItWorks}>
+            How it works
+          </a>
+          <a className="legacy-navlink legacy-signin" href="#" data-panel="auth" onClick={(event) => openPanelFromClick(event, "auth")}>
+            Sign in
+          </a>
+        </div>
+        <div id="mobile-nav-links" className={`legacy-mobile-nav-links ${openMobileMenu ? "is-open" : ""}`} role="menu">
+          <a className="legacy-navlink" href="#work" data-panel="provenance" role="menuitem" onClick={(event) => openPanelFromClick(event, "trust")}>
+            Trust
+          </a>
+          <a className="legacy-navlink" href="#our-story" data-panel="origin" role="menuitem" onClick={scrollToStory}>
+            Our Story
+          </a>
+          <a className="legacy-navlink" href="#how-it-works" data-panel="how-it-works" role="menuitem" onClick={scrollToHowItWorks}>
+            How it works
+          </a>
+          <a className="legacy-navlink legacy-signin" href="#" data-panel="auth" role="menuitem" onClick={(event) => openPanelFromClick(event, "auth")}>
+            Sign in
+          </a>
+        </div>
       </nav>
+      <button
+        type="button"
+        className={`legacy-mobile-nav-backdrop ${openMobileMenu ? "visible" : ""}`}
+        aria-hidden={!openMobileMenu}
+        onClick={() => setOpenMobileMenu(false)}
+      />
 
       <button ref={panelBackdropRef} type="button" className={`legacy-panel-backdrop ${openPanel ? "visible" : ""}`} aria-hidden={!openPanel} onClick={closePanel} />
 
