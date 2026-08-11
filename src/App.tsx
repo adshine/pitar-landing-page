@@ -453,25 +453,28 @@ export function App() {
 
         .legacy-mobile-nav-links {
           position: fixed;
-          top: 60px;
-          left: 12px;
-          right: 12px;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
           z-index: 21;
           display: flex;
           flex-direction: column;
+          justify-content: flex-start;
           width: auto;
           padding: 16px;
           gap: 10px;
-          border: 1px solid var(--line);
+          border: 0;
           background: color-mix(in oklch, var(--paper) 86%, transparent);
           backdrop-filter: blur(16px);
           -webkit-backdrop-filter: blur(16px);
-          transform: translateX(112%);
+          transform: translateX(100%);
           opacity: 0;
           transition:
             transform 240ms ease,
             opacity 240ms ease;
           pointer-events: none;
+          overflow-y: auto;
         }
 
         .legacy-mobile-nav-links.is-open {
@@ -1212,8 +1215,11 @@ export function App() {
           }
 
           .legacy-mobile-nav-links {
-            left: 16px;
-            right: 16px;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 100%;
           }
 
           .legacy-nav--fixed .legacy-hamburger {
