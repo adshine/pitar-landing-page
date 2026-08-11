@@ -2250,7 +2250,11 @@ export function App() {
                 }}
               >
                 <input type="text" aria-label="Ask Pitar a question" placeholder="Ask a question about your records..." />
-                <button type="submit" aria-label="Start asking">↑</button>
+                <button type="submit" aria-label="Send question">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 19V5M6.5 10.5 12 5l5.5 5.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
               </form>
               <div className="legacy-footer-prompt-result" aria-hidden="true">
                 <span>What changed in the renewal terms?</span>
