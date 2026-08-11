@@ -70,6 +70,8 @@ export function App() {
   const storyContentRef = useRef<HTMLDivElement | null>(null)
   const panelRef = useRef<HTMLElement | null>(null)
   const panelBackdropRef = useRef<HTMLButtonElement | null>(null)
+  const mobileMenuRef = useRef<HTMLDivElement | null>(null)
+  const mobileMenuButtonRef = useRef<HTMLButtonElement | null>(null)
   const [openPanel, setOpenPanel] = useState<string | null>(null)
   const [openMobileMenu, setOpenMobileMenu] = useState(false)
 
@@ -122,6 +124,43 @@ export function App() {
   const closePanel = () => {
     setOpenPanel(null)
   }
+
+  useEffect(() => {
+    if (!openMobileMenu) return
+
+    const previousOverflow = document.body.style.overflow
+    const firstLink = mobileMenuRef.current?.querySelector<HTMLAnchorElement>(".legacy-mobile-menu-links a")
+    const focusFrame = requestAnimationFrame(() => firstLink?.focus())
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpenMobileMenu(false)
+        return
+      }
+
+      if (event.key === "Tab" && mobileMenuRef.current) {
+        const focusable = Array.from(mobileMenuRef.current.querySelectorAll<HTMLElement>("a, button"))
+        const first = focusable[0]
+        const last = focusable[focusable.length - 1]
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault()
+          last?.focus()
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault()
+          first?.focus()
+        }
+      }
+    }
+
+    document.body.style.overflow = "hidden"
+    window.addEventListener("keydown", handleKeyDown)
+
+    return () => {
+      cancelAnimationFrame(focusFrame)
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener("keydown", handleKeyDown)
+      mobileMenuButtonRef.current?.focus()
+    }
+  }, [openMobileMenu])
 
   useEffect(() => {
     const panel = panelRef.current
@@ -453,26 +492,26 @@ export function App() {
 
         .legacy-mobile-nav-links {
           position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          z-index: 21;
+          inset: 0;
+          z-index: 30;
           display: flex;
           flex-direction: column;
           justify-content: flex-start;
-          width: auto;
-          padding: 16px;
-          gap: 10px;
+          width: 100vw;
+          height: 100dvh;
+          padding: 0 var(--section-inline) max(24px, env(safe-area-inset-bottom));
+          gap: 0;
           border: 0;
           background: color-mix(in oklch, var(--paper) 86%, transparent);
           backdrop-filter: blur(16px);
           -webkit-backdrop-filter: blur(16px);
           transform: translateX(100%);
           opacity: 0;
+          visibility: hidden;
           transition:
             transform 240ms ease,
-            opacity 240ms ease;
+            opacity 240ms ease,
+            visibility 0s linear 240ms;
           pointer-events: none;
           overflow-y: auto;
         }
@@ -480,7 +519,40 @@ export function App() {
         .legacy-mobile-nav-links.is-open {
           transform: translateX(0);
           opacity: 1;
+          visibility: visible;
+          transition-delay: 0s;
           pointer-events: auto;
+        }
+
+        .legacy-mobile-menu-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          min-height: 68px;
+          padding-top: env(safe-area-inset-top);
+          border-bottom: 1px solid var(--line);
+        }
+
+        .legacy-mobile-menu-close {
+          display: grid;
+          width: 48px;
+          height: 48px;
+          padding: 0;
+          place-items: center;
+          border: 0;
+          background: transparent;
+          color: var(--ink);
+          font: 400 2rem/1 var(--sans);
+          cursor: pointer;
+        }
+
+        .legacy-mobile-menu-links {
+          display: flex;
+          flex: 1;
+          flex-direction: column;
+          justify-content: center;
+          gap: 8px;
+          padding: 24px 0;
         }
 
         .legacy-mobile-nav-links .legacy-navlink,
@@ -1201,9 +1273,9 @@ export function App() {
           }
 
           .legacy-nav--fixed {
-            left: 16px;
-            right: 16px;
-            width: calc(100% - 32px);
+            left: var(--section-inline);
+            right: var(--section-inline);
+            width: auto;
             top: 4px;
             transform: none;
             backdrop-filter: blur(16px) saturate(1.15);
@@ -1215,10 +1287,7 @@ export function App() {
           }
 
           .legacy-mobile-nav-links {
-            left: 0;
-            right: 0;
-            top: 0;
-            bottom: 0;
+            inset: 0;
             width: 100%;
           }
 
@@ -1454,9 +1523,10 @@ export function App() {
           </span>
         </a>
         <button
+          ref={mobileMenuButtonRef}
           type="button"
           className={`legacy-hamburger ${openMobileMenu ? "is-open" : ""}`}
-          aria-label="Open menu"
+          aria-label={openMobileMenu ? "Close menu" : "Open menu"}
           aria-expanded={openMobileMenu}
           aria-controls="mobile-nav-links"
           onClick={() => setOpenMobileMenu((current) => !current)}
@@ -1478,21 +1548,35 @@ export function App() {
             Sign in
           </a>
         </div>
-        <div id="mobile-nav-links" className={`legacy-mobile-nav-links ${openMobileMenu ? "is-open" : ""}`} role="menu">
-          <a className="legacy-navlink" href="#work" data-panel="provenance" role="menuitem" onClick={(event) => openPanelFromClick(event, "trust")}>
-            Trust
-          </a>
-          <a className="legacy-navlink" href="#our-story" data-panel="origin" role="menuitem" onClick={scrollToStory}>
-            Our Story
-          </a>
-          <a className="legacy-navlink" href="#how-it-works" data-panel="how-it-works" role="menuitem" onClick={scrollToHowItWorks}>
-            How it works
-          </a>
-          <a className="legacy-navlink legacy-signin" href="#" data-panel="auth" role="menuitem" onClick={(event) => openPanelFromClick(event, "auth")}>
-            Sign in
-          </a>
-        </div>
       </nav>
+      <div
+        ref={mobileMenuRef}
+        id="mobile-nav-links"
+        className={`legacy-mobile-nav-links ${openMobileMenu ? "is-open" : ""}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Mobile navigation"
+        aria-hidden={!openMobileMenu}
+        inert={!openMobileMenu}
+      >
+        <div className="legacy-mobile-menu-header">
+          <a className="legacy-brand" href="#top" aria-label="Pitar home" onClick={closeMobileMenu}>
+            <span className="legacy-brand-lockup">
+              <span className="legacy-brand-mark" aria-hidden="true">
+                <img src={`${import.meta.env.BASE_URL}logos/pitar-mark.svg`} alt="" />
+              </span>
+              <span className="legacy-brand-stack"><b>itar</b></span>
+            </span>
+          </a>
+          <button type="button" className="legacy-mobile-menu-close" aria-label="Close menu" onClick={closeMobileMenu}>×</button>
+        </div>
+        <div className="legacy-mobile-menu-links">
+          <a className="legacy-navlink" href="#work" data-panel="provenance" onClick={(event) => openPanelFromClick(event, "trust")}>Trust</a>
+          <a className="legacy-navlink" href="#our-story" data-panel="origin" onClick={scrollToStory}>Our Story</a>
+          <a className="legacy-navlink" href="#how-it-works" data-panel="how-it-works" onClick={scrollToHowItWorks}>How it works</a>
+          <a className="legacy-navlink legacy-signin" href="#" data-panel="auth" onClick={(event) => openPanelFromClick(event, "auth")}>Sign in</a>
+        </div>
+      </div>
       <button
         type="button"
         className={`legacy-mobile-nav-backdrop ${openMobileMenu ? "visible" : ""}`}
