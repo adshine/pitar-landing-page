@@ -1587,6 +1587,19 @@ export function App() {
           mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, rgba(0, 0, 0, 0.9) 74%, transparent 100%);
         }
 
+        .legacy-footer-prompt::before {
+          content: "";
+          position: absolute;
+          inset: 0 auto auto 0;
+          z-index: 2;
+          width: 100%;
+          height: 1px;
+          border: 0;
+          background: linear-gradient(90deg, var(--line) 0%, var(--line) 18%, rgba(233, 229, 218, 0.46) 42%, rgba(255, 255, 255, 0.92) 50%, rgba(233, 229, 218, 0.46) 58%, var(--line) 82%, var(--line) 100%);
+          box-shadow: 0 5px 20px rgba(255, 255, 255, 0.055);
+          pointer-events: none;
+        }
+
         .legacy-footer-prompt-content {
           position: relative;
           z-index: 1;
