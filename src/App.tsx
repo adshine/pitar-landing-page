@@ -1732,9 +1732,9 @@ export function App() {
           width: min(68%, 460px);
           min-height: 64px;
           margin: clamp(34px, 5vw, 48px) auto 0;
-          padding: 7px;
+          padding: 0;
           border: 1px solid transparent;
-          border-radius: 999px;
+          border-radius: 0;
           background:
             linear-gradient(rgba(16, 18, 17, 0.9), rgba(16, 18, 17, 0.9)) padding-box,
             linear-gradient(90deg, rgba(233, 229, 218, 0.22) 0%, rgba(233, 229, 218, 0.22) 18%, rgba(233, 229, 218, 0.48) 42%, rgba(255, 255, 255, 0.88) 50%, rgba(233, 229, 218, 0.48) 58%, rgba(233, 229, 218, 0.22) 82%, rgba(233, 229, 218, 0.22) 100%) border-box;
@@ -1769,7 +1769,7 @@ export function App() {
           width: 48px;
           height: 48px;
           place-items: center;
-          border-radius: 50%;
+          border-radius: 0;
           color: var(--ink);
           cursor: pointer;
           font-family: var(--sans);
@@ -1802,7 +1802,8 @@ export function App() {
           display: grid;
           grid-template-columns: repeat(3, minmax(120px, 1fr));
           width: min(430px, calc(100vw - 48px));
-          padding: 6px;
+          padding: 0;
+          border-radius: 0;
           border: 1px solid var(--line);
           background: linear-gradient(180deg, rgba(18, 19, 19, 0.98), rgba(7, 8, 8, 0.99));
           box-shadow: 0 24px 70px rgba(0, 0, 0, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.035);
@@ -1862,7 +1863,7 @@ export function App() {
           height: 48px;
           place-items: center;
           border: 0;
-          border-radius: 50%;
+          border-radius: 0;
           background: var(--ink);
           color: #080a09;
           font-size: 1.35rem;
