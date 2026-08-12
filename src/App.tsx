@@ -1540,8 +1540,8 @@ export function App() {
         }
 
         .legacy-footer-frame {
-          width: calc(100% - (var(--section-inline) * 2));
-          max-width: 1180px;
+          width: 100%;
+          max-width: none;
           margin-inline: auto;
           border-inline: 1px solid var(--line);
         }
@@ -1958,7 +1958,7 @@ export function App() {
 
         @media (max-width: 700px) {
           .legacy-footer-frame {
-            width: calc(100% - (var(--section-inline) * 2));
+            width: 100%;
           }
 
           .legacy-footer-prompt {
