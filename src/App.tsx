@@ -1167,18 +1167,6 @@ export function App() {
           pointer-events: none;
         }
 
-        .legacy-primary--icon {
-          width: 42px;
-          height: 42px;
-          justify-content: center;
-          padding: 0;
-        }
-
-        .legacy-primary--icon svg {
-          width: 18px;
-          height: 18px;
-        }
-
         .legacy-visual video {
           width: 100%;
           height: 100%;
@@ -1267,23 +1255,23 @@ export function App() {
           pointer-events: none;
         }
 
-        .legacy-ask-line {
+        .legacy-ask-beams {
           position: absolute;
           left: 50%;
           top: 44px;
-          bottom: auto;
-          width: 1px;
-          height: 0;
-          background: linear-gradient(to bottom, rgba(34, 197, 94, 0.95), rgba(242, 242, 242, 0.12));
+          z-index: 0;
+          width: 120px;
+          height: 96px;
+          overflow: visible;
           transform: translateX(-50%);
-          transform-origin: top center;
+          pointer-events: none;
         }
 
-        .legacy-ask-line.is-to-answer {
+        .legacy-ask-beams.is-to-answer {
           top: auto;
           bottom: 8%;
-          transform-origin: bottom center;
-          background: linear-gradient(to top, rgba(242, 242, 242, 0.12), rgba(34, 197, 94, 0.95));
+          height: 28%;
+          width: 140px;
         }
 
         .legacy-ask-dock {
@@ -1422,17 +1410,24 @@ export function App() {
           padding: 0 14px;
           border: 0;
           border-left: 1px solid var(--line);
-          background: transparent;
-          color: #e9e5da;
+          background: #f2f2f2;
+          color: #111111;
           font-family: var(--mono);
           font-size: 0.58rem;
           letter-spacing: 0.12em;
           text-transform: uppercase;
         }
 
+        .legacy-ask-send:hover,
         .legacy-ask-send.is-hit {
-          background: rgba(34, 197, 94, 0.16);
-          color: #86efac;
+          border-left-color: #4ade80;
+          background: linear-gradient(90deg, rgba(34, 197, 94, 0.22), rgba(34, 197, 94, 0.02) 72%, transparent);
+          color: #e9e5da;
+        }
+
+        .legacy-ask-send svg {
+          width: 17px;
+          height: 17px;
         }
 
         .legacy-ask-dock {
@@ -3317,11 +3312,8 @@ export function App() {
               </p>
 
               <div className="legacy-hero-footer" id="contact">
-                <button className="legacy-primary legacy-primary--icon" type="button" data-scroll-target="#work" aria-label="Start asking">
-                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path d="M4 4L21 12L4 20L7.5 12L4 4Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-                    <path d="M7.5 12H21" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                  </svg>
+                <button className="legacy-primary" type="button" data-scroll-target="#work">
+                  Start asking
                 </button>
                 <a className="legacy-secondary" href="#" data-panel="auth">
                   Sign in
