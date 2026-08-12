@@ -466,7 +466,7 @@ export function App() {
           width: 100%;
           min-height: 100svh;
           padding: 100px var(--section-inline) 0;
-          gap: 20px;
+          gap: clamp(48px, 7vh, 84px);
         }
 
         .legacy-hero-main {
@@ -1207,8 +1207,8 @@ export function App() {
           max-width: none;
           flex: 0 0 auto;
           aspect-ratio: auto;
-          height: clamp(480px, 62vh, 620px);
-          max-height: 620px;
+          height: clamp(440px, 50vh, 560px);
+          max-height: 560px;
           overflow: hidden;
           border: 0;
           outline: 0;
@@ -2364,9 +2364,11 @@ export function App() {
           gap: 14px;
         }
 
-        #how-it-works .legacy-how-copy > p:last-child {
-          margin-left: auto;
-          text-align: right;
+        #how-it-works .legacy-how-subtitle {
+          margin: 0 0 28px;
+          max-width: 42ch;
+          color: var(--muted);
+          text-align: left;
         }
 
         @media (min-width: 901px) {
@@ -2418,9 +2420,8 @@ export function App() {
         }
 
         @media (max-width: 900px) {
-          #how-it-works .legacy-how-copy > p:last-child {
-            margin-left: 0;
-            text-align: left;
+          #how-it-works .legacy-how-subtitle {
+            margin-bottom: 24px;
           }
 
           #our-story {
@@ -3595,9 +3596,9 @@ export function App() {
           <div className="legacy-how-copy">
             <p>How it works</p>
             <h2>Everything you keep. Any question you have.</h2>
-            <p>Answers come with source evidence. No answer without trace.</p>
           </div>
           <div className="legacy-story-accordion">
+            <p className="legacy-how-subtitle">Answers come with source evidence. No answer without trace.</p>
             {howItWorksSteps.map(({ step, title, copy }, index) => (
               <details className="legacy-story-details" key={step} open={index === 0}>
                 <summary className="legacy-story-summary">
