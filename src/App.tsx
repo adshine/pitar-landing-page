@@ -1774,7 +1774,7 @@ export function App() {
           grid-template-columns: minmax(280px, 1.45fr) repeat(2, minmax(150px, 0.78fr));
           gap: clamp(42px, 6vw, 96px);
         min-height: 0;
-        padding: clamp(48px, 5vw, 72px) clamp(28px, 4vw, 64px) 40px;
+        padding: clamp(32px, 3.5vw, 48px) clamp(28px, 4vw, 64px) 28px;
         }
 
         .legacy-footer-intro {
@@ -1801,7 +1801,7 @@ export function App() {
           display: inline-flex;
           align-items: center;
           gap: 10px;
-        margin-top: clamp(48px, 6vw, 80px);
+        margin-top: clamp(28px, 3vw, 40px);
         padding-top: 0;
           color: var(--muted);
           font-family: var(--mono);
@@ -2007,7 +2007,7 @@ export function App() {
             grid-template-columns: 1fr 1fr;
           gap: 40px 28px;
             min-height: 0;
-          padding: 40px 18px 32px;
+          padding: 30px 18px 24px;
           }
 
           .legacy-footer-intro {
@@ -2021,7 +2021,7 @@ export function App() {
           }
 
           .legacy-footer-principle {
-            margin-top: 36px;
+            margin-top: 26px;
             padding-top: 0;
           }
 
