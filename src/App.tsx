@@ -1612,7 +1612,7 @@ export function App() {
         }
 
         .legacy-footer-prompt h2 {
-          max-width: 18ch;
+          max-width: 12ch;
           margin: 0 auto;
           font-family: var(--sans);
           font-size: clamp(2rem, 3.5vw, 3.35rem);
