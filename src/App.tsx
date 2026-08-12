@@ -574,8 +574,8 @@ export function App() {
           font-weight: 600;
           letter-spacing: -0.045em;
           padding: 10px 0;
-          min-height: 48px;
-          height: 48px;
+          min-height: 0;
+          height: auto;
         }
 
         .legacy-mobile-nav-links .legacy-signin {
@@ -2118,8 +2118,8 @@ export function App() {
           }
 
           .legacy-footer-prompt-form {
-            min-height: 44px;
-            height: 44px;
+            min-height: 0;
+            height: auto;
             width: 100%;
           }
 
