@@ -1630,8 +1630,8 @@ export function App() {
           position: relative;
           display: grid;
           place-items: center;
-          min-height: clamp(330px, 34vw, 410px);
-          padding: clamp(42px, 4.5vw, 60px) clamp(24px, 6vw, 88px);
+          min-height: clamp(270px, 28vw, 330px);
+          padding: clamp(28px, 3vw, 40px) clamp(24px, 6vw, 88px);
           overflow: hidden;
           border-bottom: 1px solid var(--line);
           background: radial-gradient(ellipse at center, #131414 0%, #0d0e0e 58%, #080909 100%);
@@ -2077,8 +2077,8 @@ export function App() {
           }
 
           .legacy-footer-prompt {
-            min-height: 340px;
-            padding: 42px 18px;
+            min-height: 280px;
+            padding: 28px 18px;
             background-size: auto;
           }
 
