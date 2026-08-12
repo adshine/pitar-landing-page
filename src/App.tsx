@@ -1550,8 +1550,8 @@ export function App() {
           position: relative;
           display: grid;
           place-items: center;
-          min-height: clamp(390px, 42vw, 500px);
-          padding: clamp(58px, 6.5vw, 84px) clamp(24px, 6vw, 88px);
+          min-height: clamp(330px, 34vw, 410px);
+          padding: clamp(42px, 4.5vw, 60px) clamp(24px, 6vw, 88px);
           overflow: hidden;
           border-bottom: 1px solid var(--line);
           background:
@@ -1774,7 +1774,7 @@ export function App() {
           grid-template-columns: minmax(280px, 1.45fr) repeat(2, minmax(150px, 0.78fr));
           gap: clamp(42px, 6vw, 96px);
         min-height: 0;
-        padding: clamp(32px, 3.5vw, 48px) clamp(28px, 4vw, 64px) 28px;
+        padding: clamp(24px, 2.6vw, 36px) clamp(28px, 4vw, 64px) 22px;
         }
 
         .legacy-footer-intro {
@@ -1801,7 +1801,7 @@ export function App() {
           display: inline-flex;
           align-items: center;
           gap: 10px;
-        margin-top: clamp(28px, 3vw, 40px);
+        margin-top: clamp(20px, 2vw, 28px);
         padding-top: 0;
           color: var(--muted);
           font-family: var(--mono);
@@ -1949,8 +1949,8 @@ export function App() {
           }
 
           .legacy-footer-prompt {
-            min-height: 390px;
-            padding: 54px 18px;
+            min-height: 340px;
+            padding: 42px 18px;
             background-size: auto, auto, 22px 22px, auto;
           }
 
@@ -2007,7 +2007,7 @@ export function App() {
             grid-template-columns: 1fr 1fr;
           gap: 40px 28px;
             min-height: 0;
-          padding: 30px 18px 24px;
+          padding: 24px 18px 20px;
           }
 
           .legacy-footer-intro {
