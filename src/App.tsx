@@ -459,6 +459,51 @@ export function App() {
           color: var(--ink);
         }
 
+        .legacy-nav .legacy-navlink:not(.legacy-signin) {
+          padding: 8px 10px;
+        }
+
+        .legacy-nav a,
+        .legacy-hamburger,
+        .legacy-mobile-menu-close {
+          border-radius: 0;
+          transition: color 160ms ease, background 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 100ms ease;
+        }
+
+        .legacy-nav a:hover,
+        .legacy-hamburger:hover,
+        .legacy-mobile-menu-close:hover {
+          background: rgba(233, 229, 218, 0.08);
+          color: var(--ink);
+        }
+
+        .legacy-nav .legacy-signin:hover {
+          border-color: var(--ink);
+          background: var(--ink);
+          color: #080a09;
+        }
+
+        .legacy-nav a:focus-visible,
+        .legacy-hamburger:focus-visible,
+        .legacy-mobile-menu-close:focus-visible {
+          z-index: 2;
+          outline: 1px solid var(--ink);
+          outline-offset: 3px;
+          color: var(--ink);
+        }
+
+        .legacy-nav a:active,
+        .legacy-hamburger:active,
+        .legacy-mobile-menu-close:active {
+          background: rgba(233, 229, 218, 0.14);
+          transform: translateY(1px);
+        }
+
+        .legacy-nav .legacy-signin:active {
+          background: rgba(233, 229, 218, 0.82);
+          color: #080a09;
+        }
+
         .legacy-hamburger {
           display: none;
           width: 44px;
