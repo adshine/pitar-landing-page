@@ -538,7 +538,7 @@ export function App() {
           justify-content: space-between;
           min-height: 68px;
           padding-top: env(safe-area-inset-top);
-          border-bottom: 1px solid var(--line);
+          border-bottom: 0;
         }
 
         .legacy-mobile-menu-close {
@@ -1636,14 +1636,14 @@ export function App() {
           top: 0;
           left: 50%;
           z-index: 0;
-          width: min(78%, 820px);
-          height: 100%;
+          width: min(52%, 560px);
+          height: 82%;
           background:
-            radial-gradient(ellipse at 51% 0%, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.07) 20%, rgba(255, 255, 255, 0.022) 48%, transparent 76%),
-            conic-gradient(from 164deg at 51% 0%, transparent 0 41%, rgba(255, 255, 255, 0.05) 47%, rgba(255, 255, 255, 0.015) 53%, transparent 60% 100%);
-          filter: blur(46px);
-          opacity: 0.62;
-          transform: translateX(-50%) skewX(-2deg) scaleX(1.12);
+            radial-gradient(ellipse at 51% 0%, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.045) 18%, rgba(255, 255, 255, 0.012) 42%, transparent 68%),
+            conic-gradient(from 164deg at 51% 0%, transparent 0 44%, rgba(255, 255, 255, 0.035) 48%, rgba(255, 255, 255, 0.01) 52%, transparent 57% 100%);
+          filter: blur(54px);
+          opacity: 0.5;
+          transform: translateX(-50%) skewX(-2deg);
           transform-origin: 50% 0;
           mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.92) 48%, transparent 100%);
         }
