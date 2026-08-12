@@ -1215,8 +1215,8 @@ export function App() {
         .legacy-marquee .legacy-group:focus-within {
           width: 100%;
           height: 52px;
-          overflow: hidden;
-          border-left: 1px solid var(--line);
+          overflow: visible;
+          border: 0;
         }
 
         .legacy-marquee .legacy-chip,
@@ -1230,6 +1230,7 @@ export function App() {
           background: transparent;
           gap: clamp(6px, 0.8vw, 10px);
           padding: 0 clamp(6px, 1vw, 12px);
+          justify-content: center;
         }
 
         .legacy-marquee .legacy-chip-icon,
@@ -1250,6 +1251,11 @@ export function App() {
           padding: 0;
           color: #e9e5da;
           text-align: left;
+          width: max-content;
+          min-width: max-content;
+          max-width: none;
+          overflow: visible;
+          white-space: nowrap;
         }
 
         .legacy-marquee .legacy-chip:hover .legacy-chip-icon,
@@ -1268,7 +1274,7 @@ export function App() {
         }
 
         .legacy-marquee-label {
-          border-right-color: var(--line);
+          border: 0;
         }
 
         .legacy-story {
