@@ -1555,10 +1555,10 @@ export function App() {
           overflow: hidden;
           border-bottom: 1px solid var(--line);
           background:
-            radial-gradient(ellipse at 50% 63%, rgba(255, 255, 255, 0.075), transparent 16%),
-            radial-gradient(ellipse at 50% 58%, rgba(255, 255, 255, 0.025), transparent 40%),
+            radial-gradient(ellipse at 50% 63%, rgba(255, 255, 255, 0.065), transparent 14%),
+            radial-gradient(ellipse at 50% 34%, rgba(255, 255, 255, 0.026), transparent 34%),
             radial-gradient(circle, rgba(233, 229, 218, 0.1) 0 1px, transparent 1.25px) 0 0 / 28px 28px,
-            radial-gradient(ellipse at center, #0b0c0c 0%, #060707 58%, #020303 100%);
+            radial-gradient(ellipse at center, #131414 0%, #0d0e0e 58%, #080909 100%);
           isolation: isolate;
         }
 
@@ -1578,15 +1578,13 @@ export function App() {
           top: 0;
           left: 50%;
           z-index: 0;
-          width: min(76%, 820px);
-          height: 72%;
-          background:
-            linear-gradient(104deg, transparent 0 41%, rgba(255, 255, 255, 0.052) 49%, transparent 57%),
-            linear-gradient(76deg, transparent 0 41%, rgba(255, 255, 255, 0.052) 49%, transparent 57%);
-          filter: blur(22px);
-          opacity: 0.78;
+          width: min(54%, 570px);
+          height: 58%;
+          background: conic-gradient(from 158deg at 50% 0%, transparent 0 36%, rgba(255, 255, 255, 0.04) 44%, rgba(255, 255, 255, 0.012) 50%, rgba(255, 255, 255, 0.04) 56%, transparent 64% 100%);
+          filter: blur(24px);
+          opacity: 0.74;
           transform: translateX(-50%);
-          mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, rgba(0, 0, 0, 0.82) 72%, transparent 100%);
+          mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, rgba(0, 0, 0, 0.9) 74%, transparent 100%);
         }
 
         .legacy-footer-prompt-content {
@@ -1602,14 +1600,14 @@ export function App() {
         .legacy-footer-prompt-content::before {
           content: "";
           position: absolute;
-          top: 52%;
+          top: 66%;
           left: 50%;
           z-index: -1;
-          width: 82%;
-          height: 132px;
+          width: 62%;
+          height: 76px;
           border-radius: 50%;
-          background: radial-gradient(ellipse, rgba(255, 255, 255, 0.105), rgba(255, 255, 255, 0.018) 44%, transparent 74%);
-          filter: blur(24px);
+          background: radial-gradient(ellipse, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.018) 40%, transparent 70%);
+          filter: blur(18px);
           transform: translate(-50%, -50%);
         }
 
