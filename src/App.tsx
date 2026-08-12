@@ -1006,6 +1006,7 @@ export function App() {
           padding: 24px 0 0;
           width: 100%;
           min-width: 0;
+          transform: translateY(-16px);
         }
 
         .legacy-hero-copy h1 {
@@ -1135,6 +1136,7 @@ export function App() {
           box-sizing: border-box;
           border: 1px solid rgba(233, 229, 218, 0.18);
           overflow: hidden;
+          transform: translateY(16px);
         }
 
         .legacy-visual {
@@ -2431,6 +2433,11 @@ export function App() {
 
           .legacy-hero-copy {
             display: block;
+            transform: none;
+          }
+
+          .legacy-hero-stage {
+            transform: none;
           }
 
           .legacy-hero-aside {
