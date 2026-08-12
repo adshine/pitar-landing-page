@@ -2,6 +2,7 @@ import { type CSSProperties, type MouseEvent, useEffect, useRef, useState } from
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useGSAP } from "@gsap/react"
+import OrbitingCirclesGlobe from "@/components/ui/orbiting-circles-02"
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
@@ -1079,6 +1080,311 @@ export function App() {
           filter: grayscale(1) sepia(1) saturate(6) hue-rotate(72deg) contrast(1.08);
         }
 
+        .legacy-orbit-slot {
+          position: absolute;
+          inset: 0 0 52px;
+          z-index: 2;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          pointer-events: none;
+        }
+
+        .legacy-orbit-slot > * {
+          pointer-events: auto;
+          transform: scale(1.68) translateY(44%);
+          transform-origin: center center;
+        }
+
+        .legacy-flow {
+          position: absolute;
+          inset: 0 0 52px;
+          z-index: 2;
+          display: grid;
+          grid-template-columns: auto minmax(36px, 1fr) auto minmax(36px, 1fr) minmax(168px, 1.15fr);
+          align-items: center;
+          gap: 8px;
+          padding: 18px 20px 14px;
+          pointer-events: none;
+          background: linear-gradient(90deg, rgba(4, 8, 5, 0.28) 0%, transparent 28%, transparent 72%, rgba(4, 8, 5, 0.34) 100%);
+        }
+
+        .legacy-flow-cluster,
+        .legacy-flow-mark,
+        .legacy-flow-card,
+        .legacy-hex {
+          pointer-events: auto;
+        }
+
+        .legacy-flow-cluster {
+          position: relative;
+          width: 108px;
+          height: 116px;
+          flex: 0 0 auto;
+        }
+
+        .legacy-flow-cluster .legacy-hex {
+          position: absolute;
+          left: 35px;
+          top: 37px;
+        }
+
+        .legacy-flow-cluster .legacy-hex:nth-child(1) { transform: translate(0, -36px); }
+        .legacy-flow-cluster .legacy-hex:nth-child(2) { transform: translate(31px, -18px); }
+        .legacy-flow-cluster .legacy-hex:nth-child(3) { transform: translate(31px, 18px); }
+        .legacy-flow-cluster .legacy-hex:nth-child(4) { transform: translate(0, 36px); }
+        .legacy-flow-cluster .legacy-hex:nth-child(5) { transform: translate(-31px, 18px); }
+        .legacy-flow-cluster .legacy-hex:nth-child(6) { transform: translate(-31px, -18px); }
+
+        .legacy-hex {
+          position: relative;
+          width: 38px;
+          height: 42px;
+          padding: 0;
+          border: 0;
+          background: transparent;
+          color: #e9e5da;
+          cursor: pointer;
+        }
+
+        .legacy-hex-face {
+          position: absolute;
+          inset: 0;
+          display: grid;
+          place-items: center;
+          clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+          background:
+            radial-gradient(22px circle at var(--mx, 50%) var(--my, 40%), rgba(0, 0, 0, 0.92), transparent 62%),
+            linear-gradient(180deg, rgba(18, 28, 20, 0.92), rgba(4, 8, 5, 0.96));
+          box-shadow: inset 0 0 0 1px rgba(233, 229, 218, 0.22);
+        }
+
+        .legacy-hex-face::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          clip-path: inherit;
+          background: radial-gradient(18px circle at var(--mx, 50%) var(--my, 40%), color-mix(in oklab, var(--hex-color) 88%, white), transparent 68%);
+          opacity: 0.35;
+          pointer-events: none;
+        }
+
+        .legacy-hex-face::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          clip-path: inherit;
+          box-shadow: inset 0 0 0 1.5px color-mix(in oklab, var(--hex-color) 80%, #d3ee67);
+          opacity: 0;
+          pointer-events: none;
+        }
+
+        .legacy-hex:hover .legacy-hex-face,
+        .legacy-hex:focus-visible .legacy-hex-face {
+          background:
+            radial-gradient(28px circle at var(--mx, 50%) var(--my, 40%), transparent 8%, rgba(0, 0, 0, 0.88) 62%),
+            linear-gradient(180deg, rgba(6, 10, 7, 0.2), rgba(0, 0, 0, 0.92));
+        }
+
+        .legacy-hex:hover .legacy-hex-face::before,
+        .legacy-hex:focus-visible .legacy-hex-face::before {
+          opacity: 1;
+        }
+
+        .legacy-hex:hover .legacy-hex-face::after,
+        .legacy-hex:focus-visible .legacy-hex-face::after {
+          opacity: 1;
+        }
+
+        .legacy-hex-face img {
+          position: relative;
+          z-index: 1;
+          width: 16px;
+          height: 16px;
+          display: block;
+        }
+
+        .legacy-hex-tip {
+          position: absolute;
+          left: 50%;
+          bottom: calc(100% + 6px);
+          z-index: 4;
+          transform: translateX(-50%) translateY(4px);
+          padding: 3px 7px;
+          border: 1px solid rgba(242, 242, 242, 0.18);
+          background: rgba(4, 8, 5, 0.94);
+          color: #e9e5da;
+          font-family: var(--mono);
+          font-size: 0.5rem;
+          letter-spacing: 0.08em;
+          line-height: 1.2;
+          text-transform: uppercase;
+          white-space: nowrap;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 160ms ease, transform 160ms ease;
+        }
+
+        .legacy-hex:hover .legacy-hex-tip,
+        .legacy-hex:focus-visible .legacy-hex-tip {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0);
+        }
+
+        .legacy-flow-link {
+          width: 100%;
+          height: 24px;
+          overflow: visible;
+        }
+
+        .legacy-flow-path {
+          fill: none;
+          stroke: rgba(211, 238, 103, 0.22);
+          stroke-width: 1.2;
+        }
+
+        .legacy-flow-shimmer {
+          fill: none;
+          stroke-width: 1.6;
+          stroke-linecap: round;
+          stroke-dasharray: 14 72;
+          animation: legacy-flow-shimmer 2.4s linear infinite;
+        }
+
+        .legacy-flow-mark {
+          display: grid;
+          place-items: center;
+          width: 44px;
+          height: 48px;
+          animation: legacy-flow-bounce 2.1s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+        }
+
+        .legacy-flow-mark img {
+          width: 26px;
+          height: 32px;
+          display: block;
+          filter: drop-shadow(0 0 10px rgba(211, 238, 103, 0.28));
+        }
+
+        .legacy-flow-card {
+          position: relative;
+          display: grid;
+          justify-items: center;
+          gap: 8px;
+          min-height: 168px;
+          padding: 28px 22px 22px;
+          clip-path: polygon(50% 0%, 100% 18%, 100% 82%, 50% 100%, 0% 82%, 0% 18%);
+          background:
+            linear-gradient(180deg, rgba(10, 16, 11, 0.88), rgba(3, 6, 4, 0.94));
+          box-shadow: inset 0 0 0 1px rgba(233, 229, 218, 0.2);
+          color: var(--ink);
+          text-align: center;
+        }
+
+        .legacy-flow-stack {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 28px;
+        }
+
+        .legacy-flow-stack-item {
+          display: grid;
+          place-items: center;
+          width: 26px;
+          height: 28px;
+          margin-left: -8px;
+          clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+          background: rgba(6, 10, 7, 0.96);
+          box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--hex-color) 70%, white);
+        }
+
+        .legacy-flow-stack-item:first-child {
+          margin-left: 0;
+        }
+
+        .legacy-flow-stack-item img {
+          width: 12px;
+          height: 12px;
+          display: block;
+        }
+
+        .legacy-flow-q {
+          margin: 0;
+          max-width: 28ch;
+          color: var(--muted);
+          font-family: var(--mono);
+          font-size: 0.52rem;
+          letter-spacing: 0.06em;
+          line-height: 1.45;
+          text-transform: uppercase;
+        }
+
+        .legacy-flow-a {
+          margin: 0;
+          max-width: 30ch;
+          color: #f2f2f2;
+          font-size: 0.78rem;
+          line-height: 1.4;
+        }
+
+        @keyframes legacy-flow-shimmer {
+          from { stroke-dashoffset: 86; }
+          to { stroke-dashoffset: -86; }
+        }
+
+        @keyframes legacy-flow-bounce {
+          0%, 100% { transform: translateY(0); }
+          42% { transform: translateY(-6px); }
+          58% { transform: translateY(0); }
+        }
+
+        @media (max-width: 900px) {
+          .legacy-flow {
+            grid-template-columns: auto minmax(20px, 1fr) auto minmax(20px, 1fr) minmax(140px, 1.2fr);
+            padding: 12px 12px 10px;
+          }
+
+          .legacy-flow-a {
+            font-size: 0.68rem;
+          }
+        }
+
+        @media (max-width: 700px) {
+          .legacy-flow {
+            grid-template-columns: auto 12px auto 12px minmax(0, 1fr);
+            gap: 4px;
+            padding: 10px 10px 8px;
+          }
+
+          .legacy-flow-cluster {
+            width: 88px;
+            height: 96px;
+          }
+
+          .legacy-flow-cluster .legacy-hex {
+            left: 25px;
+            top: 27px;
+          }
+
+          .legacy-flow-q {
+            display: none;
+          }
+
+          .legacy-flow-card {
+            min-height: 132px;
+            padding: 22px 14px 16px;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .legacy-flow-shimmer,
+          .legacy-flow-mark {
+            animation: none;
+          }
+        }
+
         .legacy-marquee {
           position: absolute;
           right: 0;
@@ -1652,7 +1958,7 @@ export function App() {
 
         #our-story {
           min-height: 100vh;
-          padding: clamp(48px, 6vw, 76px) var(--section-inline) clamp(96px, 14vw, 180px);
+          padding: clamp(28px, 3.5vw, 44px) var(--section-inline) clamp(40px, 5vw, 72px);
           display: grid;
           place-items: center;
           overflow: hidden;
@@ -1661,6 +1967,8 @@ export function App() {
 
         #how-it-works {
           border-bottom: 0;
+          padding-top: clamp(88px, 11vw, 140px);
+          padding-bottom: clamp(88px, 11vw, 140px);
         }
 
         #our-story > div {
@@ -2088,9 +2396,9 @@ export function App() {
           max-width: 27ch;
           margin: 32px 0 0;
           color: color-mix(in oklch, var(--ink) 72%, transparent);
-          font-size: clamp(1.25rem, 2vw, 1.75rem);
-          line-height: 1.38;
-          letter-spacing: -0.025em;
+          font-size: clamp(0.95rem, 1.15vw, 1.125rem);
+          line-height: 1.45;
+          letter-spacing: -0.015em;
         }
 
         .legacy-footer-principle {
@@ -2354,7 +2662,7 @@ export function App() {
 
           .legacy-footer-tagline {
             max-width: 24ch;
-            font-size: 1.35rem;
+            font-size: 1rem;
           }
 
           .legacy-footer-principle {
@@ -2539,8 +2847,10 @@ export function App() {
         </div>
 
         <div className="legacy-hero-stage" id="work" aria-label="Featured Pitar visual">
-          <div className="legacy-visual" aria-label="Background hero visual" aria-hidden="true">
-            <video src={`${import.meta.env.BASE_URL}videos/hero.mp4`} autoPlay loop muted playsInline />
+          <div className="legacy-visual" aria-label="Background hero visual">
+            <div className="legacy-orbit-slot dark">
+              <OrbitingCirclesGlobe />
+            </div>
           </div>
             <div className="legacy-marquee" aria-label="Possible connectors">
             <button className="legacy-marquee-label" type="button" onClick={() => setOpenPanel("connections")}>Sources</button>
