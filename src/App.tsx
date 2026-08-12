@@ -1652,7 +1652,7 @@ export function App() {
 
         #our-story {
           min-height: 100vh;
-          padding: clamp(96px, 14vw, 180px) var(--section-inline);
+          padding: clamp(48px, 6vw, 76px) var(--section-inline) clamp(96px, 14vw, 180px);
           display: grid;
           place-items: center;
           overflow: hidden;
@@ -1873,17 +1873,15 @@ export function App() {
           transform: translate(-50%, -50%);
         }
 
-        .legacy-footer-prompt h2 {
+        .legacy-footer-prompt h3 {
           max-width: none;
           margin: 0 auto;
           font-family: var(--sans);
-          font-size: clamp(2rem, 4vw, 2.7rem);
+          font-size: clamp(1.35rem, 2.4vw, 1.85rem);
           font-weight: 400;
-          line-height: 1.05;
-          letter-spacing: -0.045em;
+          line-height: 1.15;
+          letter-spacing: -0.03em;
           white-space: nowrap;
-          letter-spacing: -0.045em;
-          line-height: 1;
           text-wrap: balance;
         }
 
@@ -2272,9 +2270,9 @@ export function App() {
             inset: 0 auto auto 0;
           }
 
-          .legacy-footer-prompt h2 {
+          .legacy-footer-prompt h3 {
             margin-top: 0;
-            font-size: clamp(2rem, 9vw, 2.7rem);
+            font-size: clamp(1.25rem, 5.4vw, 1.7rem);
             white-space: normal;
           }
 
@@ -2633,7 +2631,7 @@ export function App() {
         <div className="legacy-footer-frame">
           <section className="legacy-footer-prompt" aria-labelledby="footer-prompt-title">
             <div className="legacy-footer-prompt-content">
-              <h2 id="footer-prompt-title">Ask what your records know.</h2>
+              <h3 id="footer-prompt-title">Ask what your records know.</h3>
               <p className="legacy-footer-prompt-copy">One question in. One clear answer out, with the exact page that proves it.</p>
               <form
                 className="legacy-footer-prompt-form"
