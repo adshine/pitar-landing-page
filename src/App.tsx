@@ -2508,6 +2508,7 @@ export function App() {
         }
 
         #how-it-works {
+          min-height: 100vh;
           border-bottom: 0;
           padding-top: clamp(88px, 11vw, 140px);
           padding-bottom: clamp(88px, 11vw, 140px);
