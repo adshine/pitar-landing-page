@@ -1616,9 +1616,7 @@ export function App() {
           padding: clamp(42px, 4.5vw, 60px) clamp(24px, 6vw, 88px);
           overflow: hidden;
           border-bottom: 1px solid var(--line);
-          background:
-            radial-gradient(circle, rgba(233, 229, 218, 0.1) 0 1px, transparent 1.25px) 0 0 / 28px 28px,
-            radial-gradient(ellipse at center, #131414 0%, #0d0e0e 58%, #080909 100%);
+          background: radial-gradient(ellipse at center, #131414 0%, #0d0e0e 58%, #080909 100%);
           isolation: isolate;
         }
 
@@ -2048,7 +2046,7 @@ export function App() {
           .legacy-footer-prompt {
             min-height: 340px;
             padding: 42px 18px;
-            background-size: auto, auto, 22px 22px, auto;
+            background-size: auto;
           }
 
           .legacy-footer-prompt::before {
