@@ -1495,6 +1495,10 @@ export function App() {
           background: radial-gradient(circle at 50% 105%, rgba(22, 255, 59, 0.07), transparent 42%), var(--paper);
         }
 
+        #how-it-works {
+          border-bottom: 0;
+        }
+
         #our-story > div {
           width: min(100%, 760px);
           margin-inline: auto;
