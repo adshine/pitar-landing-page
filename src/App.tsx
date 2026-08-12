@@ -1640,11 +1640,12 @@ export function App() {
           z-index: 0;
           width: min(78%, 820px);
           height: 100%;
-          background: linear-gradient(172deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.07) 24%, rgba(255, 255, 255, 0.025) 58%, transparent 90%);
-          clip-path: polygon(47.5% 0, 52.5% 0, 76% 100%, 19% 100%);
-          filter: blur(28px);
-          opacity: 0.68;
-          transform: translateX(-50%) skewX(-3deg);
+          background:
+            radial-gradient(ellipse at 51% 0%, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.07) 20%, rgba(255, 255, 255, 0.022) 48%, transparent 76%),
+            conic-gradient(from 164deg at 51% 0%, transparent 0 41%, rgba(255, 255, 255, 0.05) 47%, rgba(255, 255, 255, 0.015) 53%, transparent 60% 100%);
+          filter: blur(46px);
+          opacity: 0.62;
+          transform: translateX(-50%) skewX(-2deg) scaleX(1.12);
           transform-origin: 50% 0;
           mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.92) 48%, transparent 100%);
         }
@@ -1728,7 +1729,7 @@ export function App() {
 
         .legacy-footer-prompt-form:focus-within {
           border-color: transparent;
-          box-shadow: 0 20px 72px rgba(0, 0, 0, 0.52), 0 0 36px rgba(32, 255, 79, 0.08);
+          box-shadow: 0 20px 72px rgba(0, 0, 0, 0.52), 0 0 36px rgba(255, 255, 255, 0.055);
         }
 
         .legacy-footer-prompt-form input {
@@ -1842,10 +1843,10 @@ export function App() {
 
         .legacy-footer-prompt-form button:hover,
         .legacy-footer-prompt-form button:focus-visible {
-          background: #20ff4f;
+          background: #ffffff;
           outline: none;
           transform: translateY(-2px);
-          box-shadow: 0 7px 20px rgba(32, 255, 79, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+          box-shadow: 0 7px 20px rgba(255, 255, 255, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.7);
         }
 
 
