@@ -1623,7 +1623,7 @@ export function App() {
         }
 
         .legacy-footer-prompt-copy {
-          max-width: 44ch;
+          max-width: 36ch;
           margin: 18px auto 0;
           color: var(--muted);
           font-size: clamp(0.95rem, 1.25vw, 1.12rem);
@@ -1660,6 +1660,84 @@ export function App() {
           background: transparent;
           color: var(--ink);
           font: 500 1rem/1.3 var(--sans);
+        }
+
+        .legacy-footer-source-picker {
+          position: relative;
+          flex: 0 0 auto;
+        }
+
+        .legacy-footer-source-picker summary {
+          display: grid;
+          width: 48px;
+          height: 48px;
+          place-items: center;
+          border-radius: 50%;
+          color: var(--ink);
+          cursor: pointer;
+          font-family: var(--sans);
+          font-size: 1.45rem;
+          font-weight: 300;
+          list-style: none;
+          transition: background 180ms ease, transform 180ms ease;
+        }
+
+        .legacy-footer-source-picker summary::-webkit-details-marker {
+          display: none;
+        }
+
+        .legacy-footer-source-picker summary:hover,
+        .legacy-footer-source-picker summary:focus-visible,
+        .legacy-footer-source-picker[open] summary {
+          background: rgba(233, 229, 218, 0.08);
+          outline: none;
+        }
+
+        .legacy-footer-source-picker[open] summary {
+          transform: rotate(45deg);
+        }
+
+        .legacy-footer-source-menu {
+          position: absolute;
+          bottom: calc(100% + 18px);
+          left: 0;
+          z-index: 5;
+          display: grid;
+          grid-template-columns: repeat(3, minmax(120px, 1fr));
+          width: min(430px, calc(100vw - 48px));
+          padding: 8px;
+          border: 1px solid rgba(233, 229, 218, 0.2);
+          background: rgba(7, 9, 8, 0.96);
+          box-shadow: 0 24px 70px rgba(0, 0, 0, 0.62);
+          -webkit-backdrop-filter: blur(20px);
+          backdrop-filter: blur(20px);
+        }
+
+        .legacy-footer-source-option {
+          display: flex;
+          align-items: center;
+          gap: 9px;
+          min-width: 0;
+          padding: 11px 10px;
+          border: 0;
+          background: transparent;
+          color: var(--ink);
+          cursor: pointer;
+          font: 500 0.72rem/1.2 var(--sans);
+          text-align: left;
+        }
+
+        .legacy-footer-source-option:hover,
+        .legacy-footer-source-option:focus-visible {
+          background: rgba(233, 229, 218, 0.08);
+          outline: none;
+        }
+
+        .legacy-footer-source-option img {
+          width: 19px;
+          height: 19px;
+          flex: 0 0 auto;
+          object-fit: contain;
         }
 
         .legacy-footer-prompt-form input::placeholder {
@@ -1898,6 +1976,16 @@ export function App() {
           .legacy-footer-prompt-form input {
             padding: 0 12px;
             font-size: 16px;
+          }
+
+          .legacy-footer-source-picker summary {
+            width: 44px;
+            height: 44px;
+          }
+
+          .legacy-footer-source-menu {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            width: min(300px, calc(100vw - 58px));
           }
 
           .legacy-page {
@@ -2215,6 +2303,17 @@ export function App() {
                   document.getElementById("work")?.scrollIntoView({ behavior: "smooth", block: "start" })
                 }}
               >
+                <details className="legacy-footer-source-picker">
+                  <summary aria-label="Choose a source" title="Choose a source">+</summary>
+                  <div className="legacy-footer-source-menu" role="menu" aria-label="Available sources">
+                    {connectors.map(({ label, icon }) => (
+                      <button className="legacy-footer-source-option" type="button" role="menuitem" key={label}>
+                        <img src={icon} alt="" />
+                        <span>{label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </details>
                 <input type="text" aria-label="Ask Pitar a question" placeholder="Ask a question about your records..." />
                 <button type="submit" aria-label="Send question">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
