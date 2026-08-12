@@ -190,40 +190,6 @@ function snapshotForElapsed(beatIndex: number, elapsedMs: number) {
   }
 }
 
-function LightBeams({ progress, from }: { progress: number; from: "input" | "cloud" }) {
-  const p = Math.max(0, Math.min(1, progress))
-  const toAnswer = from === "cloud"
-  const origin = toAnswer ? "60px 140px" : "60px 0px"
-  const stroke = toAnswer ? "url(#beam-up)" : "url(#beam-down)"
-
-  return (
-    <svg
-      className={`legacy-ask-beams${toAnswer ? " is-to-answer" : ""}`}
-      viewBox="0 0 120 140"
-      preserveAspectRatio="none"
-      aria-hidden="true"
-    >
-      <defs>
-        <linearGradient id="beam-down" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#ffffff" stopOpacity="0.95" />
-          <stop offset="0.5" stopColor="#ffffff" stopOpacity="0.32" />
-          <stop offset="1" stopColor="#ffffff" stopOpacity="0" />
-        </linearGradient>
-        <linearGradient id="beam-up" x1="0" y1="1" x2="0" y2="0">
-          <stop offset="0" stopColor="#ffffff" stopOpacity="0" />
-          <stop offset="0.5" stopColor="#ffffff" stopOpacity="0.32" />
-          <stop offset="1" stopColor="#ffffff" stopOpacity="0.95" />
-        </linearGradient>
-      </defs>
-      <g style={{ transform: `scaleY(${p})`, transformOrigin: origin }}>
-        <line x1="60" y1={toAnswer ? 140 : 0} x2="16" y2={toAnswer ? 0 : 140} stroke={stroke} strokeWidth="1.2" strokeLinecap="round" />
-        <line x1="60" y1={toAnswer ? 140 : 0} x2="60" y2={toAnswer ? 0 : 140} stroke={stroke} strokeWidth="1.2" strokeLinecap="round" />
-        <line x1="60" y1={toAnswer ? 140 : 0} x2="104" y2={toAnswer ? 0 : 140} stroke={stroke} strokeWidth="1.2" strokeLinecap="round" />
-      </g>
-    </svg>
-  )
-}
-
 type HeroAskFlowProps = {
   beatIndex: number
   elapsedMs: number
@@ -255,9 +221,13 @@ export function HeroAskFlow({ beatIndex, elapsedMs }: HeroAskFlowProps) {
 
   return (
     <div className="legacy-ask-flow" data-phase={phase} aria-hidden="true">
-      {lineMode === "from-cloud" ? <LightBeams progress={lineT} from="cloud" /> : null}
+      {lineMode === "from-cloud" ? (
+        <span className="legacy-ask-line is-to-answer" style={{ height: `${lineT * 28}%` }} />
+      ) : null}
       <div className="legacy-ask-dock" style={{ transform: `translateY(${dockY}px)` }}>
-        {lineMode === "from-input" ? <LightBeams progress={lineT} from="input" /> : null}
+        {lineMode === "from-input" ? (
+          <span className="legacy-ask-line" style={{ height: `${lineT * 92}px` }} />
+        ) : null}
         <div className="legacy-ask-input">
           <span className={`legacy-ask-add${menuOpen ? " is-open" : ""}`} aria-hidden="true">
             <i>+</i>
@@ -267,9 +237,8 @@ export function HeroAskFlow({ beatIndex, elapsedMs }: HeroAskFlowProps) {
             {phase === "type" ? <i className="legacy-ask-caret" /> : null}
           </span>
           <button className={`legacy-ask-send${sendActive ? " is-hit" : ""}`} type="button" tabIndex={-1}>
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M4 4L21 12L4 20L7.5 12L4 4Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-              <path d="M7.5 12H21" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3.7 3.55a1 1 0 0 1 1.08-.12l16.7 7.65a1 1 0 0 1 0 1.82l-16.7 7.66a1 1 0 0 1-1.39-1.13L5.1 13H12a1 1 0 1 0 0-2H5.1L3.39 4.57a1 1 0 0 1 .31-1.02Z" fill="currentColor" />
             </svg>
           </button>
         </div>
