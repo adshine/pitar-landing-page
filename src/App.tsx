@@ -1925,7 +1925,7 @@ export function App() {
         .legacy-footer-prompt-form input {
           min-width: 0;
           flex: 0 1 auto;
-          width: clamp(220px, 26vw, 300px);
+          width: clamp(300px, 34vw, 420px);
           padding: 0 18px;
           border: 0;
           outline: 0;
@@ -1985,7 +1985,7 @@ export function App() {
           z-index: 5;
           display: grid;
           grid-template-columns: repeat(3, minmax(120px, 1fr));
-          width: calc(clamp(220px, 26vw, 300px) + 96px);
+          width: calc(clamp(300px, 34vw, 420px) + 96px);
           max-width: calc(100vw - 48px);
           padding: 0;
           border-radius: 0;
