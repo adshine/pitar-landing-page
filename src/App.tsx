@@ -1,4 +1,4 @@
-import { type CSSProperties, type MouseEvent, useEffect, useMemo, useRef, useState } from "react"
+import { type CSSProperties, type MouseEvent, useEffect, useRef, useState } from "react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useGSAP } from "@gsap/react"
@@ -62,9 +62,27 @@ const howItWorksSteps = [
   },
 ]
 
+const SOURCE_SLOT_COUNT = 6
+const SOURCE_SWAP_MS = 2400
+const SOURCE_ANIM_MS = 520
+
+type SourceSlot = {
+  current: Connector
+  incoming: Connector | null
+  exiting: boolean
+}
+
 export function App() {
-  const marqueeItems = useMemo(() => connectors.slice(0, 6), [])
-  const trackRef = useRef<HTMLDivElement>(null)
+  const [sourceSlots, setSourceSlots] = useState<SourceSlot[]>(() =>
+    connectors.slice(0, SOURCE_SLOT_COUNT).map((current) => ({
+      current,
+      incoming: null,
+      exiting: false,
+    })),
+  )
+  const sourceQueueRef = useRef(connectors.slice(SOURCE_SLOT_COUNT))
+  const nextSourceSlotRef = useRef(0)
+  const sourceSwapTimerRef = useRef<number | null>(null)
   const pausedRef = useRef(false)
   const storySectionRef = useRef<HTMLElement | null>(null)
   const storyContentRef = useRef<HTMLDivElement | null>(null)
@@ -225,31 +243,47 @@ export function App() {
   }, { scope: storySectionRef })
 
   useEffect(() => {
-    const track = trackRef.current
-    if (!track) return
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    const marquee = document.querySelector(".legacy-marquee")
+    let commitTimer = 0
 
-    const trackContainer = track.closest(".legacy-marquee")
-    if (!trackContainer) return
+    const swapNextSlot = () => {
+      if (pausedRef.current) return
+      const incoming = sourceQueueRef.current[0]
+      if (!incoming) return
 
-    let frame = 0
-    const speed = 38
-    let last = performance.now()
-    let x = 0
+      const slotIndex = nextSourceSlotRef.current % SOURCE_SLOT_COUNT
+      let outgoing: Connector | null = null
 
-    const update = (timestamp: number) => {
-      const delta = (timestamp - last) / 1000
-      last = timestamp
+      setSourceSlots((slots) => {
+        outgoing = slots[slotIndex]?.current ?? null
+        if (!outgoing || outgoing.label === incoming.label) return slots
 
-      if (!pausedRef.current) {
-        const trackWidth = track.firstElementChild?.getBoundingClientRect().width ?? 0
-        if (trackWidth > 0) {
-          x -= speed * delta
-          if (x <= -trackWidth) x += trackWidth
-          track.style.transform = `translateX(${x}px)`
-        }
-      }
+        return slots.map((slot, index) =>
+          index === slotIndex
+            ? {
+                current: outgoing!,
+                incoming,
+                exiting: !prefersReducedMotion,
+              }
+            : slot,
+        )
+      })
 
-      frame = requestAnimationFrame(update)
+      if (!outgoing) return
+      const outgoingConnector = outgoing as Connector
+      if (outgoingConnector.label === incoming.label) return
+      sourceQueueRef.current = [...sourceQueueRef.current.slice(1), outgoingConnector]
+      nextSourceSlotRef.current = slotIndex + 1
+
+      commitTimer = window.setTimeout(() => {
+        setSourceSlots((slots) =>
+          slots.map((slot, index) => {
+            if (index !== slotIndex || !slot.incoming) return slot
+            return { current: slot.incoming, incoming: null, exiting: false }
+          }),
+        )
+      }, prefersReducedMotion ? 0 : SOURCE_ANIM_MS)
     }
 
     const pause = () => {
@@ -257,22 +291,22 @@ export function App() {
     }
     const play = () => {
       pausedRef.current = false
-      last = performance.now()
     }
 
-    trackContainer.addEventListener("mouseenter", pause)
-    trackContainer.addEventListener("mouseleave", play)
-    trackContainer.addEventListener("focusin", pause)
-    trackContainer.addEventListener("focusout", play)
+    marquee?.addEventListener("mouseenter", pause)
+    marquee?.addEventListener("mouseleave", play)
+    marquee?.addEventListener("focusin", pause)
+    marquee?.addEventListener("focusout", play)
 
-    frame = requestAnimationFrame(update)
+    sourceSwapTimerRef.current = window.setInterval(swapNextSlot, SOURCE_SWAP_MS)
 
     return () => {
-      cancelAnimationFrame(frame)
-      trackContainer.removeEventListener("mouseenter", pause)
-      trackContainer.removeEventListener("mouseleave", play)
-      trackContainer.removeEventListener("focusin", pause)
-      trackContainer.removeEventListener("focusout", play)
+      if (sourceSwapTimerRef.current) window.clearInterval(sourceSwapTimerRef.current)
+      window.clearTimeout(commitTimer)
+      marquee?.removeEventListener("mouseenter", pause)
+      marquee?.removeEventListener("mouseleave", play)
+      marquee?.removeEventListener("focusin", pause)
+      marquee?.removeEventListener("focusout", play)
     }
   }, [])
 
@@ -502,6 +536,36 @@ export function App() {
         .legacy-nav .legacy-signin:active {
           background: rgba(233, 229, 218, 0.82);
           color: #080a09;
+        }
+
+        .legacy-nav .legacy-navlink:not(.legacy-signin)::after {
+          content: "";
+          position: absolute;
+          bottom: 2px;
+          left: 50%;
+          width: 0;
+          height: 1px;
+          background: currentColor;
+          opacity: 0.82;
+          transform: translateX(-50%);
+          transition: width 180ms cubic-bezier(0.22, 1, 0.36, 1), opacity 180ms ease;
+        }
+
+        .legacy-nav .legacy-navlink:not(.legacy-signin):hover,
+        .legacy-nav .legacy-navlink:not(.legacy-signin):focus-visible {
+          background: transparent;
+          color: #ffffff;
+          text-shadow: 0 0 16px rgba(255, 255, 255, 0.18);
+        }
+
+        .legacy-nav .legacy-navlink:not(.legacy-signin):hover::after,
+        .legacy-nav .legacy-navlink:not(.legacy-signin):focus-visible::after {
+          width: 50%;
+          opacity: 1;
+        }
+
+        .legacy-nav .legacy-navlink:not(.legacy-signin):active {
+          background: transparent;
         }
 
         .legacy-hamburger {
@@ -1263,8 +1327,46 @@ export function App() {
           width: auto;
           flex: 0 0 auto;
           height: 52px;
-          overflow: visible;
+          overflow: hidden;
           border: 0;
+        }
+
+        .legacy-chip-slot {
+          display: grid;
+          grid-template-areas: "chip";
+          align-items: center;
+          justify-items: center;
+          height: 52px;
+          overflow: hidden;
+        }
+
+        .legacy-chip-slot .legacy-chip {
+          grid-area: chip;
+        }
+
+        .legacy-chip-slot .legacy-chip.is-exit {
+          animation: source-slot-exit 520ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+        }
+
+        .legacy-chip-slot .legacy-chip.is-enter {
+          animation: source-slot-enter 520ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+        }
+
+        @keyframes source-slot-exit {
+          from { transform: translateY(0); opacity: 1; }
+          to { transform: translateY(-110%); opacity: 0; }
+        }
+
+        @keyframes source-slot-enter {
+          from { transform: translateY(110%); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .legacy-chip-slot .legacy-chip.is-exit,
+          .legacy-chip-slot .legacy-chip.is-enter {
+            animation: none;
+          }
         }
 
         .legacy-marquee .legacy-chip,
@@ -1687,7 +1789,7 @@ export function App() {
           min-height: clamp(270px, 28vw, 330px);
           padding: clamp(72px, 7vw, 96px) clamp(24px, 6vw, 88px);
           overflow: hidden;
-          border-bottom: 1px solid var(--line);
+          border-bottom: 0;
           background: #050505;
           isolation: isolate;
         }
@@ -2435,17 +2537,32 @@ export function App() {
             <button className="legacy-marquee-label" type="button" onClick={() => setOpenPanel("connections")}>Sources</button>
             <div className="legacy-track">
               <div className="legacy-track-group">
-                {marqueeItems.map((connector, index) => (
-                  <span className="legacy-group" key={`left-${index}-${connector.label}`}>
-                    <span
-                      className="legacy-chip"
-                      aria-label={connector.label}
-                      style={{ ["--chip-color" as keyof CSSProperties]: connector.color } as CSSProperties}
-                    >
-                      <span className="legacy-chip-icon" aria-hidden="true">
-                        <img src={connector.icon} alt="" width="22" height="22" />
+                {sourceSlots.map((slot, index) => (
+                  <span className="legacy-group" key={`source-slot-${index}`}>
+                    <span className={`legacy-chip-slot${slot.exiting ? " is-swapping" : ""}`}>
+                      <span
+                        className={`legacy-chip${slot.exiting ? " is-exit" : ""}`}
+                        aria-hidden={Boolean(slot.incoming)}
+                        aria-label={slot.incoming ? undefined : slot.current.label}
+                        style={{ ["--chip-color" as keyof CSSProperties]: slot.current.color } as CSSProperties}
+                      >
+                        <span className="legacy-chip-icon" aria-hidden="true">
+                          <img src={slot.current.icon} alt="" width="22" height="22" />
+                        </span>
+                        <span className="legacy-chip-label">{slot.current.label}</span>
                       </span>
-                      <span className="legacy-chip-label">{connector.label}</span>
+                      {slot.incoming ? (
+                        <span
+                          className="legacy-chip is-enter is-in"
+                          aria-label={slot.incoming.label}
+                          style={{ ["--chip-color" as keyof CSSProperties]: slot.incoming.color } as CSSProperties}
+                        >
+                          <span className="legacy-chip-icon" aria-hidden="true">
+                            <img src={slot.incoming.icon} alt="" width="22" height="22" />
+                          </span>
+                          <span className="legacy-chip-label">{slot.incoming.label}</span>
+                        </span>
+                      ) : null}
                     </span>
                   </span>
                 ))}
