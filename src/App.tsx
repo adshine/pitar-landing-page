@@ -1,7 +1,8 @@
-import { type CSSProperties, type MouseEvent, useEffect, useRef, useState } from "react"
+import { type CSSProperties, type MouseEvent, type PointerEvent, useEffect, useRef, useState } from "react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useGSAP } from "@gsap/react"
+import { HeroAskFlow, heroAskBeats, heroAskDuration } from "@/components/hero-ask-flow"
 import OrbitingCirclesGlobe from "@/components/ui/orbiting-circles-02"
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
@@ -93,6 +94,16 @@ export function App() {
   const mobileMenuButtonRef = useRef<HTMLButtonElement | null>(null)
   const [openPanel, setOpenPanel] = useState<string | null>(null)
   const [openMobileMenu, setOpenMobileMenu] = useState(false)
+  const [heroScreen, setHeroScreen] = useState<1 | 2>(1)
+  const [heroBeat, setHeroBeat] = useState(0)
+  const [heroElapsed, setHeroElapsed] = useState(0)
+  const [heroHoverPaused, setHeroHoverPaused] = useState(false)
+  const heroElapsedRef = useRef(0)
+  const heroPausedRef = useRef(false)
+  const heroScrubbingRef = useRef(false)
+  const heroScreenRef = useRef<1 | 2>(1)
+  const heroBeatRef = useRef(0)
+  const screenOneMs = 5200
 
   const panelTitle: Record<string, string> = {
     connections: "Connections",
@@ -311,9 +322,77 @@ export function App() {
     }
   }, [])
 
+  heroPausedRef.current = heroHoverPaused
+  heroScreenRef.current = heroScreen
+  heroBeatRef.current = heroBeat
+
+  useEffect(() => {
+    let frame = 0
+    let last = performance.now()
+
+    const tick = (now: number) => {
+      const delta = now - last
+      last = now
+      const screen = heroScreenRef.current
+      const duration = screen === 1 ? screenOneMs : heroAskDuration(heroBeatRef.current)
+
+      if (!heroPausedRef.current && !heroScrubbingRef.current) {
+        let next = heroElapsedRef.current + delta
+        if (next >= duration) {
+          if (screen === 1) {
+            heroScreenRef.current = 2
+            setHeroScreen(2)
+          } else {
+            heroBeatRef.current = (heroBeatRef.current + 1) % heroAskBeats.length
+            heroScreenRef.current = 1
+            setHeroBeat(heroBeatRef.current)
+            setHeroScreen(1)
+          }
+          next = 0
+        }
+        heroElapsedRef.current = next
+        setHeroElapsed(next)
+      }
+
+      frame = requestAnimationFrame(tick)
+    }
+
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
+  }, [screenOneMs])
+
+  const seekHeroProgress = (clientX: number, target: HTMLElement) => {
+    const box = target.getBoundingClientRect()
+    const ratio = box.width <= 0 ? 0 : Math.min(1, Math.max(0, (clientX - box.left) / box.width))
+    const duration = heroScreenRef.current === 1 ? screenOneMs : heroAskDuration(heroBeatRef.current)
+    heroElapsedRef.current = ratio * duration
+    setHeroElapsed(heroElapsedRef.current)
+  }
+
+  const onHeroProgressPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    event.preventDefault()
+    heroScrubbingRef.current = true
+    const bar = event.currentTarget
+    bar.setPointerCapture(event.pointerId)
+    seekHeroProgress(event.clientX, bar)
+  }
+
+  const onHeroProgressPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    if (!heroScrubbingRef.current) return
+    seekHeroProgress(event.clientX, event.currentTarget)
+  }
+
+  const endHeroScrub = () => {
+    heroScrubbingRef.current = false
+  }
+
   return (
     <main className="legacy-page" aria-labelledby="hero-title">
       <style>{`
+        .legacy-visual-timeline {
+          display: none !important;
+        }
+
         :root {
           --paper: #0a0a0a;
           --paper-deep: #060606;
@@ -1082,7 +1161,7 @@ export function App() {
 
         .legacy-orbit-slot {
           position: absolute;
-          inset: 0 0 52px;
+          inset: 0;
           z-index: 2;
           overflow: hidden;
           display: flex;
@@ -1093,8 +1172,369 @@ export function App() {
 
         .legacy-orbit-slot > * {
           pointer-events: auto;
-          transform: scale(1.68) translateY(44%);
+          transform: scale(1.68) translateY(36%);
           transform-origin: center center;
+        }
+
+        .legacy-orbit-slot.is-asking > * {
+          transform: scale(1.68) translateY(36%);
+        }
+
+        .legacy-visual-timeline {
+          position: absolute;
+          top: 18px;
+          right: 14px;
+          bottom: 64px;
+          z-index: 6;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 0;
+          pointer-events: auto;
+        }
+
+        .legacy-visual-timeline::before {
+          content: "";
+          position: absolute;
+          top: 12%;
+          bottom: 12%;
+          left: 50%;
+          width: 1px;
+          background: var(--line);
+          transform: translateX(-50%);
+        }
+
+        .legacy-visual-timeline button {
+          position: relative;
+          z-index: 1;
+          display: grid;
+          width: 28px;
+          height: 28px;
+          margin: 10px 0;
+          place-items: center;
+          border: 1px solid var(--line);
+          background: #080000;
+          color: var(--muted);
+          font-family: var(--mono);
+          font-size: 0.52rem;
+          letter-spacing: 0.08em;
+          cursor: pointer;
+        }
+
+        .legacy-visual-timeline button[aria-current="true"] {
+          border-color: #e9e5da;
+          color: #e9e5da;
+        }
+
+        .legacy-ask-flow {
+          position: absolute;
+          inset: 0 52px 12px;
+          z-index: 5;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 14px;
+          pointer-events: none;
+        }
+
+        .legacy-ask-line {
+          position: absolute;
+          left: 50%;
+          top: 44px;
+          bottom: auto;
+          width: 1px;
+          height: 0;
+          background: linear-gradient(to bottom, rgba(34, 197, 94, 0.95), rgba(242, 242, 242, 0.12));
+          transform: translateX(-50%);
+          transform-origin: top center;
+        }
+
+        .legacy-ask-dock {
+          position: relative;
+          width: min(100%, 440px);
+        }
+
+        .legacy-ask-input {
+          display: flex;
+          align-items: center;
+          min-height: 44px;
+          border: 1px solid var(--line);
+          background: rgba(8, 0, 0, 0.78);
+          -webkit-backdrop-filter: blur(12px);
+          backdrop-filter: blur(12px);
+        }
+
+        .legacy-ask-add {
+          display: grid;
+          flex: 0 0 44px;
+          height: 44px;
+          place-items: center;
+          border-right: 1px solid var(--line);
+          color: #e9e5da;
+          font-family: var(--sans);
+          font-size: 1.35rem;
+          font-weight: 300;
+          line-height: 1;
+          font-style: normal;
+        }
+
+        .legacy-ask-add i {
+          font-style: normal;
+          font-weight: 300;
+          line-height: 1;
+          transition: transform 180ms ease;
+        }
+
+        .legacy-ask-add.is-open {
+          background: rgba(233, 229, 218, 0.08);
+        }
+
+        .legacy-ask-add.is-open i {
+          transform: rotate(45deg);
+        }
+
+        .legacy-ask-menu {
+          position: absolute;
+          top: calc(100% + 8px);
+          left: 0;
+          z-index: 7;
+          display: flex;
+          flex-direction: column;
+          width: min(100%, 260px);
+          max-height: 168px;
+          overflow-y: auto;
+          border: 1px solid var(--line);
+          background: rgba(8, 0, 0, 0.9);
+          -webkit-backdrop-filter: blur(14px);
+          backdrop-filter: blur(14px);
+          scrollbar-width: thin;
+        }
+
+        .legacy-ask-menu-item {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          min-width: 0;
+          padding: 8px 10px;
+          color: var(--muted);
+          font-family: var(--sans);
+          font-size: 0.62rem;
+          letter-spacing: 0.02em;
+        }
+
+        .legacy-ask-menu-item em {
+          flex: 1;
+          min-width: 0;
+          overflow: hidden;
+          font-style: normal;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .legacy-ask-check {
+          flex: 0 0 14px;
+          width: 14px;
+          height: 14px;
+          color: #86efac;
+        }
+
+        .legacy-ask-menu-item.is-hot,
+        .legacy-ask-menu-item.is-on {
+          color: #e9e5da;
+          background: rgba(34, 197, 94, 0.1);
+        }
+
+        .legacy-ask-menu-item img {
+          width: 16px;
+          height: 16px;
+          flex: 0 0 auto;
+        }
+
+        .legacy-ask-typed {
+          flex: 1;
+          min-width: 0;
+          overflow: hidden;
+          padding: 10px 12px;
+          color: #f2f2f2;
+          font-family: var(--mono);
+          font-size: 0.6rem;
+          letter-spacing: 0;
+          line-height: 1.2;
+          white-space: nowrap;
+        }
+
+        .legacy-ask-caret {
+          display: inline-block;
+          width: 6px;
+          height: 11px;
+          margin-left: 2px;
+          background: #22c55e;
+          animation: legacy-ask-caret 0.9s steps(1) infinite;
+          vertical-align: -1px;
+        }
+
+        .legacy-ask-send {
+          flex: 0 0 auto;
+          height: 44px;
+          padding: 0 14px;
+          border: 0;
+          border-left: 1px solid var(--line);
+          background: transparent;
+          color: #e9e5da;
+          font-family: var(--mono);
+          font-size: 0.58rem;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+        }
+
+        .legacy-ask-send.is-hit {
+          background: rgba(34, 197, 94, 0.16);
+          color: #86efac;
+        }
+
+        .legacy-ask-dock {
+          will-change: transform;
+        }
+
+        .legacy-ask-mouse {
+          position: absolute;
+          top: 58px;
+          right: 78px;
+          width: 22px;
+          height: 22px;
+          opacity: 0;
+          pointer-events: none;
+        }
+
+        .legacy-ask-mouse svg {
+          display: block;
+          width: 100%;
+          height: 100%;
+          overflow: visible;
+          filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.45));
+        }
+
+        .legacy-ask-mouse.is-visible {
+          opacity: 1;
+          transition: top 0.55s cubic-bezier(0.22, 0.61, 0.36, 1), left 0.55s cubic-bezier(0.22, 0.61, 0.36, 1), right 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+        }
+
+        .legacy-ask-mouse.is-plus {
+          top: 12px;
+          left: 14px;
+          right: auto;
+        }
+
+        .legacy-ask-mouse.is-picking {
+          right: auto;
+        }
+
+        .legacy-ask-mouse.is-aiming {
+          top: 14px;
+          right: 18px;
+          left: auto;
+        }
+
+        .legacy-ask-mouse.is-click {
+          transform: scale(0.88) translate(1px, 1px);
+        }
+
+        .legacy-ask-answer {
+          position: relative;
+          width: min(100%, 440px);
+          padding: 14px 16px 16px;
+          border: 1px solid var(--line);
+          background: rgba(8, 0, 0, 0.82);
+          will-change: transform;
+        }
+
+        .legacy-ask-answer-kicker {
+          margin: 0 0 8px;
+          color: var(--muted);
+          font-family: var(--mono);
+          font-size: 0.5rem;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+        }
+
+        .legacy-ask-answer-body {
+          margin: 0;
+          color: #f2f2f2;
+          font-size: 0.92rem;
+          line-height: 1.45;
+        }
+
+        .legacy-ask-answer-rule {
+          position: relative;
+          height: 1px;
+          margin: 20px 0 14px;
+          background: var(--line);
+        }
+
+        .legacy-ask-answer-logos {
+          position: absolute;
+          left: 50%;
+          top: 0;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 0 8px;
+          background: rgba(8, 0, 0, 0.82);
+          transform: translate(-50%, -50%);
+        }
+
+        .legacy-ask-answer-logos img {
+          display: block;
+          width: 18px;
+          height: 18px;
+          border: 0;
+          background: transparent;
+        }
+
+        .legacy-ask-answer-cite {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          margin: 0;
+          color: var(--muted);
+          font-family: var(--mono);
+          font-size: 0.52rem;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+
+        .legacy-hero-progress {
+          position: absolute;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          z-index: 6;
+          display: flex;
+          align-items: flex-end;
+          height: 14px;
+          cursor: ew-resize;
+          touch-action: none;
+        }
+
+        .legacy-hero-progress-track {
+          position: relative;
+          width: 100%;
+          height: 1px;
+          overflow: hidden;
+          background: var(--line);
+        }
+
+        .legacy-hero-progress-fill {
+          display: block;
+          height: 100%;
+          background: linear-gradient(90deg, rgba(242, 242, 242, 0.08), rgba(242, 242, 242, 0.95));
+        }
+
+        @keyframes legacy-ask-caret {
+          50% { opacity: 0; }
         }
 
         .legacy-flow {
@@ -1386,6 +1826,7 @@ export function App() {
         }
 
         .legacy-marquee {
+          display: none;
           position: absolute;
           right: 0;
           bottom: 0;
@@ -2847,9 +3288,63 @@ export function App() {
         </div>
 
         <div className="legacy-hero-stage" id="work" aria-label="Featured Pitar visual">
-          <div className="legacy-visual" aria-label="Background hero visual">
-            <div className="legacy-orbit-slot dark">
-              <OrbitingCirclesGlobe />
+          <div
+            className="legacy-visual"
+            aria-label="Background hero visual"
+            data-screen={heroScreen}
+            onMouseEnter={() => setHeroHoverPaused(true)}
+            onMouseLeave={() => setHeroHoverPaused(false)}
+          >
+            <div className={`legacy-orbit-slot dark${heroScreen === 2 ? " is-asking" : ""}`}>
+              <OrbitingCirclesGlobe paused={heroHoverPaused} dimRings={heroScreen === 2} />
+            </div>
+            {heroScreen === 2 ? <HeroAskFlow beatIndex={heroBeat} elapsedMs={heroElapsed} /> : null}
+            <nav className="legacy-visual-timeline" aria-label="Hero storyboard">
+              <button
+                type="button"
+                aria-current={heroScreen === 1}
+                onClick={() => {
+                  heroElapsedRef.current = 0
+                  setHeroElapsed(0)
+                  setHeroScreen(1)
+                }}
+              >
+                01
+              </button>
+              <button
+                type="button"
+                aria-current={heroScreen === 2}
+                onClick={() => {
+                  heroElapsedRef.current = 0
+                  setHeroElapsed(0)
+                  setHeroScreen(2)
+                }}
+              >
+                02
+              </button>
+            </nav>
+            <div
+              className="legacy-hero-progress"
+              role="slider"
+              aria-label="Hero playback"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round(
+                (heroElapsed / (heroScreen === 1 ? screenOneMs : heroAskDuration(heroBeat))) * 100,
+              )}
+              onPointerDown={onHeroProgressPointerDown}
+              onPointerMove={onHeroProgressPointerMove}
+              onPointerUp={endHeroScrub}
+              onPointerCancel={endHeroScrub}
+            >
+              <span className="legacy-hero-progress-track">
+                <i
+                  className="legacy-hero-progress-fill"
+                  style={{
+                    width: `${Math.min(100, (heroElapsed / (heroScreen === 1 ? screenOneMs : heroAskDuration(heroBeat))) * 100)}%`,
+                  }}
+                />
+              </span>
             </div>
           </div>
             <div className="legacy-marquee" aria-label="Possible connectors">
