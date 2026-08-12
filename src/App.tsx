@@ -1636,13 +1636,13 @@ export function App() {
           top: 0;
           left: 50%;
           z-index: 0;
-          width: min(52%, 560px);
-          height: 82%;
+          width: min(36%, 400px);
+          height: 64%;
           background:
             radial-gradient(ellipse at 51% 0%, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.045) 18%, rgba(255, 255, 255, 0.012) 42%, transparent 68%),
             conic-gradient(from 164deg at 51% 0%, transparent 0 44%, rgba(255, 255, 255, 0.035) 48%, rgba(255, 255, 255, 0.01) 52%, transparent 57% 100%);
           filter: blur(54px);
-          opacity: 0.5;
+          opacity: 0.38;
           transform: translateX(-50%) skewX(-2deg);
           transform-origin: 50% 0;
           mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.92) 48%, transparent 100%);
@@ -1656,7 +1656,7 @@ export function App() {
           width: 100%;
           height: 1px;
           border: 0;
-          background: rgba(233, 229, 218, 0.22);
+          background: rgba(233, 229, 218, 0.12);
           box-shadow: none;
           pointer-events: none;
         }
