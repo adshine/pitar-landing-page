@@ -1534,7 +1534,7 @@ export function App() {
         .legacy-footer {
           position: relative;
           overflow: hidden;
-          border-top: 1px solid var(--line);
+          border: 0;
           background: #050505;
           color: var(--ink);
         }
@@ -1543,7 +1543,7 @@ export function App() {
           width: 100%;
           max-width: none;
           margin-inline: auto;
-          border-inline: 1px solid var(--line);
+          border: 0;
         }
 
         .legacy-footer-prompt {
