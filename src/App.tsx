@@ -1216,6 +1216,7 @@ export function App() {
           width: 100%;
           height: 52px;
           overflow: hidden;
+          border-left: 1px solid var(--line);
         }
 
         .legacy-marquee .legacy-chip,
@@ -1227,36 +1228,47 @@ export function App() {
           padding: 0;
           overflow: hidden;
           background: transparent;
+          gap: clamp(6px, 0.8vw, 10px);
+          padding: 0 clamp(6px, 1vw, 12px);
         }
 
         .legacy-marquee .legacy-chip-icon,
         .legacy-marquee .legacy-chip-label {
-          position: absolute;
-          inset: 0;
+          position: relative;
+          inset: auto;
           display: grid;
-          width: 100%;
-          height: 100%;
+          width: auto;
+          height: auto;
           max-width: none;
           place-items: center;
           opacity: 1;
-          transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+          transform: none;
+          transition: none;
         }
 
         .legacy-marquee .legacy-chip-label {
-          padding: 0 4px;
-          transform: translateY(100%);
+          padding: 0;
           color: #e9e5da;
-          text-align: center;
+          text-align: left;
         }
 
         .legacy-marquee .legacy-chip:hover .legacy-chip-icon,
         .legacy-marquee .legacy-chip:focus-visible .legacy-chip-icon {
-          transform: translateY(-100%);
+          transform: none;
         }
 
         .legacy-marquee .legacy-chip:hover .legacy-chip-label,
         .legacy-marquee .legacy-chip:focus-visible .legacy-chip-label {
-          transform: translateY(0);
+          transform: none;
+        }
+
+        .legacy-marquee {
+          border-top-color: var(--line);
+          box-shadow: none;
+        }
+
+        .legacy-marquee-label {
+          border-right-color: var(--line);
         }
 
         .legacy-story {
