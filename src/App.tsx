@@ -438,7 +438,7 @@ export function App() {
           flex-direction: column;
           align-items: stretch;
           justify-content: flex-start;
-          gap: clamp(20px, 3vh, 32px);
+          gap: 80px;
           width: min(1180px, 100%);
           margin-inline: auto;
           min-width: 0;
