@@ -1704,7 +1704,7 @@ export function App() {
           top: 0;
           left: 50%;
           z-index: 0;
-          width: min(36%, 400px);
+          width: min(28%, 320px);
           height: 64%;
           background:
             radial-gradient(ellipse at 51% 0%, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.045) 18%, rgba(255, 255, 255, 0.012) 42%, transparent 68%),
@@ -1713,8 +1713,8 @@ export function App() {
           opacity: 0.38;
           transform: translateX(-50%) skewX(-2deg);
           transform-origin: 50% 0;
-          mask-image: radial-gradient(ellipse at 50% 48%, #000 0%, rgba(0, 0, 0, 0.94) 26%, rgba(0, 0, 0, 0.46) 50%, transparent 74%);
-          -webkit-mask-image: radial-gradient(ellipse at 50% 48%, #000 0%, rgba(0, 0, 0, 0.94) 26%, rgba(0, 0, 0, 0.46) 50%, transparent 74%);
+          mask-image: radial-gradient(ellipse at 50% 48%, #000 0 12%, rgba(0, 0, 0, 0.82) 22%, rgba(0, 0, 0, 0.24) 34%, transparent 48%);
+          -webkit-mask-image: radial-gradient(ellipse at 50% 48%, #000 0 12%, rgba(0, 0, 0, 0.82) 22%, rgba(0, 0, 0, 0.24) 34%, transparent 48%);
         }
 
         .legacy-footer-prompt::before {
