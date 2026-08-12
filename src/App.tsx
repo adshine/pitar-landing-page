@@ -1651,16 +1651,18 @@ export function App() {
           min-height: 64px;
           margin: clamp(34px, 5vw, 48px) auto 0;
           padding: 7px;
-          border: 1px solid rgba(233, 229, 218, 0.28);
+          border: 1px solid transparent;
           border-radius: 999px;
-          background: rgba(16, 18, 17, 0.84);
+          background:
+            linear-gradient(rgba(16, 18, 17, 0.9), rgba(16, 18, 17, 0.9)) padding-box,
+            linear-gradient(90deg, rgba(233, 229, 218, 0.22) 0%, rgba(233, 229, 218, 0.22) 18%, rgba(233, 229, 218, 0.48) 42%, rgba(255, 255, 255, 0.88) 50%, rgba(233, 229, 218, 0.48) 58%, rgba(233, 229, 218, 0.22) 82%, rgba(233, 229, 218, 0.22) 100%) border-box;
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.72), 0 24px 70px rgba(0, 0, 0, 0.54), inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.75);
           -webkit-backdrop-filter: blur(16px);
           backdrop-filter: blur(16px);
         }
 
         .legacy-footer-prompt-form:focus-within {
-          border-color: rgba(233, 229, 218, 0.7);
+          border-color: transparent;
           box-shadow: 0 20px 72px rgba(0, 0, 0, 0.52), 0 0 36px rgba(32, 255, 79, 0.08);
         }
 
