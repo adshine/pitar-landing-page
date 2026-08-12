@@ -429,7 +429,7 @@ export function App() {
           align-items: stretch;
           width: 100%;
           min-height: 100svh;
-          padding: 100px var(--section-inline) 24px;
+          padding: 100px var(--section-inline) 0;
           gap: 20px;
         }
 
@@ -775,7 +775,7 @@ export function App() {
 
         .legacy-nav--fixed {
           position: fixed;
-          top: 8px;
+          top: 0;
           left: 50%;
           z-index: 20;
           width: max-content;
@@ -1129,8 +1129,10 @@ export function App() {
           display: flex;
           flex-direction: column;
           align-items: stretch;
+          flex: 1 1 auto;
           gap: 0;
           width: 100%;
+          min-height: 0;
           box-sizing: border-box;
           border: 1px solid rgba(233, 229, 218, 0.18);
           overflow: hidden;
@@ -1142,9 +1144,10 @@ export function App() {
           place-items: center;
           width: 100%;
           max-width: none;
-          aspect-ratio: 735 / 413;
-          height: auto;
-          max-height: min(56svh, 560px);
+          flex: 1 1 auto;
+          aspect-ratio: auto;
+          height: 100%;
+          max-height: none;
           overflow: hidden;
           border-radius: 0;
           background: #090909;
