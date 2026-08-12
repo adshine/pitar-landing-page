@@ -1555,8 +1555,6 @@ export function App() {
           overflow: hidden;
           border-bottom: 1px solid var(--line);
           background:
-            radial-gradient(ellipse at 50% 63%, rgba(255, 255, 255, 0.065), transparent 14%),
-            radial-gradient(ellipse at 50% 34%, rgba(255, 255, 255, 0.026), transparent 34%),
             radial-gradient(circle, rgba(233, 229, 218, 0.1) 0 1px, transparent 1.25px) 0 0 / 28px 28px,
             radial-gradient(ellipse at center, #131414 0%, #0d0e0e 58%, #080909 100%);
           isolation: isolate;
@@ -1578,13 +1576,15 @@ export function App() {
           top: 0;
           left: 50%;
           z-index: 0;
-          width: min(54%, 570px);
-          height: 58%;
-          background: conic-gradient(from 158deg at 50% 0%, transparent 0 36%, rgba(255, 255, 255, 0.04) 44%, rgba(255, 255, 255, 0.012) 50%, rgba(255, 255, 255, 0.04) 56%, transparent 64% 100%);
-          filter: blur(24px);
-          opacity: 0.74;
-          transform: translateX(-50%);
-          mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, rgba(0, 0, 0, 0.9) 74%, transparent 100%);
+          width: min(78%, 820px);
+          height: 100%;
+          background: linear-gradient(172deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.07) 24%, rgba(255, 255, 255, 0.025) 58%, transparent 90%);
+          clip-path: polygon(47.5% 0, 52.5% 0, 76% 100%, 19% 100%);
+          filter: blur(28px);
+          opacity: 0.68;
+          transform: translateX(-50%) skewX(-3deg);
+          transform-origin: 50% 0;
+          mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.92) 48%, transparent 100%);
         }
 
         .legacy-footer-prompt::before {
@@ -1611,7 +1611,7 @@ export function App() {
         }
 
         .legacy-footer-prompt-content::before {
-          content: "";
+          content: none;
           position: absolute;
           top: 66%;
           left: 50%;
@@ -1986,7 +1986,7 @@ export function App() {
           }
 
           .legacy-footer-prompt::before {
-            inset: 24px 12px;
+            inset: 0 auto auto 0;
           }
 
           .legacy-footer-prompt h2 {
