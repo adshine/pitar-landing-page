@@ -1796,6 +1796,15 @@ export function App() {
         }
 
         .legacy-footer-source-picker[open] summary {
+          transform: none;
+        }
+
+        .legacy-footer-source-picker summary span {
+          display: inline-block;
+          transition: transform 180ms ease;
+        }
+
+        .legacy-footer-source-picker[open] summary span {
           transform: rotate(45deg);
         }
 
@@ -2441,7 +2450,7 @@ export function App() {
                 }}
               >
                 <details className="legacy-footer-source-picker">
-                  <summary aria-label="Choose a source" title="Choose a source">+</summary>
+                  <summary aria-label="Choose a source" title="Choose a source"><span aria-hidden="true">+</span></summary>
                   <div className="legacy-footer-source-menu" role="menu" aria-label="Available sources">
                     {connectors.map(({ label, icon }) => (
                       <button className="legacy-footer-source-option" type="button" role="menuitem" key={label}>
