@@ -1693,7 +1693,7 @@ export function App() {
 
         .legacy-footer-main {
           display: grid;
-          grid-template-columns: minmax(280px, 1.45fr) repeat(3, minmax(130px, 0.72fr));
+          grid-template-columns: minmax(280px, 1.45fr) repeat(2, minmax(150px, 0.78fr));
           gap: clamp(42px, 6vw, 96px);
         min-height: 0;
         padding: clamp(48px, 5vw, 72px) clamp(28px, 4vw, 64px) 40px;
@@ -1863,10 +1863,6 @@ export function App() {
           .legacy-footer-main {
             grid-template-columns: minmax(0, 1.3fr) repeat(2, minmax(120px, 0.7fr));
           }
-
-          .legacy-footer-column:last-child {
-            grid-column: 2;
-          }
         }
 
         @media (max-width: 700px) {
@@ -1941,9 +1937,6 @@ export function App() {
             padding-top: 0;
           }
 
-          .legacy-footer-column:last-child {
-            grid-column: auto;
-          }
 
           .legacy-footer-rail {
             align-items: flex-start;
@@ -2259,12 +2252,6 @@ export function App() {
               <button type="button" onClick={() => setOpenPanel("auth")}>Sign in</button>
             </nav>
 
-            <div className="legacy-footer-column" aria-label="Principles">
-              <h2>Principles</h2>
-              <span>Answers with evidence</span>
-              <span>Your sources stay yours</span>
-              <span>Built to be checked</span>
-            </div>
           </div>
 
           <div className="legacy-footer-rail">
