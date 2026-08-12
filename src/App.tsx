@@ -1625,11 +1625,12 @@ export function App() {
         }
 
         .legacy-footer-prompt h2 {
-          max-width: 12ch;
+          max-width: none;
           margin: 0 auto;
           font-family: var(--sans);
           font-size: clamp(2rem, 3.5vw, 3.35rem);
           font-weight: 600;
+          white-space: nowrap;
           letter-spacing: -0.045em;
           line-height: 1;
           text-wrap: balance;
@@ -1647,7 +1648,7 @@ export function App() {
         .legacy-footer-prompt-form {
           display: flex;
           align-items: center;
-          width: min(76%, 540px);
+          width: min(68%, 460px);
           min-height: 64px;
           margin: clamp(34px, 5vw, 48px) auto 0;
           padding: 7px;
@@ -1992,6 +1993,7 @@ export function App() {
           .legacy-footer-prompt h2 {
             margin-top: 0;
             font-size: clamp(2.2rem, 10vw, 3rem);
+            white-space: normal;
           }
 
           .legacy-footer-prompt-copy {
