@@ -1909,6 +1909,22 @@ export function App() {
           transform: translateX(5px);
         }
 
+        .legacy-footer-legal {
+          display: inline-flex;
+          align-items: center;
+          gap: clamp(18px, 2vw, 30px);
+        }
+
+        .legacy-footer-legal a {
+          color: var(--ink);
+          text-decoration: none;
+        }
+
+        .legacy-footer-legal a:hover,
+        .legacy-footer-legal a:focus-visible {
+          color: #20ff4f;
+        }
+
         .legacy-footer-visual {
           position: relative;
         height: clamp(180px, 18vw, 240px);
@@ -2370,7 +2386,10 @@ export function App() {
 
           <div className="legacy-footer-rail">
             <span>© 2026 Pitar</span>
-            <a className="legacy-footer-cta" href="#top">Start asking</a>
+            <nav className="legacy-footer-legal" aria-label="Legal">
+              <a href="/privacy">Privacy</a>
+              <a href="/terms">Terms &amp; Conditions</a>
+            </nav>
           </div>
 
           <div className="legacy-footer-visual" aria-hidden="true">
