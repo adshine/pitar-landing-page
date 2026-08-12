@@ -1131,10 +1131,14 @@ export function App() {
           align-items: stretch;
           flex: 1 1 auto;
           gap: 0;
-          width: 100%;
+          width: 100vw;
+          max-width: none;
           min-height: 0;
+          margin-left: calc(50% - 50vw);
           box-sizing: border-box;
           border: 0;
+          outline: 0;
+          box-shadow: none;
           overflow: hidden;
         }
 
@@ -1149,6 +1153,9 @@ export function App() {
           height: 100%;
           max-height: none;
           overflow: hidden;
+          border: 0;
+          outline: 0;
+          box-shadow: none;
           border-radius: 0;
           background: #090909;
         }
@@ -1971,9 +1978,9 @@ export function App() {
           z-index: 5;
           transform: none;
           display: inline-flex;
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 6px;
+          flex-direction: row;
+          align-items: center;
+          gap: 8px;
           color: var(--ink);
           text-decoration: none;
           text-align: left;
@@ -2447,7 +2454,8 @@ export function App() {
             left: clamp(18px, 5vw, 28px);
             right: auto;
             transform: none;
-            align-items: flex-start;
+            flex-direction: row;
+            align-items: center;
             justify-content: flex-start;
             text-align: left;
             width: auto;
@@ -2461,7 +2469,7 @@ export function App() {
           }
 
           .legacy-scroll-hint svg {
-            align-self: flex-start;
+            align-self: center;
           }
         }
 
@@ -2491,8 +2499,8 @@ export function App() {
         }
 
         #our-story {
-          min-height: 100vh;
-          padding: clamp(28px, 3.5vw, 44px) var(--section-inline) clamp(40px, 5vw, 72px);
+          min-height: 0;
+          padding: 100px var(--section-inline);
           display: grid;
           place-items: center;
           overflow: hidden;
