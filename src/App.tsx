@@ -1308,11 +1308,12 @@ export function App() {
         }
 
         .legacy-marquee .legacy-track {
-          display: flex;
-          align-items: center;
-          justify-content: space-evenly;
+          display: grid;
+          grid-template-columns: repeat(6, minmax(0, 1fr));
+          align-items: stretch;
           width: calc(100% - 126px);
           margin-left: 126px;
+          min-width: 0;
           transform: none !important;
           will-change: auto;
         }
@@ -1325,7 +1326,9 @@ export function App() {
         .legacy-marquee .legacy-group:hover,
         .legacy-marquee .legacy-group:focus-within {
           width: auto;
-          flex: 0 0 auto;
+          min-width: 0;
+          max-width: none;
+          flex: none;
           height: 52px;
           overflow: hidden;
           border: 0;
@@ -1335,7 +1338,8 @@ export function App() {
           display: grid;
           grid-template-areas: "chip";
           align-items: center;
-          justify-items: center;
+          justify-items: stretch;
+          width: 100%;
           height: 52px;
           overflow: hidden;
         }
@@ -1373,13 +1377,15 @@ export function App() {
         .legacy-marquee .legacy-chip:hover,
         .legacy-marquee .legacy-chip:focus-visible {
           position: relative;
-          width: auto;
-          max-width: none;
+          box-sizing: border-box;
+          width: 100%;
+          max-width: 100%;
+          min-width: 0;
           height: 52px;
-          overflow: visible;
+          overflow: hidden;
           background: transparent;
-          gap: 8px;
-          padding: 0 6px;
+          gap: clamp(4px, 0.6vw, 8px);
+          padding: 0 clamp(2px, 0.6vw, 8px);
           justify-content: center;
           align-items: center;
         }
@@ -1398,16 +1404,23 @@ export function App() {
           transition: none;
         }
 
+        .legacy-marquee .legacy-chip-icon {
+          flex: 0 0 22px;
+        }
+
         .legacy-marquee .legacy-chip-label {
           padding: 0;
           color: #e9e5da;
           text-align: left;
-          width: max-content;
-          min-width: max-content;
-          max-width: none;
-          overflow: visible;
+          flex: 0 1 auto;
+          width: auto;
+          min-width: 0;
+          max-width: 100%;
+          overflow: hidden;
           white-space: nowrap;
-          letter-spacing: 0.04em;
+          text-overflow: clip;
+          letter-spacing: 0.03em;
+          font-size: clamp(0.42rem, 0.85vw, 0.58rem);
         }
 
         .legacy-marquee .legacy-chip:hover .legacy-chip-icon,
@@ -1890,7 +1903,8 @@ export function App() {
           align-items: center;
           width: fit-content;
           max-width: 100%;
-          min-height: 64px;
+          min-height: 0;
+          height: auto;
           margin: clamp(34px, 5vw, 48px) auto 0;
           padding: 0;
           border: 1px solid transparent;
@@ -2290,19 +2304,16 @@ export function App() {
           .legacy-marquee .legacy-track {
             width: calc(100% - 88px);
             margin-left: 88px;
-            justify-content: flex-start;
-            gap: 4px;
-            overflow-x: auto;
-            scrollbar-width: none;
+            overflow: hidden;
           }
 
-          .legacy-marquee .legacy-track::-webkit-scrollbar {
-            display: none;
+          .legacy-marquee .legacy-chip {
+            gap: 0;
+            padding: 0;
           }
 
           .legacy-marquee .legacy-chip-label {
-            font-size: 0.46rem;
-            letter-spacing: 0.025em;
+            display: none;
           }
 
           .legacy-footer-source-picker summary {
