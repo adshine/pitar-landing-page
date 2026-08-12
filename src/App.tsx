@@ -1681,7 +1681,7 @@ export function App() {
           display: grid;
           place-items: center;
           min-height: clamp(270px, 28vw, 330px);
-          padding: clamp(28px, 3vw, 40px) clamp(24px, 6vw, 88px);
+          padding: clamp(48px, 5vw, 64px) clamp(24px, 6vw, 88px);
           overflow: hidden;
           border-bottom: 1px solid var(--line);
           background: radial-gradient(ellipse at center, #131414 0%, #0d0e0e 58%, #080909 100%);
@@ -1713,7 +1713,8 @@ export function App() {
           opacity: 0.38;
           transform: translateX(-50%) skewX(-2deg);
           transform-origin: 50% 0;
-          mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.92) 48%, transparent 100%);
+          mask-image: radial-gradient(ellipse at 50% 48%, #000 0%, rgba(0, 0, 0, 0.94) 26%, rgba(0, 0, 0, 0.46) 50%, transparent 74%);
+          -webkit-mask-image: radial-gradient(ellipse at 50% 48%, #000 0%, rgba(0, 0, 0, 0.94) 26%, rgba(0, 0, 0, 0.46) 50%, transparent 74%);
         }
 
         .legacy-footer-prompt::before {
@@ -2142,7 +2143,7 @@ export function App() {
 
           .legacy-footer-prompt {
             min-height: 280px;
-            padding: 28px 18px;
+            padding: 40px 18px;
             background-size: auto;
           }
 
