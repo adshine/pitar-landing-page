@@ -92,6 +92,7 @@ export function App() {
   const panelBackdropRef = useRef<HTMLButtonElement | null>(null)
   const mobileMenuRef = useRef<HTMLDivElement | null>(null)
   const mobileMenuButtonRef = useRef<HTMLButtonElement | null>(null)
+  const navRef = useRef<HTMLElement | null>(null)
   const [openPanel, setOpenPanel] = useState<string | null>(null)
   const [openMobileMenu, setOpenMobileMenu] = useState(false)
   const [navScrolled, setNavScrolled] = useState(false)
@@ -230,6 +231,30 @@ export function App() {
     handleScroll()
     window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
+  useEffect(() => {
+    const nav = navRef.current
+    if (!nav) return
+
+    const measure = () => {
+      if (window.matchMedia("(max-width: 900px)").matches) return
+
+      const brand = nav.querySelector<HTMLElement>(".legacy-brand")
+      const links = nav.querySelector<HTMLElement>(".legacy-nav-links")
+      const gap = parseFloat(getComputedStyle(nav).gap) || 0
+      const compactPaddingX = 14 * 2
+      const natural = (brand?.offsetWidth ?? 0) + gap + (links?.offsetWidth ?? 0) + compactPaddingX
+      nav.style.setProperty("--nav-compact-width", `${Math.ceil(natural)}px`)
+    }
+
+    measure()
+    window.addEventListener("resize", measure)
+    const frame = requestAnimationFrame(measure)
+    return () => {
+      window.removeEventListener("resize", measure)
+      cancelAnimationFrame(frame)
+    }
   }, [])
 
   useGSAP(() => {
@@ -810,7 +835,7 @@ export function App() {
 
         @media (min-width: 901px) {
           .legacy-nav--fixed.is-scrolled {
-            width: max-content;
+            width: var(--nav-compact-width, max-content);
             max-width: calc(100% - 16px);
             padding: 10px 14px 10px 14px;
             background: color-mix(in oklch, var(--paper) 74%, transparent);
@@ -2339,6 +2364,11 @@ export function App() {
           gap: 14px;
         }
 
+        #how-it-works .legacy-how-copy > p:last-child {
+          margin-left: auto;
+          text-align: right;
+        }
+
         @media (min-width: 901px) {
           #how-it-works > div {
             grid-template-columns: minmax(0, 0.9fr) minmax(440px, 1.1fr);
@@ -2388,6 +2418,11 @@ export function App() {
         }
 
         @media (max-width: 900px) {
+          #how-it-works .legacy-how-copy > p:last-child {
+            margin-left: 0;
+            text-align: left;
+          }
+
           #our-story {
             text-align: left !important;
             justify-items: start !important;
@@ -2430,6 +2465,9 @@ export function App() {
             width: auto;
             top: 4px;
             transform: none;
+            border: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            background: color-mix(in oklch, var(--paper) 74%, transparent);
             backdrop-filter: blur(16px) saturate(1.15);
             -webkit-backdrop-filter: blur(16px) saturate(1.15);
           }
@@ -3274,7 +3312,7 @@ export function App() {
         }
       `}</style>
 
-      <nav className={`legacy-nav legacy-nav--fixed ${navScrolled ? "is-scrolled" : ""}`} aria-label="Primary">
+      <nav ref={navRef} className={`legacy-nav legacy-nav--fixed ${navScrolled ? "is-scrolled" : ""}`} aria-label="Primary">
         <a className="legacy-brand" href="#top" aria-label="Pitar home">
           <span className="legacy-brand-lockup">
             <span className="legacy-brand-mark" aria-hidden="true">
