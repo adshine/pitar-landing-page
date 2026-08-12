@@ -1555,10 +1555,10 @@ export function App() {
           overflow: hidden;
           border-bottom: 1px solid var(--line);
           background:
-            radial-gradient(ellipse at 50% 43%, rgba(255, 255, 255, 0.075), transparent 16%),
-            radial-gradient(ellipse at 50% 55%, rgba(32, 255, 79, 0.04), transparent 34%),
+            radial-gradient(ellipse at 50% 63%, rgba(255, 255, 255, 0.075), transparent 16%),
+            radial-gradient(ellipse at 50% 58%, rgba(255, 255, 255, 0.025), transparent 40%),
             radial-gradient(circle, rgba(233, 229, 218, 0.1) 0 1px, transparent 1.25px) 0 0 / 28px 28px,
-            radial-gradient(ellipse at center, #0b0e0c 0%, #060807 58%, #030403 100%);
+            radial-gradient(ellipse at center, #0b0c0c 0%, #060707 58%, #020303 100%);
           isolation: isolate;
         }
 
@@ -1575,16 +1575,18 @@ export function App() {
         .legacy-footer-prompt::after {
           content: "";
           position: absolute;
-          top: 7%;
+          top: 0;
           left: 50%;
           z-index: 0;
-          width: min(58%, 620px);
-          height: 45%;
-          background: conic-gradient(from 146deg at 50% 0%, transparent 0 31%, rgba(255, 255, 255, 0.055) 42%, rgba(255, 255, 255, 0.015) 49%, rgba(255, 255, 255, 0.055) 56%, transparent 69% 100%);
-          filter: blur(18px);
-          opacity: 0.9;
+          width: min(76%, 820px);
+          height: 72%;
+          background:
+            linear-gradient(104deg, transparent 0 41%, rgba(255, 255, 255, 0.052) 49%, transparent 57%),
+            linear-gradient(76deg, transparent 0 41%, rgba(255, 255, 255, 0.052) 49%, transparent 57%);
+          filter: blur(22px);
+          opacity: 0.78;
           transform: translateX(-50%);
-          mask-image: linear-gradient(to bottom, #000, rgba(0, 0, 0, 0.78) 55%, transparent 100%);
+          mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, rgba(0, 0, 0, 0.82) 72%, transparent 100%);
         }
 
         .legacy-footer-prompt-content {
@@ -1600,15 +1602,15 @@ export function App() {
         .legacy-footer-prompt-content::before {
           content: "";
           position: absolute;
-          top: 34px;
+          top: 52%;
           left: 50%;
           z-index: -1;
-          width: 76%;
-          height: 150px;
+          width: 82%;
+          height: 132px;
           border-radius: 50%;
-          background: radial-gradient(ellipse, rgba(255, 255, 255, 0.115), rgba(255, 255, 255, 0.025) 42%, transparent 72%);
-          filter: blur(28px);
-          transform: translateX(-50%);
+          background: radial-gradient(ellipse, rgba(255, 255, 255, 0.105), rgba(255, 255, 255, 0.018) 44%, transparent 74%);
+          filter: blur(24px);
+          transform: translate(-50%, -50%);
         }
 
         .legacy-footer-prompt h2 {
