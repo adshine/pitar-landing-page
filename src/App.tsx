@@ -1006,7 +1006,6 @@ export function App() {
           padding: 24px 0 0;
           width: 100%;
           min-width: 0;
-          transform: translateY(-16px);
         }
 
         .legacy-hero-copy h1 {
@@ -1131,12 +1130,10 @@ export function App() {
           flex-direction: column;
           align-items: stretch;
           gap: 0;
-          order: -1;
           width: 100%;
           box-sizing: border-box;
           border: 1px solid rgba(233, 229, 218, 0.18);
           overflow: hidden;
-          transform: translateY(16px);
         }
 
         .legacy-visual {
@@ -1159,7 +1156,7 @@ export function App() {
           inset: 0;
           z-index: 3;
           pointer-events: none;
-          background: radial-gradient(ellipse 64% 60% at 50% 42%, transparent 36%, #090909 78%);
+          background: radial-gradient(ellipse 82% 78% at 50% 44%, transparent 58%, #090909 96%);
         }
 
         .legacy-visual::before {
@@ -1191,7 +1188,7 @@ export function App() {
           position: absolute;
           inset: 0;
           z-index: 2;
-          overflow: hidden;
+          overflow: visible;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -2433,11 +2430,6 @@ export function App() {
 
           .legacy-hero-copy {
             display: block;
-            transform: none;
-          }
-
-          .legacy-hero-stage {
-            transform: none;
           }
 
           .legacy-hero-aside {
