@@ -1134,7 +1134,7 @@ export function App() {
           width: 100%;
           min-height: 0;
           box-sizing: border-box;
-          border: 1px solid rgba(233, 229, 218, 0.18);
+          border: 0;
           overflow: hidden;
         }
 
@@ -1966,17 +1966,17 @@ export function App() {
 
         .legacy-scroll-hint {
           position: absolute;
-          left: 50%;
+          left: var(--section-inline);
           bottom: 28px;
           z-index: 5;
-          transform: translateX(-50%);
+          transform: none;
           display: inline-flex;
           flex-direction: column;
-          align-items: center;
+          align-items: flex-start;
           gap: 6px;
           color: var(--ink);
           text-decoration: none;
-          text-align: center;
+          text-align: left;
           font-family: var(--mono);
           letter-spacing: 0.11em;
           text-transform: uppercase;

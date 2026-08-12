@@ -39,10 +39,10 @@ export default function ParticleSphereAnimation() {
     geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3))
 
     const material = new THREE.PointsMaterial({
-      color: new THREE.Color(0, 0.78, 0.28),
+      color: new THREE.Color(0.12, 0.52, 0.32),
       size: 0.028,
       transparent: true,
-      opacity: 0.92,
+      opacity: 0.62,
       depthWrite: false,
       sizeAttenuation: true,
     })
