@@ -1815,7 +1815,8 @@ export function App() {
           z-index: 5;
           display: grid;
           grid-template-columns: repeat(3, minmax(120px, 1fr));
-          width: min(430px, calc(100vw - 48px));
+          width: calc(clamp(220px, 26vw, 300px) + 96px);
+          max-width: calc(100vw - 48px);
           padding: 0;
           border-radius: 0;
           border: 1px solid var(--line);
@@ -2146,7 +2147,8 @@ export function App() {
 
           .legacy-footer-source-menu {
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            width: min(300px, calc(100vw - 58px));
+            width: calc(100vw - 36px);
+            max-width: calc(100vw - 36px);
           }
 
           .legacy-page {
