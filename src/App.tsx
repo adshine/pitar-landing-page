@@ -1790,18 +1790,31 @@ export function App() {
 
         .legacy-footer-source-menu {
           position: absolute;
-          bottom: calc(100% + 18px);
+          bottom: calc(100% + 12px);
           left: 0;
           z-index: 5;
           display: grid;
           grid-template-columns: repeat(3, minmax(120px, 1fr));
           width: min(430px, calc(100vw - 48px));
-          padding: 8px;
-          border: 1px solid rgba(233, 229, 218, 0.2);
-          background: rgba(7, 9, 8, 0.96);
-          box-shadow: 0 24px 70px rgba(0, 0, 0, 0.62);
+          padding: 6px;
+          border: 1px solid var(--line);
+          background: linear-gradient(180deg, rgba(18, 19, 19, 0.98), rgba(7, 8, 8, 0.99));
+          box-shadow: 0 24px 70px rgba(0, 0, 0, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.035);
           -webkit-backdrop-filter: blur(20px);
           backdrop-filter: blur(20px);
+          transform-origin: bottom left;
+          animation: footer-source-reveal 180ms cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        @keyframes footer-source-reveal {
+          from {
+            opacity: 0;
+            transform: translateY(8px) scale(0.985);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
         }
 
         .legacy-footer-source-option {
@@ -1810,7 +1823,7 @@ export function App() {
           gap: 9px;
           min-width: 0;
           padding: 11px 10px;
-          border: 0;
+          border: 1px solid transparent;
           background: transparent;
           color: var(--ink);
           cursor: pointer;
@@ -1821,6 +1834,7 @@ export function App() {
         .legacy-footer-source-option:hover,
         .legacy-footer-source-option:focus-visible {
           background: rgba(233, 229, 218, 0.08);
+          border-color: rgba(233, 229, 218, 0.1);
           outline: none;
         }
 
