@@ -1637,6 +1637,8 @@ export function App() {
         }
 
         .legacy-footer-prompt-copy {
+          max-width: none;
+          white-space: nowrap;
           max-width: 36ch;
           margin: 18px auto 0;
           color: var(--muted);
@@ -1999,6 +2001,7 @@ export function App() {
           .legacy-footer-prompt-copy {
             margin-top: 20px;
             font-size: 0.95rem;
+            white-space: normal;
           }
 
           .legacy-footer-prompt-form {
