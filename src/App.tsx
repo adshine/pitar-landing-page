@@ -1634,7 +1634,7 @@ export function App() {
         .legacy-footer-prompt-form {
           display: flex;
           align-items: center;
-          width: min(88%, 650px);
+          width: min(76%, 540px);
           min-height: 64px;
           margin: clamp(34px, 5vw, 48px) auto 0;
           padding: 7px;
