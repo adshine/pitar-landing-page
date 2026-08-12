@@ -1732,7 +1732,8 @@ export function App() {
         .legacy-footer-prompt-form {
           display: flex;
           align-items: center;
-          width: min(68%, 460px);
+          width: fit-content;
+          max-width: 100%;
           min-height: 64px;
           margin: clamp(34px, 5vw, 48px) auto 0;
           padding: 0;
@@ -1753,7 +1754,8 @@ export function App() {
 
         .legacy-footer-prompt-form input {
           min-width: 0;
-          flex: 1;
+          flex: 0 1 auto;
+          width: clamp(220px, 26vw, 300px);
           padding: 0 18px;
           border: 0;
           outline: 0;
@@ -2108,6 +2110,8 @@ export function App() {
           }
 
           .legacy-footer-prompt-form input {
+            flex: 1;
+            width: auto;
             padding: 0 12px;
             font-size: 16px;
           }
