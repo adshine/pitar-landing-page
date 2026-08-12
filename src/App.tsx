@@ -94,6 +94,7 @@ export function App() {
   const mobileMenuButtonRef = useRef<HTMLButtonElement | null>(null)
   const [openPanel, setOpenPanel] = useState<string | null>(null)
   const [openMobileMenu, setOpenMobileMenu] = useState(false)
+  const [navScrolled, setNavScrolled] = useState(false)
   const [heroScreen, setHeroScreen] = useState<1 | 2>(1)
   const [heroBeat, setHeroBeat] = useState(0)
   const [heroElapsed, setHeroElapsed] = useState(0)
@@ -219,6 +220,16 @@ export function App() {
 
     buttons.forEach((button) => button.addEventListener("click", handleClick))
     return () => buttons.forEach((button) => button.removeEventListener("click", handleClick))
+  }, [])
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setNavScrolled(window.scrollY > 24)
+    }
+
+    handleScroll()
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
   useGSAP(() => {
@@ -542,6 +553,7 @@ export function App() {
           flex: 0 0 auto;
           align-items: center;
           gap: clamp(16px, 2.5vw, 32px);
+          margin-left: auto;
         }
 
         .legacy-nav .legacy-brand,
@@ -778,17 +790,37 @@ export function App() {
           top: 0;
           left: 50%;
           z-index: 20;
-          width: max-content;
-          max-width: calc(100% - 16px);
-          padding: 10px 14px 10px 14px;
-          background: color-mix(in oklch, var(--paper) 74%, transparent);
-          border: 1px solid var(--line);
+          width: 100%;
+          padding: 10px var(--section-inline) 10px;
+          background: transparent;
+          border: 0;
+          border-bottom: 1px solid var(--line);
           border-radius: 0;
-          backdrop-filter: blur(18px) saturate(1.25);
-          -webkit-backdrop-filter: blur(18px) saturate(1.25);
-          box-shadow: 0 12px 34px rgba(0, 0, 0, 0.25);
-          transform: translateX(-50%);
+          box-shadow: none;
           justify-content: flex-start;
+          transform: translateX(-50%);
+          transition:
+            width 320ms cubic-bezier(0.22, 1, 0.36, 1),
+            padding 320ms cubic-bezier(0.22, 1, 0.36, 1),
+            background 320ms ease,
+            border-color 320ms ease,
+            border-width 320ms ease,
+            box-shadow 320ms ease;
+        }
+
+        @media (min-width: 901px) {
+          .legacy-nav--fixed.is-scrolled {
+            width: max-content;
+            max-width: calc(100% - 16px);
+            padding: 10px 14px 10px 14px;
+            background: color-mix(in oklch, var(--paper) 74%, transparent);
+            border: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            backdrop-filter: blur(18px) saturate(1.25);
+            -webkit-backdrop-filter: blur(18px) saturate(1.25);
+            box-shadow: 0 12px 34px rgba(0, 0, 0, 0.25);
+            justify-content: flex-start;
+          }
         }
 
         .legacy-mobile-nav .legacy-brand-divider {
@@ -1129,7 +1161,7 @@ export function App() {
           display: flex;
           flex-direction: column;
           align-items: stretch;
-          flex: 1 1 auto;
+          flex: 0 0 auto;
           gap: 0;
           width: 100vw;
           max-width: none;
@@ -1148,10 +1180,10 @@ export function App() {
           place-items: center;
           width: 100%;
           max-width: none;
-          flex: 1 1 auto;
+          flex: 0 0 auto;
           aspect-ratio: auto;
-          height: 100%;
-          max-height: none;
+          height: clamp(480px, 62vh, 620px);
+          max-height: 620px;
           overflow: hidden;
           border: 0;
           outline: 0;
@@ -3231,6 +3263,10 @@ export function App() {
         }
 
         @media (prefers-reduced-motion: reduce) {
+          .legacy-nav--fixed {
+            transition: none;
+          }
+
           #our-story > div {
             transform: none !important;
             opacity: 1 !important;
@@ -3238,7 +3274,7 @@ export function App() {
         }
       `}</style>
 
-      <nav className="legacy-nav legacy-nav--fixed" aria-label="Primary">
+      <nav className={`legacy-nav legacy-nav--fixed ${navScrolled ? "is-scrolled" : ""}`} aria-label="Primary">
         <a className="legacy-brand" href="#top" aria-label="Pitar home">
           <span className="legacy-brand-lockup">
             <span className="legacy-brand-mark" aria-hidden="true">
