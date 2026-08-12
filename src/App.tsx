@@ -1823,7 +1823,7 @@ export function App() {
           color: color-mix(in oklch, var(--ink) 42%, transparent);
         }
 
-        .legacy-footer-prompt-form button {
+        .legacy-footer-prompt-form > button {
           display: grid;
           flex: 0 0 auto;
           width: 48px;
@@ -1839,8 +1839,8 @@ export function App() {
           transition: background 180ms ease, transform 180ms ease, box-shadow 180ms ease;
         }
 
-        .legacy-footer-prompt-form button:hover,
-        .legacy-footer-prompt-form button:focus-visible {
+        .legacy-footer-prompt-form > button:hover,
+        .legacy-footer-prompt-form > button:focus-visible {
           background: #ffffff;
           outline: none;
           transform: translateY(-2px);
@@ -2108,7 +2108,7 @@ export function App() {
             pointer-events: none;
           }
 
-          .legacy-footer-prompt-form button {
+          .legacy-footer-prompt-form > button {
             width: 44px;
             height: 44px;
           }
