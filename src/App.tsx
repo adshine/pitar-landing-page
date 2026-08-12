@@ -1699,7 +1699,7 @@ export function App() {
         }
 
         .legacy-footer-prompt::after {
-          content: "";
+          content: none;
           position: absolute;
           top: 0;
           left: 50%;
