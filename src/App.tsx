@@ -1244,8 +1244,9 @@ export function App() {
         }
 
         .legacy-marquee .legacy-track {
-          display: grid;
-          grid-template-columns: repeat(6, minmax(0, 1fr));
+          display: flex;
+          align-items: center;
+          justify-content: space-evenly;
           width: calc(100% - 126px);
           margin-left: 126px;
           transform: none !important;
@@ -1259,7 +1260,8 @@ export function App() {
         .legacy-marquee .legacy-group,
         .legacy-marquee .legacy-group:hover,
         .legacy-marquee .legacy-group:focus-within {
-          width: 100%;
+          width: auto;
+          flex: 0 0 auto;
           height: 52px;
           overflow: visible;
           border: 0;
@@ -1269,14 +1271,15 @@ export function App() {
         .legacy-marquee .legacy-chip:hover,
         .legacy-marquee .legacy-chip:focus-visible {
           position: relative;
-          width: 100%;
+          width: auto;
+          max-width: none;
           height: 52px;
-          padding: 0;
-          overflow: hidden;
+          overflow: visible;
           background: transparent;
-          gap: clamp(6px, 0.8vw, 10px);
-          padding: 0 clamp(6px, 1vw, 12px);
+          gap: 8px;
+          padding: 0 6px;
           justify-content: center;
+          align-items: center;
         }
 
         .legacy-marquee .legacy-chip-icon,
@@ -1302,6 +1305,7 @@ export function App() {
           max-width: none;
           overflow: visible;
           white-space: nowrap;
+          letter-spacing: 0.04em;
         }
 
         .legacy-marquee .legacy-chip:hover .legacy-chip-icon,
@@ -1684,7 +1688,7 @@ export function App() {
           padding: clamp(48px, 5vw, 64px) clamp(24px, 6vw, 88px);
           overflow: hidden;
           border-bottom: 1px solid var(--line);
-          background: radial-gradient(ellipse at center, #131414 0%, #0d0e0e 58%, #080909 100%);
+          background: #050505;
           isolation: isolate;
         }
 
@@ -2183,6 +2187,14 @@ export function App() {
           .legacy-marquee .legacy-track {
             width: calc(100% - 88px);
             margin-left: 88px;
+            justify-content: flex-start;
+            gap: 4px;
+            overflow-x: auto;
+            scrollbar-width: none;
+          }
+
+          .legacy-marquee .legacy-track::-webkit-scrollbar {
+            display: none;
           }
 
           .legacy-marquee .legacy-chip-label {
