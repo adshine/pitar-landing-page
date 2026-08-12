@@ -63,7 +63,7 @@ const howItWorksSteps = [
 ]
 
 export function App() {
-  const marqueeItems = useMemo(() => Array.from({ length: 4 }, () => connectors).flat(), [])
+  const marqueeItems = useMemo(() => connectors.slice(0, 6), [])
   const trackRef = useRef<HTMLDivElement>(null)
   const pausedRef = useRef(false)
   const storySectionRef = useRef<HTMLElement | null>(null)
@@ -1197,6 +1197,68 @@ export function App() {
           color: #e9e5da;
         }
 
+        .legacy-marquee .legacy-track {
+          display: grid;
+          grid-template-columns: repeat(6, minmax(0, 1fr));
+          width: calc(100% - 126px);
+          margin-left: 126px;
+          transform: none !important;
+          will-change: auto;
+        }
+
+        .legacy-marquee .legacy-track-group {
+          display: contents;
+        }
+
+        .legacy-marquee .legacy-group,
+        .legacy-marquee .legacy-group:hover,
+        .legacy-marquee .legacy-group:focus-within {
+          width: 100%;
+          height: 52px;
+          overflow: hidden;
+        }
+
+        .legacy-marquee .legacy-chip,
+        .legacy-marquee .legacy-chip:hover,
+        .legacy-marquee .legacy-chip:focus-visible {
+          position: relative;
+          width: 100%;
+          height: 52px;
+          padding: 0;
+          overflow: hidden;
+          background: transparent;
+        }
+
+        .legacy-marquee .legacy-chip-icon,
+        .legacy-marquee .legacy-chip-label {
+          position: absolute;
+          inset: 0;
+          display: grid;
+          width: 100%;
+          height: 100%;
+          max-width: none;
+          place-items: center;
+          opacity: 1;
+          transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .legacy-marquee .legacy-chip-label {
+          padding: 0 4px;
+          transform: translateY(100%);
+          color: #e9e5da;
+          text-align: center;
+        }
+
+        .legacy-marquee .legacy-chip:hover .legacy-chip-icon,
+        .legacy-marquee .legacy-chip:focus-visible .legacy-chip-icon {
+          transform: translateY(-100%);
+        }
+
+        .legacy-marquee .legacy-chip:hover .legacy-chip-label,
+        .legacy-marquee .legacy-chip:focus-visible .legacy-chip-label {
+          transform: translateY(0);
+        }
+
         .legacy-story {
           width: 100%;
           margin: 0 auto;
@@ -2014,6 +2076,20 @@ export function App() {
             font-size: 16px;
           }
 
+          .legacy-marquee-label {
+            min-width: 88px;
+          }
+
+          .legacy-marquee .legacy-track {
+            width: calc(100% - 88px);
+            margin-left: 88px;
+          }
+
+          .legacy-marquee .legacy-chip-label {
+            font-size: 0.46rem;
+            letter-spacing: 0.025em;
+          }
+
           .legacy-footer-source-picker summary {
             width: 44px;
             height: 44px;
@@ -2243,28 +2319,13 @@ export function App() {
           </div>
             <div className="legacy-marquee" aria-label="Possible connectors">
             <button className="legacy-marquee-label" type="button" onClick={() => setOpenPanel("connections")}>Sources</button>
-            <div className="legacy-track" ref={trackRef}>
+            <div className="legacy-track">
               <div className="legacy-track-group">
                 {marqueeItems.map((connector, index) => (
                   <span className="legacy-group" key={`left-${index}-${connector.label}`}>
                     <span
                       className="legacy-chip"
                       aria-label={connector.label}
-                      style={{ ["--chip-color" as keyof CSSProperties]: connector.color } as CSSProperties}
-                    >
-                      <span className="legacy-chip-icon" aria-hidden="true">
-                        <img src={connector.icon} alt="" width="22" height="22" />
-                      </span>
-                      <span className="legacy-chip-label">{connector.label}</span>
-                    </span>
-                  </span>
-                ))}
-              </div>
-              <div className="legacy-track-group" aria-hidden="true">
-                {marqueeItems.map((connector, index) => (
-                  <span className="legacy-group" key={`right-${index}-${connector.label}`}>
-                    <span
-                      className="legacy-chip"
                       style={{ ["--chip-color" as keyof CSSProperties]: connector.color } as CSSProperties}
                     >
                       <span className="legacy-chip-icon" aria-hidden="true">
