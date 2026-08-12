@@ -1148,23 +1148,33 @@ export function App() {
           max-height: min(56svh, 560px);
           overflow: hidden;
           border-radius: 0;
-          background: #080000;
+          background: #090909;
+        }
+
+        .legacy-visual::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          z-index: 3;
+          pointer-events: none;
+          background: radial-gradient(ellipse 64% 60% at 50% 42%, transparent 36%, #090909 78%);
         }
 
         .legacy-visual::before {
           content: "";
           position: absolute;
-          top: 0;
+          top: -12%;
           left: 50%;
           z-index: 1;
-          width: min(42%, 520px);
-          height: 100%;
-          background: linear-gradient(176deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.045) 34%, transparent 82%);
-          clip-path: polygon(43% 0, 57% 0, 88% 100%, 12% 100%);
-          filter: blur(34px);
-          opacity: 0.62;
+          width: min(46%, 420px);
+          height: 92%;
+          background: radial-gradient(ellipse 42% 70% at 50% 8%, rgba(20, 168, 96, 0.32), rgba(20, 168, 96, 0.1) 46%, transparent 74%);
+          filter: blur(42px);
+          opacity: 0.85;
           transform: translateX(-50%);
           pointer-events: none;
+          mask-image: radial-gradient(ellipse 70% 72% at 50% 28%, #000 20%, transparent 74%);
+          -webkit-mask-image: radial-gradient(ellipse 70% 72% at 50% 28%, #000 20%, transparent 74%);
         }
 
         .legacy-visual video {
@@ -1230,7 +1240,7 @@ export function App() {
           margin: 10px 0;
           place-items: center;
           border: 1px solid var(--line);
-          background: #080000;
+          background: #090909;
           color: var(--muted);
           font-family: var(--mono);
           font-size: 0.52rem;
@@ -1255,23 +1265,63 @@ export function App() {
           pointer-events: none;
         }
 
-        .legacy-ask-beams {
+        .legacy-ask-line {
           position: absolute;
           left: 50%;
           top: 44px;
-          z-index: 0;
-          width: 120px;
-          height: 96px;
-          overflow: visible;
+          bottom: auto;
+          width: 1px;
+          height: 0;
+          background: linear-gradient(to bottom, rgba(34, 197, 94, 0.95), rgba(242, 242, 242, 0.12));
           transform: translateX(-50%);
-          pointer-events: none;
+          transform-origin: top center;
         }
 
-        .legacy-ask-beams.is-to-answer {
+        .legacy-ask-line.is-to-answer {
           top: auto;
           bottom: 8%;
-          height: 28%;
-          width: 140px;
+          transform-origin: bottom center;
+          background: linear-gradient(to top, rgba(242, 242, 242, 0.12), rgba(34, 197, 94, 0.95));
+        }
+
+        .legacy-visual-beams {
+          position: absolute;
+          inset: 0;
+          z-index: 1;
+          overflow: hidden;
+          pointer-events: none;
+          transform: rotate(-21deg) scale(1.12);
+          transform-origin: 50% 10%;
+          mask-image: radial-gradient(ellipse 58% 54% at 50% 34%, #000 8%, rgba(0, 0, 0, 0.55) 38%, transparent 66%);
+          -webkit-mask-image: radial-gradient(ellipse 58% 54% at 50% 34%, #000 8%, rgba(0, 0, 0, 0.55) 38%, transparent 66%);
+        }
+
+        .legacy-visual-beams i {
+          position: absolute;
+          top: -16%;
+          left: 50%;
+          width: 16%;
+          height: 140%;
+          background: linear-gradient(
+            180deg,
+            rgba(20, 168, 96, 0.26) 0%,
+            rgba(20, 168, 96, 0.09) 40%,
+            rgba(20, 168, 96, 0) 78%
+          );
+          filter: blur(46px);
+          transform-origin: top center;
+        }
+
+        .legacy-visual-beams i:nth-child(1) {
+          transform: translateX(-210%);
+        }
+
+        .legacy-visual-beams i:nth-child(2) {
+          transform: translateX(-50%);
+        }
+
+        .legacy-visual-beams i:nth-child(3) {
+          transform: translateX(110%);
         }
 
         .legacy-ask-dock {
@@ -1283,10 +1333,11 @@ export function App() {
           display: flex;
           align-items: center;
           min-height: 44px;
-          border: 1px solid var(--line);
-          background: rgba(8, 0, 0, 0.78);
-          -webkit-backdrop-filter: blur(12px);
-          backdrop-filter: blur(12px);
+          border: 1px solid rgba(242, 242, 242, 0.16);
+          background: rgba(12, 18, 14, 0.34);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+          -webkit-backdrop-filter: blur(22px) saturate(1.45);
+          backdrop-filter: blur(22px) saturate(1.45);
         }
 
         .legacy-ask-add {
@@ -1481,8 +1532,11 @@ export function App() {
           position: relative;
           width: min(100%, 440px);
           padding: 14px 16px 16px;
-          border: 1px solid var(--line);
-          background: rgba(8, 0, 0, 0.82);
+          border: 1px solid rgba(242, 242, 242, 0.16);
+          background: rgba(12, 18, 14, 0.34);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+          -webkit-backdrop-filter: blur(22px) saturate(1.45);
+          backdrop-filter: blur(22px) saturate(1.45);
           will-change: transform;
         }
 
@@ -1517,7 +1571,7 @@ export function App() {
           align-items: center;
           gap: 10px;
           padding: 0 8px;
-          background: rgba(8, 0, 0, 0.82);
+          background: transparent;
           transform: translate(-50%, -50%);
         }
 
@@ -3331,6 +3385,9 @@ export function App() {
             onMouseEnter={() => setHeroHoverPaused(true)}
             onMouseLeave={() => setHeroHoverPaused(false)}
           >
+            <div className="legacy-visual-beams" aria-hidden="true">
+              <i /><i /><i />
+            </div>
             <div className={`legacy-orbit-slot dark${heroScreen === 2 ? " is-asking" : ""}`}>
               <OrbitingCirclesGlobe paused={heroHoverPaused} dimRings={heroScreen === 2} />
             </div>
