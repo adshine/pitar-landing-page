@@ -429,7 +429,7 @@ export function App() {
           align-items: stretch;
           width: 100%;
           min-height: 100svh;
-          padding: 8px var(--section-inline) 24px;
+          padding: 100px var(--section-inline) 24px;
           gap: 20px;
         }
 
@@ -1167,9 +1167,9 @@ export function App() {
           z-index: 1;
           width: min(46%, 420px);
           height: 92%;
-          background: radial-gradient(ellipse 42% 70% at 50% 8%, rgba(20, 168, 96, 0.32), rgba(20, 168, 96, 0.1) 46%, transparent 74%);
+          background: radial-gradient(ellipse 42% 70% at 50% 8%, rgba(20, 168, 96, 0.16), rgba(20, 168, 96, 0.05) 46%, transparent 74%);
           filter: blur(42px);
-          opacity: 0.85;
+          opacity: 0.55;
           transform: translateX(-50%);
           pointer-events: none;
           mask-image: radial-gradient(ellipse 70% 72% at 50% 28%, #000 20%, transparent 74%);
@@ -1303,8 +1303,8 @@ export function App() {
           height: 140%;
           background: linear-gradient(
             180deg,
-            rgba(20, 168, 96, 0.26) 0%,
-            rgba(20, 168, 96, 0.09) 40%,
+            rgba(20, 168, 96, 0.12) 0%,
+            rgba(20, 168, 96, 0.04) 40%,
             rgba(20, 168, 96, 0) 78%
           );
           filter: blur(46px);
@@ -2426,6 +2426,7 @@ export function App() {
 
           .legacy-hero {
             min-height: auto;
+            padding-top: 100px;
           }
 
           .legacy-hero-copy {
