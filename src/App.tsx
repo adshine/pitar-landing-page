@@ -1685,7 +1685,7 @@ export function App() {
           display: grid;
           place-items: center;
           min-height: clamp(270px, 28vw, 330px);
-          padding: clamp(48px, 5vw, 64px) clamp(24px, 6vw, 88px);
+          padding: clamp(72px, 7vw, 96px) clamp(24px, 6vw, 88px);
           overflow: hidden;
           border-bottom: 1px solid var(--line);
           background: #050505;
@@ -1951,6 +1951,7 @@ export function App() {
 
 
         .legacy-footer-main {
+          border-top: 0;
           display: grid;
           grid-template-columns: minmax(280px, 1.45fr) repeat(2, minmax(150px, 0.78fr));
           gap: clamp(42px, 6vw, 96px);
@@ -2147,7 +2148,7 @@ export function App() {
 
           .legacy-footer-prompt {
             min-height: 280px;
-            padding: 40px 18px;
+            padding: 56px 18px;
             background-size: auto;
           }
 
