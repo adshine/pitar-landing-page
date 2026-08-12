@@ -826,7 +826,7 @@ export function App() {
           margin: 0;
           font-family: var(--sans);
           font-size: clamp(3.3rem, 4.8vw, 5.2rem);
-          font-weight: 600;
+          font-weight: 400;
           letter-spacing: -0.045em;
           line-height: 0.88;
         }
@@ -1708,8 +1708,10 @@ export function App() {
           max-width: none;
           margin: 0 auto;
           font-family: var(--sans);
-          font-size: clamp(2rem, 3.5vw, 3.35rem);
-          font-weight: 600;
+          font-size: clamp(2rem, 4vw, 2.7rem);
+          font-weight: 400;
+          line-height: 1.05;
+          letter-spacing: -0.045em;
           white-space: nowrap;
           letter-spacing: -0.045em;
           line-height: 1;
@@ -2089,7 +2091,7 @@ export function App() {
 
           .legacy-footer-prompt h2 {
             margin-top: 0;
-            font-size: clamp(2.2rem, 10vw, 3rem);
+            font-size: clamp(2rem, 9vw, 2.7rem);
             white-space: normal;
           }
 
