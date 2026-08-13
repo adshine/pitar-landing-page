@@ -2878,6 +2878,11 @@ export function App() {
           isolation: isolate;
         }
 
+        .legacy-footer-prompt {
+          border-top: 1px solid transparent;
+          border-image: linear-gradient(90deg, var(--line) 0%, var(--line) 28%, rgba(255, 255, 255, 0.82) 50%, var(--line) 72%, var(--line) 100%) 1;
+        }
+
         .legacy-footer-prompt::before {
           content: none;
           position: absolute;
