@@ -215,8 +215,14 @@ export function HeroAskFlow({ beatIndex, elapsedMs }: HeroAskFlowProps) {
   const menuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const hot = menuRef.current?.querySelector<HTMLElement>(".is-hot")
-    hot?.scrollIntoView({ block: "nearest" })
+    const menu = menuRef.current
+    const hot = menu?.querySelector<HTMLElement>(".is-hot")
+    if (!menu || !hot) return
+
+    const itemTop = hot.offsetTop
+    const itemBottom = itemTop + hot.offsetHeight
+    if (itemTop < menu.scrollTop) menu.scrollTop = itemTop
+    else if (itemBottom > menu.scrollTop + menu.clientHeight) menu.scrollTop = itemBottom - menu.clientHeight
   }, [hoverPick, menuOpen])
 
   return (
