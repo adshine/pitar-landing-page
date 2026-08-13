@@ -447,7 +447,7 @@ export function App() {
           isolation: isolate;
           min-height: 100svh;
           margin: 0;
-          overflow: hidden;
+          overflow: clip;
           background: var(--paper);
           color: var(--ink);
           font-family: var(--sans);
@@ -1059,7 +1059,7 @@ export function App() {
           flex-direction: row;
           align-items: flex-start;
           justify-content: space-between;
-          gap: clamp(28px, 5vw, 80px);
+          gap: clamp(48px, 9vw, 160px);
           padding: 24px 0 0;
           width: 100%;
           min-width: 0;
@@ -1191,6 +1191,7 @@ export function App() {
           width: 100vw;
           max-width: none;
           min-height: 0;
+          margin-top: auto;
           margin-left: calc(50% - 50vw);
           box-sizing: border-box;
           border: 0;
@@ -1207,8 +1208,8 @@ export function App() {
           max-width: none;
           flex: 0 0 auto;
           aspect-ratio: auto;
-          height: clamp(440px, 50vh, 560px);
-          max-height: 560px;
+          height: clamp(460px, 58vh, 600px);
+          max-height: 600px;
           overflow: hidden;
           border: 0;
           outline: 0;
@@ -2359,27 +2360,62 @@ export function App() {
         }
 
         .legacy-how-copy {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          gap: 48px;
+        }
+
+        .legacy-how-copy > div {
           display: grid;
           align-content: start;
           gap: 14px;
         }
 
+        .legacy-how-copy > div > p:first-child {
+          margin-bottom: 0;
+        }
+
+        .legacy-how-media {
+          width: 100%;
+          aspect-ratio: 4 / 5;
+          overflow: hidden;
+          border: 1px solid var(--line);
+          background: #090909;
+        }
+
+        .legacy-how-media img {
+          display: block;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          filter: grayscale(1) sepia(1) saturate(6) hue-rotate(72deg) contrast(1.08);
+        }
+
         #how-it-works .legacy-how-subtitle {
-          margin: 0 0 28px;
+          margin: 0;
           max-width: 42ch;
           color: var(--muted);
           text-align: left;
         }
 
         @media (min-width: 901px) {
-          #how-it-works > div {
+          #how-it-works .legacy-how-grid {
             grid-template-columns: minmax(0, 0.9fr) minmax(440px, 1.1fr);
             align-items: start;
             gap: clamp(64px, 9vw, 144px);
           }
 
           #how-it-works .legacy-story-accordion {
+            position: sticky;
+            top: 96px;
+            align-self: start;
             padding-top: 2px;
+          }
+
+          #how-it-works .legacy-how-media {
+            position: sticky;
+            top: 24px;
           }
         }
 
@@ -2406,6 +2442,10 @@ export function App() {
           line-height: 1.05;
           letter-spacing: -0.045em;
           font-family: var(--sans);
+        }
+
+        #how-it-works .legacy-how-copy h2 {
+          max-width: 24ch;
         }
 
         @keyframes legacy-rise-in {
@@ -2583,6 +2623,19 @@ export function App() {
           border-bottom: 0;
           padding-top: clamp(88px, 11vw, 140px);
           padding-bottom: clamp(88px, 11vw, 140px);
+          display: grid;
+          place-items: center;
+        }
+
+        #how-it-works > div {
+          width: min(100%, 1180px);
+          display: grid;
+          gap: clamp(48px, 7vh, 84px);
+        }
+
+        .legacy-how-grid {
+          display: grid;
+          gap: clamp(48px, 7vh, 84px);
         }
 
         #our-story > div {
@@ -3594,20 +3647,27 @@ export function App() {
       <section className="legacy-story" id="how-it-works" aria-label="How Pitar works">
         <div>
           <div className="legacy-how-copy">
-            <p>How it works</p>
-            <h2>Everything you keep. Any question you have.</h2>
-          </div>
-          <div className="legacy-story-accordion">
+            <div>
+              <p>How it works</p>
+              <h2>Everything you keep. Any question you have.</h2>
+            </div>
             <p className="legacy-how-subtitle">Answers come with source evidence. No answer without trace.</p>
-            {howItWorksSteps.map(({ step, title, copy }, index) => (
-              <details className="legacy-story-details" key={step} open={index === 0}>
-                <summary className="legacy-story-summary">
-                  <span className="legacy-story-step">{step}</span>
-                  <h3 className="legacy-story-title">{title}</h3>
-                </summary>
-                <p className="legacy-story-body">{copy}</p>
-              </details>
-            ))}
+          </div>
+          <div className="legacy-how-grid">
+            <div className="legacy-story-accordion">
+              {howItWorksSteps.map(({ step, title, copy }, index) => (
+                <details className="legacy-story-details" key={step} open={index === 0}>
+                  <summary className="legacy-story-summary">
+                    <span className="legacy-story-step">{step}</span>
+                    <h3 className="legacy-story-title">{title}</h3>
+                  </summary>
+                  <p className="legacy-story-body">{copy}</p>
+                </details>
+              ))}
+            </div>
+            <div className="legacy-how-media">
+              <img src={`${import.meta.env.BASE_URL}images/how-it-works.jpg`} alt="Pitar knowledge visual" loading="lazy" />
+            </div>
           </div>
         </div>
       </section>
