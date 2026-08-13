@@ -101,11 +101,15 @@ export function App() {
   const [heroElapsed, setHeroElapsed] = useState(0)
   const [heroHoverPaused, setHeroHoverPaused] = useState(false)
   const [activeHowStep, setActiveHowStep] = useState(0)
+  const [howBeat, setHowBeat] = useState(0)
+  const [howElapsed, setHowElapsed] = useState(0)
   const heroElapsedRef = useRef(0)
   const heroPausedRef = useRef(false)
   const heroScrubbingRef = useRef(false)
   const heroScreenRef = useRef<1 | 2>(1)
   const heroBeatRef = useRef(0)
+  const howElapsedRef = useRef(0)
+  const howBeatRef = useRef(0)
   const screenOneMs = 5200
 
   const panelTitle: Record<string, string> = {
@@ -397,6 +401,37 @@ export function App() {
     frame = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(frame)
   }, [screenOneMs])
+
+  howBeatRef.current = howBeat
+
+  useEffect(() => {
+    if (activeHowStep !== 1) return
+    howElapsedRef.current = 0
+    howBeatRef.current = 0
+    setHowElapsed(0)
+    setHowBeat(0)
+
+    let frame = 0
+    let last = performance.now()
+
+    const tick = (now: number) => {
+      const delta = now - last
+      last = now
+      let next = howElapsedRef.current + delta
+      const duration = heroAskDuration(howBeatRef.current)
+      if (next >= duration) {
+        howBeatRef.current = (howBeatRef.current + 1) % heroAskBeats.length
+        setHowBeat(howBeatRef.current)
+        next = 0
+      }
+      howElapsedRef.current = next
+      setHowElapsed(next)
+      frame = requestAnimationFrame(tick)
+    }
+
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
+  }, [activeHowStep])
 
   const seekHeroProgress = (clientX: number, target: HTMLElement) => {
     const box = target.getBoundingClientRect()
@@ -2353,6 +2388,7 @@ export function App() {
           padding: 48px var(--section-inline) 110px;
           color: var(--muted);
           opacity: 1;
+          background: var(--paper);
         }
 
         .legacy-story > div {
@@ -2388,13 +2424,44 @@ export function App() {
           background: #090909;
         }
 
+        .legacy-how-media::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          z-index: 3;
+          pointer-events: none;
+          background: radial-gradient(ellipse 82% 78% at 50% 44%, transparent 58%, #090909 96%);
+        }
+
+        .legacy-how-media::before {
+          content: "";
+          position: absolute;
+          top: -12%;
+          left: 50%;
+          z-index: 1;
+          width: min(52%, 320px);
+          height: 92%;
+          background: radial-gradient(ellipse 42% 70% at 50% 8%, rgba(20, 168, 96, 0.16), rgba(20, 168, 96, 0.05) 46%, transparent 74%);
+          filter: blur(42px);
+          opacity: 0.55;
+          transform: translateX(-50%);
+          pointer-events: none;
+          mask-image: radial-gradient(ellipse 70% 72% at 50% 28%, #000 20%, transparent 74%);
+          -webkit-mask-image: radial-gradient(ellipse 70% 72% at 50% 28%, #000 20%, transparent 74%);
+        }
+
         .legacy-how-media-stage {
           position: absolute;
           inset: 0;
+          z-index: 2;
           display: grid;
           place-items: center;
           overflow: hidden;
           animation: legacy-how-media-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        .legacy-how-media-stage .legacy-visual-beams {
+          z-index: 1;
         }
 
         .legacy-how-media-stage .legacy-orbit-slot {
@@ -2402,11 +2469,16 @@ export function App() {
           inset: 0;
         }
 
+        .legacy-how-media-stage .legacy-orbit-slot > * {
+          transform: scale(1.62) translateY(38%);
+          transform-origin: center center;
+        }
+
         .legacy-how-media-stage .legacy-ask-flow {
           position: absolute;
           inset: 0;
-          transform: scale(0.82);
-          transform-origin: center;
+          padding: clamp(24px, 6vw, 48px) clamp(18px, 5vw, 40px);
+          transform: none;
         }
 
         .legacy-lineage {
@@ -2480,12 +2552,16 @@ export function App() {
           to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
         }
 
-        .legacy-how-media img {
+        .legacy-how-review-image {
           display: block;
           width: 100%;
           height: 100%;
           object-fit: cover;
           filter: grayscale(1) sepia(1) saturate(6) hue-rotate(72deg) contrast(1.08);
+        }
+
+        .legacy-how-media-stage .legacy-orbit-slot img {
+          filter: none;
         }
 
         #how-it-works .legacy-how-subtitle {
@@ -3769,11 +3845,12 @@ export function App() {
             <div className="legacy-how-media">
               {activeHowStep === 0 ? (
                 <div className="legacy-how-media-stage" key="connect">
+                  <div className="legacy-visual-beams" aria-hidden="true"><i /><i /><i /></div>
                   <div className="legacy-orbit-slot dark"><OrbitingCirclesGlobe paused={false} dimRings={false} /></div>
                 </div>
               ) : activeHowStep === 1 ? (
                 <div className="legacy-how-media-stage" key="ask">
-                  <HeroAskFlow beatIndex={heroBeat} elapsedMs={heroElapsed} />
+                  <HeroAskFlow beatIndex={howBeat} elapsedMs={howElapsed} />
                 </div>
               ) : (
                 <div className="legacy-how-media-stage" key="review">
