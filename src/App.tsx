@@ -3723,7 +3723,7 @@ export function App() {
 
       <section className="legacy-story" id="our-story" ref={storySectionRef} aria-label="Pitar origin story">
         <div ref={storyContentRef}>
-          <p>How it works</p>
+          <p>Our story</p>
           <h2>The origin of Pitar.</h2>
           <p>
             My father, Peter Chukwu Emeka Nwankwo, wrote constantly. Letters, sermons, ledgers kept in a hand I can still
