@@ -2409,6 +2409,72 @@ export function App() {
           transform-origin: center;
         }
 
+        .legacy-lineage {
+          position: relative;
+          display: grid;
+          width: min(78%, 460px);
+          gap: 34px;
+          padding-left: 42px;
+        }
+
+        .legacy-lineage::before {
+          content: "";
+          position: absolute;
+          top: 18px;
+          bottom: 18px;
+          left: 15px;
+          width: 1px;
+          background: linear-gradient(to bottom, rgba(34, 197, 94, 0.2), #22c55e 45%, rgba(34, 197, 94, 0.2));
+          box-shadow: 0 0 16px rgba(34, 197, 94, 0.35);
+        }
+
+        .legacy-lineage-step {
+          position: relative;
+          display: grid;
+          gap: 7px;
+          opacity: 0;
+          animation: legacy-lineage-step 520ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .legacy-lineage-step:nth-child(2) { animation-delay: 120ms; }
+        .legacy-lineage-step:nth-child(3) { animation-delay: 240ms; }
+        .legacy-lineage-step:nth-child(4) { animation-delay: 360ms; }
+
+        .legacy-lineage-step::before {
+          content: "";
+          position: absolute;
+          top: 8px;
+          left: -34px;
+          width: 14px;
+          height: 14px;
+          border: 1px solid #22c55e;
+          background: #090909;
+          box-shadow: 0 0 12px rgba(34, 197, 94, 0.45);
+          transform: rotate(45deg);
+        }
+
+        .legacy-lineage-step span {
+          color: #4ade80;
+          font: 500 0.56rem/1 var(--mono);
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+        }
+
+        .legacy-lineage-step strong {
+          color: var(--ink);
+          font: 500 clamp(1rem, 1.7vw, 1.35rem)/1.25 var(--sans);
+        }
+
+        .legacy-lineage-step small {
+          color: var(--muted);
+          font: 400 0.8rem/1.5 var(--sans);
+        }
+
+        @keyframes legacy-lineage-step {
+          from { opacity: 0; transform: translateY(12px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
         @keyframes legacy-how-media-in {
           from { opacity: 0; transform: translateY(18px) scale(0.985); filter: blur(8px); }
           to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
@@ -3706,7 +3772,12 @@ export function App() {
                 </div>
               ) : (
                 <div className="legacy-how-media-stage" key="review">
-                  <img src={`${import.meta.env.BASE_URL}images/how-it-works.jpg`} alt="Pitar sourced answer visual" loading="lazy" />
+                  <div className="legacy-lineage" aria-label="Answer lineage timeline">
+                    <div className="legacy-lineage-step"><span>Source</span><strong>Google Drive</strong><small>2019 Kaduna lease addendum</small></div>
+                    <div className="legacy-lineage-step"><span>Record</span><strong>Page 2, clause 4.1</strong><small>Warehouse location and agreement reference</small></div>
+                    <div className="legacy-lineage-step"><span>Evidence</span><strong>Kaduna warehouse</strong><small>Matched across the 2016 lease and 2019 addendum</small></div>
+                    <div className="legacy-lineage-step"><span>Answer</span><strong>One sentence, sourced</strong><small>Every claim returns to its exact page</small></div>
+                  </div>
                 </div>
               )}
             </div>
