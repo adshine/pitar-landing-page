@@ -100,6 +100,7 @@ export function App() {
   const [heroBeat, setHeroBeat] = useState(0)
   const [heroElapsed, setHeroElapsed] = useState(0)
   const [heroHoverPaused, setHeroHoverPaused] = useState(false)
+  const [activeHowStep, setActiveHowStep] = useState(0)
   const heroElapsedRef = useRef(0)
   const heroPausedRef = useRef(false)
   const heroScrubbingRef = useRef(false)
@@ -2377,11 +2378,40 @@ export function App() {
         }
 
         .legacy-how-media {
+          position: relative;
+          display: grid;
+          place-items: center;
           width: 100%;
           aspect-ratio: 4 / 5;
           overflow: hidden;
           border: 1px solid var(--line);
           background: #090909;
+        }
+
+        .legacy-how-media-stage {
+          position: absolute;
+          inset: 0;
+          display: grid;
+          place-items: center;
+          overflow: hidden;
+          animation: legacy-how-media-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        .legacy-how-media-stage .legacy-orbit-slot {
+          position: absolute;
+          inset: 0;
+        }
+
+        .legacy-how-media-stage .legacy-ask-flow {
+          position: absolute;
+          inset: 0;
+          transform: scale(0.82);
+          transform-origin: center;
+        }
+
+        @keyframes legacy-how-media-in {
+          from { opacity: 0; transform: translateY(18px) scale(0.985); filter: blur(8px); }
+          to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
         }
 
         .legacy-how-media img {
@@ -3656,8 +3686,8 @@ export function App() {
           <div className="legacy-how-grid">
             <div className="legacy-story-accordion">
               {howItWorksSteps.map(({ step, title, copy }, index) => (
-                <details className="legacy-story-details" key={step} open={index === 0}>
-                  <summary className="legacy-story-summary">
+                <details className="legacy-story-details" key={step} open={activeHowStep === index}>
+                  <summary className="legacy-story-summary" onClick={(event) => { event.preventDefault(); setActiveHowStep(index) }}>
                     <span className="legacy-story-step">{step}</span>
                     <h3 className="legacy-story-title">{title}</h3>
                   </summary>
@@ -3666,7 +3696,19 @@ export function App() {
               ))}
             </div>
             <div className="legacy-how-media">
-              <img src={`${import.meta.env.BASE_URL}images/how-it-works.jpg`} alt="Pitar knowledge visual" loading="lazy" />
+              {activeHowStep === 0 ? (
+                <div className="legacy-how-media-stage" key="connect">
+                  <div className="legacy-orbit-slot dark"><OrbitingCirclesGlobe paused={false} dimRings={false} /></div>
+                </div>
+              ) : activeHowStep === 1 ? (
+                <div className="legacy-how-media-stage" key="ask">
+                  <HeroAskFlow beatIndex={heroBeat} elapsedMs={heroElapsed} />
+                </div>
+              ) : (
+                <div className="legacy-how-media-stage" key="review">
+                  <img src={`${import.meta.env.BASE_URL}images/how-it-works.jpg`} alt="Pitar sourced answer visual" loading="lazy" />
+                </div>
+              )}
             </div>
           </div>
         </div>
