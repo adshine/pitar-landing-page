@@ -1,12 +1,42 @@
 import { type CSSProperties, type MouseEvent, type PointerEvent, useEffect, useRef, useState } from "react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { ScrollToPlugin } from "gsap/ScrollToPlugin"
 import { useGSAP } from "@gsap/react"
 import { HeroAskFlow, heroAskBeats, heroAskDuration } from "@/components/hero-ask-flow"
 import { HowReviewFlow } from "@/components/how-review-flow"
 import OrbitingCirclesGlobe from "@/components/ui/orbiting-circles-02"
 
-gsap.registerPlugin(ScrollTrigger, useGSAP)
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin, useGSAP)
+
+function splitWords(el: HTMLElement) {
+  if (el.dataset.words === "1") {
+    return Array.from(el.querySelectorAll<HTMLElement>("[data-word]"))
+  }
+  const raw = el.textContent ?? ""
+  el.textContent = ""
+  el.dataset.words = "1"
+  return raw.trim().split(/\s+/).map((word, index, words) => {
+    const span = document.createElement("span")
+    span.dataset.word = ""
+    span.style.display = "inline-block"
+    span.textContent = word
+    el.append(span)
+    if (index < words.length - 1) el.append(document.createTextNode(" "))
+    return span
+  })
+}
+
+function scrollToId(id: string) {
+  const target = document.getElementById(id)
+  if (!target) return
+  gsap.to(window, {
+    duration: 1.05,
+    ease: "power2.inOut",
+    scrollTo: { y: target, autoKill: true },
+    overwrite: "auto",
+  })
+}
 
 type Connector = {
   label: string
@@ -46,6 +76,53 @@ const connectionGroups = [
 ]
 
 const upcomingErp = ["SAP", "Oracle", "NetSuite", "Dynamics 365", "Workday", "Sage"]
+
+const CARE_MAIL = "mailto:care@pitar.ai?subject=Pitar%20plans"
+
+const pitarPlans = [
+  {
+    id: "personal",
+    kicker: "For a family archive",
+    name: "Personal",
+    price: "Join the list",
+    blurb: "A private place for letters, records, and the stories they hold.",
+    points: [
+      "Organize a personal or family archive",
+      "Ask questions across processed documents",
+      "Return to the exact source page",
+    ],
+    cta: "Create a personal account",
+    action: "signup" as const,
+  },
+  {
+    id: "professional",
+    kicker: "For practitioners",
+    name: "Professional",
+    price: "Talk to care",
+    blurb: "Evidence-grounded research for legal and investigative work.",
+    points: [
+      "Trace answers across case materials",
+      "Keep source context in view",
+      "Work from a connected evidence graph",
+    ],
+    cta: "Create a professional account",
+    action: "signup" as const,
+  },
+  {
+    id: "enterprise",
+    kicker: "For organizations",
+    name: "Enterprise",
+    price: "Custom",
+    blurb: "Institutional knowledge that remains connected to its evidence.",
+    points: [
+      "Make internal documents searchable",
+      "Preserve authoritative source context",
+      "Prepare for team-scale knowledge work",
+    ],
+    cta: "Ask care about Enterprise",
+    action: "care" as const,
+  },
+]
 
 const howItWorksSteps = [
   {
@@ -99,6 +176,7 @@ export function App() {
   const mobileMenuButtonRef = useRef<HTMLButtonElement | null>(null)
   const navRef = useRef<HTMLElement | null>(null)
   const [openPanel, setOpenPanel] = useState<string | null>(null)
+  const [authMode, setAuthMode] = useState<"signin" | "signup">("signup")
   const [openMobileMenu, setOpenMobileMenu] = useState(false)
   const [navScrolled, setNavScrolled] = useState(false)
   const [heroScreen, setHeroScreen] = useState<1 | 2>(1)
@@ -131,7 +209,7 @@ export function App() {
 
   const panelTitle: Record<string, string> = {
     connections: "Connections",
-    auth: "Sign in",
+    auth: "Account",
     trust: "Trust",
     story: "Our Story",
   }
@@ -142,7 +220,10 @@ export function App() {
       "Start with a mail account, cloud drive, or folder upload.",
       "All answers surface the original source page for easy verification.",
     ],
-    auth: ["Sign in to your account.", "This panel is a placeholder for your auth entry point."],
+    auth: [
+      "Sign in to your account.",
+      "Create an account to connect a source and ask your records.",
+    ],
     trust: ["View how provenance is tracked from source to answer.", "Every answer is anchored with trace metadata."],
     story: [
       "It started with one man's papers.",
@@ -159,18 +240,31 @@ export function App() {
     event.preventDefault()
     setOpenPanel(null)
     closeMobileMenu()
-    document.getElementById("our-story")?.scrollIntoView({ behavior: "smooth", block: "start" })
+    scrollToId("our-story")
   }
 
   const scrollToHowItWorks = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault()
     setOpenPanel(null)
     closeMobileMenu()
-    document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth", block: "start" })
+    scrollToId("how-it-works")
+  }
+
+  const scrollToPlans = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault()
+    setOpenPanel(null)
+    closeMobileMenu()
+    scrollToId("plans")
+  }
+
+  const requireAccount = (mode: "signin" | "signup" = "signup") => {
+    setAuthMode(mode)
+    setOpenPanel("auth")
   }
 
   const openPanelFromClick = (event: MouseEvent<HTMLAnchorElement>, panel: string) => {
     event.preventDefault()
+    if (panel === "auth") setAuthMode("signin")
     setOpenPanel(panel)
     closeMobileMenu()
   }
@@ -219,20 +313,11 @@ export function App() {
   useEffect(() => {
     const panel = panelRef.current
     const backdrop = panelBackdropRef.current
-    if (!panel || !backdrop) return
-
-    gsap.killTweensOf([panel, backdrop])
-
-    if (openPanel) {
-      panel.removeAttribute("inert")
-      gsap.set(panel, { visibility: "visible", xPercent: 110 })
-      gsap.to(panel, { xPercent: 0, duration: 0.34, ease: "power3.out" })
-      gsap.to(backdrop, { autoAlpha: 1, duration: 0.22, ease: "power2.out" })
-    } else {
-      panel.setAttribute("inert", "")
-      gsap.to(panel, { xPercent: 110, duration: 0.26, ease: "power2.in", onComplete: () => gsap.set(panel, { visibility: "hidden" }) })
-      gsap.to(backdrop, { autoAlpha: 0, duration: 0.2, ease: "power2.in" })
-    }
+    if (panel) gsap.set(panel, { clearProps: "transform,visibility,x,xPercent" })
+    if (backdrop) gsap.set(backdrop, { clearProps: "opacity,visibility,autoAlpha" })
+    if (!panel) return
+    if (openPanel) panel.removeAttribute("inert")
+    else panel.setAttribute("inert", "")
   }, [openPanel])
 
   useEffect(() => {
@@ -335,6 +420,20 @@ export function App() {
       color: "var(--muted)",
     })
 
+    const heading = content.querySelector<HTMLElement>("h2")
+    if (heading && !reducedMotion) {
+      const words = splitWords(heading)
+      gsap.from(words, {
+        y: 16,
+        autoAlpha: 0,
+        filter: "blur(8px)",
+        duration: 0.7,
+        stagger: 0.06,
+        ease: "power2.out",
+        scrollTrigger: { trigger: heading, start: "top 84%" },
+      })
+    }
+
     children.forEach((child) => {
       gsap.to(child, {
         autoAlpha: 1,
@@ -366,19 +465,11 @@ export function App() {
     const circ = 2 * Math.PI * 50
     const lastIndex = HOW_ORBIT_STEPS - 1
 
-    const travelForProgress = (progress: number) => {
-      if (HOW_ORBIT_STEPS <= 1) return 0
-      const local = progress * HOW_ORBIT_STEPS
-      const step = Math.min(lastIndex, Math.floor(local + 1e-6))
-      const frac = Math.min(1, Math.max(0, local - step))
-      const hold = 0.38
-      if (step >= lastIndex) return HOW_ORBIT_TRAVEL
-      if (frac <= hold) return step * HOW_ORBIT_GAP
-      return (step + (frac - hold) / (1 - hold)) * HOW_ORBIT_GAP
-    }
+    const travelForProgress = (progress: number) =>
+      Math.min(1, Math.max(0, progress)) * HOW_ORBIT_TRAVEL
 
     const stepForProgress = (progress: number) =>
-      Math.min(lastIndex, Math.max(0, Math.round(travelForProgress(progress) / HOW_ORBIT_GAP)))
+      Math.min(lastIndex, Math.max(0, Math.floor(Math.min(0.999, progress) * HOW_ORBIT_STEPS)))
 
     const placeOrbit = (progress: number) => {
       const travel = travelForProgress(progress)
@@ -410,8 +501,8 @@ export function App() {
         scrollTrigger: {
           trigger: wrapper,
           start: "top top",
-          end: "bottom bottom",
-          scrub: true,
+          end: "+=270vh",
+          scrub: 1.2,
           invalidateOnRefresh: true,
           toggleActions: "play none none none",
           onUpdate: (self) => {
@@ -440,6 +531,41 @@ export function App() {
       timeline?.kill()
     }
   }, { scope: howWrapRef, dependencies: [isDesktopHow, reducedMotion] })
+
+  useGSAP(() => {
+    if (reducedMotion) return
+    ScrollTrigger.normalizeScroll(true)
+
+    const blocks = document.querySelectorAll<HTMLElement>(
+      "#how-it-works .legacy-how-copy, #plans .legacy-plans-copy, #plans .legacy-plan",
+    )
+    blocks.forEach((block) => {
+      gsap.fromTo(
+        block,
+        { autoAlpha: 0, y: 28, filter: "blur(10px)" },
+        {
+          autoAlpha: 1,
+          y: 0,
+          filter: "blur(0px)",
+          duration: 0.9,
+          ease: "power2.out",
+          scrollTrigger: { trigger: block, start: "top 86%", once: true },
+        },
+      )
+      const heading = block.querySelector<HTMLElement>("h2, h3")
+      if (!heading) return
+      const words = splitWords(heading)
+      gsap.from(words, {
+        y: 14,
+        autoAlpha: 0,
+        filter: "blur(7px)",
+        duration: 0.65,
+        stagger: 0.055,
+        ease: "power2.out",
+        scrollTrigger: { trigger: heading, start: "top 88%", once: true },
+      })
+    })
+  }, { dependencies: [reducedMotion] })
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -798,10 +924,11 @@ export function App() {
 
         .legacy-nav-links {
           display: flex;
-          flex: 0 0 auto;
+          flex: 0 1 auto;
           align-items: center;
-          gap: clamp(16px, 2.5vw, 32px);
+          gap: clamp(8px, 1.4vw, 22px);
           margin-left: auto;
+          min-width: 0;
         }
 
         .legacy-nav .legacy-brand,
@@ -1039,6 +1166,8 @@ export function App() {
           left: 50%;
           z-index: 20;
           width: 100%;
+          max-width: 100%;
+          box-sizing: border-box;
           padding: 10px var(--section-inline) 10px;
           background: transparent;
           border: 0;
@@ -1059,7 +1188,7 @@ export function App() {
         @media (min-width: 901px) {
           .legacy-nav--fixed.is-scrolled {
             width: var(--nav-compact-width, max-content);
-            max-width: calc(100% - 16px);
+            max-width: calc(100vw - 32px);
             padding: 10px 14px 10px 14px;
             background: color-mix(in oklch, var(--paper) 74%, transparent);
             border: 1px solid var(--line);
@@ -1078,15 +1207,18 @@ export function App() {
         .legacy-panel-backdrop {
           position: fixed;
           inset: 0;
-          z-index: 40;
+          z-index: 55;
           background: rgba(4, 4, 4, 0.58);
           opacity: 0;
+          visibility: hidden;
           pointer-events: none;
+          transition: opacity 220ms ease, visibility 0s 220ms;
         }
 
         .legacy-panel-backdrop.visible {
           opacity: 1;
           pointer-events: auto;
+          visibility: visible;
         }
 
         .legacy-panel {
@@ -1094,9 +1226,9 @@ export function App() {
           top: 16px;
           right: 16px;
           bottom: 16px;
-          z-index: 45;
+          z-index: 60;
           width: min(420px, calc(100vw - 32px));
-          background: color-mix(in oklch, var(--paper) 86%, transparent);
+          background: #0c0c0c;
           border: 1px solid var(--line);
           box-shadow: 0 24px 120px rgba(0, 0, 0, 0.48);
           transform: translateX(110%);
@@ -1105,16 +1237,26 @@ export function App() {
           flex-direction: column;
           overflow: hidden;
           backdrop-filter: blur(16px);
+          transition: transform 340ms cubic-bezier(0.22, 1, 0.36, 1), visibility 0s 340ms;
         }
 
         .legacy-panel.visible {
-          transform: translateX(0);
+          transform: none;
+          visibility: visible;
+          transition: transform 340ms cubic-bezier(0.22, 1, 0.36, 1), visibility 0s;
         }
 
         .legacy-panel-header {
           min-height: 58px;
           padding: 16px 18px;
           border-bottom: 1px solid var(--line);
+        }
+
+        .legacy-panel:has(.legacy-auth) .legacy-panel-header {
+          border-bottom: 0;
+        }
+
+        .legacy-panel-header {
           display: flex;
           align-items: stretch;
           justify-content: space-between;
@@ -1152,6 +1294,8 @@ export function App() {
         }
 
         .legacy-panel-content {
+          flex: 1;
+          min-height: 0;
           padding: 18px;
           display: grid;
           gap: 10px;
@@ -1161,9 +1305,115 @@ export function App() {
           font-family: var(--sans);
         }
 
+        .legacy-panel-content:has(.legacy-auth) {
+          display: flex;
+          flex-direction: column;
+        }
+
         .legacy-panel-content p {
           margin: 0;
           line-height: 1.6;
+        }
+
+        .legacy-auth {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+          gap: 12px;
+          min-height: 100%;
+        }
+
+        .legacy-auth-tabs {
+          display: flex;
+          gap: 0;
+          margin: -18px -18px 0;
+          border-bottom: 1px solid var(--line);
+        }
+
+        .legacy-auth-tabs button {
+          flex: 1;
+          padding: 18px 8px;
+          border: 0;
+          border-bottom: 1px solid transparent;
+          margin-bottom: -1px;
+          background: transparent;
+          color: var(--muted);
+          font: 500 0.62rem/1 var(--mono);
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          cursor: pointer;
+        }
+
+        .legacy-auth-tabs button.is-on {
+          color: var(--ink);
+          border-bottom-color: var(--acid);
+        }
+
+        .legacy-auth h3 {
+          margin: 8px 0 0;
+          color: var(--ink);
+          font: 500 1.35rem/1.15 var(--sans);
+          letter-spacing: -0.03em;
+        }
+
+        .legacy-auth-form {
+          display: grid;
+          gap: 12px;
+          margin-top: 6px;
+        }
+
+        .legacy-auth-form label {
+          display: grid;
+          gap: 6px;
+        }
+
+        .legacy-auth-form label:first-of-type {
+          margin-bottom: 8px;
+        }
+
+        .legacy-auth-form span {
+          color: var(--muted);
+          font: 500 0.56rem/1 var(--mono);
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+        }
+
+        .legacy-auth-form input {
+          width: 100%;
+          min-height: 42px;
+          padding: 0 12px;
+          border: 1px solid var(--line);
+          background: rgba(12, 18, 14, 0.4);
+          color: var(--ink);
+          font: 400 0.92rem/1.3 var(--sans);
+        }
+
+        .legacy-auth-submit {
+          min-height: 44px;
+          border: 0;
+          background: var(--ink);
+          color: var(--paper);
+          font: 500 0.78rem/1 var(--sans);
+          cursor: pointer;
+        }
+
+        .legacy-auth-foot {
+          margin-top: auto;
+          display: grid;
+          gap: 10px;
+          padding-top: 24px;
+        }
+
+        .legacy-auth-forgot {
+          color: var(--muted);
+          font-size: 0.78rem;
+        }
+
+        .legacy-auth-note {
+          margin: 0;
+          color: var(--muted);
+          font-size: 0.78rem;
+          line-height: 1.5;
         }
 
         .legacy-connections-intro {
@@ -1910,7 +2160,7 @@ export function App() {
         .legacy-hero-progress-fill {
           display: block;
           height: 100%;
-          background: linear-gradient(90deg, rgba(242, 242, 242, 0.08), rgba(242, 242, 242, 0.95));
+          background: linear-gradient(90deg, rgba(242, 242, 242, 0.035), rgba(242, 242, 242, 0.95));
         }
 
         @keyframes legacy-ask-caret {
@@ -2607,7 +2857,7 @@ export function App() {
           width: 100%;
           aspect-ratio: 4 / 5;
           overflow: hidden;
-          border: 1px solid var(--line);
+          border: 1px solid rgba(242, 242, 242, 0.035);
           background: #090909;
         }
 
@@ -2669,8 +2919,60 @@ export function App() {
           inset: auto;
           width: 100%;
           height: 100%;
-          padding: clamp(16px, 4vw, 28px);
+          padding: 16px 14px;
+          gap: 10px;
           transform: none;
+          justify-content: center;
+        }
+
+        #how-it-works .legacy-ask-line {
+          display: none;
+        }
+
+        #how-it-works .legacy-ask-dock,
+        #how-it-works .legacy-ask-answer {
+          width: 100%;
+          max-width: none;
+        }
+
+        #how-it-works .legacy-ask-input {
+          min-height: 40px;
+          align-items: flex-start;
+        }
+
+        #how-it-works .legacy-ask-add,
+        #how-it-works .legacy-ask-send {
+          height: auto;
+          min-height: 40px;
+        }
+
+        #how-it-works .legacy-ask-typed {
+          white-space: normal;
+          overflow: visible;
+          font-size: 0.62rem;
+          line-height: 1.35;
+          padding: 8px 10px;
+        }
+
+        #how-it-works .legacy-ask-answer {
+          padding: 12px 12px 12px;
+        }
+
+        #how-it-works .legacy-ask-answer-body {
+          font-size: 0.8rem;
+          line-height: 1.4;
+        }
+
+        #how-it-works .legacy-ask-answer-rule {
+          margin: 14px 0 10px;
+        }
+
+        #how-it-works .legacy-ask-mouse {
+          display: none;
+        }
+
+        #how-it-works .legacy-how-media::after {
+          display: none;
         }
 
         .legacy-review-flow {
@@ -2768,7 +3070,7 @@ export function App() {
 
         .legacy-review-card {
           padding: 12px 14px 14px;
-          border: 1px solid rgba(242, 242, 242, 0.16);
+          border: 1px solid rgba(242, 242, 242, 0.035);
           background: rgba(12, 18, 14, 0.34);
           box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
           -webkit-backdrop-filter: blur(22px) saturate(1.45);
@@ -2794,7 +3096,7 @@ export function App() {
           width: 28px;
           height: 28px;
           margin: 0;
-          border: 1px solid rgba(242, 242, 242, 0.16);
+          border: 1px solid rgba(242, 242, 242, 0.035);
           background: rgba(12, 18, 14, 0.55);
           box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
         }
@@ -2881,7 +3183,7 @@ export function App() {
         @media (min-width: 901px) {
           .legacy-how-scroll {
             position: relative;
-            min-height: 300vh;
+            min-height: 370vh;
           }
 
           .legacy-how-scroll.is-static {
@@ -2891,6 +3193,7 @@ export function App() {
           .legacy-how-viewport {
             position: sticky;
             top: 0;
+            z-index: 0;
             height: 100vh;
             overflow: hidden;
             display: grid;
@@ -3479,8 +3782,158 @@ export function App() {
           }
         }
 
+        .legacy-plans {
+          position: relative;
+          z-index: 0;
+          min-height: 100vh;
+          padding: clamp(88px, 11vw, 140px) var(--section-inline) clamp(72px, 8vw, 110px);
+          background: #000;
+          color: var(--ink);
+        }
+
+        .legacy-plans-copy {
+          display: grid;
+          gap: 12px;
+          max-width: 46ch;
+          margin-bottom: clamp(36px, 5vh, 56px);
+        }
+
+        .legacy-plans-copy > p:first-child {
+          margin: 0;
+          color: var(--acid);
+          font: 500 0.6rem/1 var(--mono);
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+        }
+
+        .legacy-plans-copy h2 {
+          margin: 0;
+          font: 500 clamp(2rem, 4vw, 3rem)/1.05 var(--sans);
+          letter-spacing: -0.045em;
+        }
+
+        .legacy-plans-lede {
+          margin: 0;
+          color: var(--muted);
+          font: 400 1rem/1.6 var(--sans);
+        }
+
+        .legacy-plans-grid {
+          display: grid;
+          gap: 1px;
+          background: rgba(242, 242, 242, 0.06);
+          border: 1px solid rgba(242, 242, 242, 0.06);
+        }
+
+        @media (min-width: 901px) {
+          .legacy-plans-grid {
+            grid-template-columns: 1.05fr 1.15fr 1fr;
+          }
+        }
+
+        .legacy-plan {
+          display: grid;
+          align-content: start;
+          gap: 22px;
+          padding: clamp(22px, 3vw, 32px);
+          background: #000;
+        }
+
+        .legacy-plan.is-featured {
+          background: #070807;
+        }
+
+        .legacy-plan header {
+          display: grid;
+          gap: 8px;
+        }
+
+        .legacy-plan header span {
+          color: var(--muted);
+          font: 500 0.56rem/1 var(--mono);
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+        }
+
+        .legacy-plan h3 {
+          margin: 0;
+          font: 500 clamp(1.5rem, 2.2vw, 1.9rem)/1.1 var(--sans);
+          letter-spacing: -0.03em;
+        }
+
+        .legacy-plan header strong {
+          color: var(--acid);
+          font: 500 0.92rem/1.3 var(--sans);
+        }
+
+        .legacy-plan header p {
+          margin: 4px 0 0;
+          max-width: 32ch;
+          color: var(--muted);
+          font: 400 0.95rem/1.55 var(--sans);
+        }
+
+        .legacy-plan ul {
+          margin: 0;
+          padding: 0;
+          display: grid;
+          gap: 10px;
+          list-style: none;
+        }
+
+        .legacy-plan li {
+          position: relative;
+          padding-left: 16px;
+          color: var(--ink);
+          font: 400 0.9rem/1.45 var(--sans);
+        }
+
+        .legacy-plan li::before {
+          content: "";
+          position: absolute;
+          top: 0.55em;
+          left: 0;
+          width: 6px;
+          height: 1px;
+          background: var(--acid);
+        }
+
+        .legacy-plan-cta {
+          justify-self: start;
+          margin-top: auto;
+          padding: 12px 16px;
+          border: 1px solid rgba(242, 242, 242, 0.16);
+          background: transparent;
+          color: var(--ink);
+          font: 500 0.78rem/1 var(--sans);
+          text-decoration: none;
+          cursor: pointer;
+        }
+
+        .legacy-plan.is-featured .legacy-plan-cta {
+          background: var(--ink);
+          color: #000;
+          border-color: var(--ink);
+        }
+
+        .legacy-plan-cta:hover,
+        .legacy-plan-cta:focus-visible {
+          border-color: var(--acid);
+        }
+
+        .legacy-plans-care {
+          margin: 28px 0 0;
+          color: var(--muted);
+          font: 400 0.88rem/1.5 var(--sans);
+        }
+
+        .legacy-plans-care a {
+          color: var(--ink);
+        }
+
         .legacy-footer {
           position: relative;
+          z-index: 20;
           overflow: hidden;
           border: 0;
           background: #050505;
@@ -3551,6 +4004,10 @@ export function App() {
           background: rgba(233, 229, 218, 0.12);
           box-shadow: none;
           pointer-events: none;
+        }
+
+        .legacy-footer-prompt .legacy-visual-beams {
+          z-index: 0;
         }
 
         .legacy-footer-prompt-content {
@@ -4129,6 +4586,9 @@ export function App() {
           <a className="legacy-navlink" href="#how-it-works" data-panel="how-it-works" onClick={scrollToHowItWorks}>
             How it works
           </a>
+          <a className="legacy-navlink" href="#plans" onClick={scrollToPlans}>
+            Plans
+          </a>
           <a className="legacy-navlink legacy-signin" href="#" data-panel="auth" onClick={(event) => openPanelFromClick(event, "auth")}>
             Sign in
           </a>
@@ -4159,6 +4619,7 @@ export function App() {
           <a className="legacy-navlink" href="#work" data-panel="provenance" onClick={(event) => openPanelFromClick(event, "trust")}>Trust</a>
           <a className="legacy-navlink" href="#our-story" data-panel="origin" onClick={scrollToStory}>Our Story</a>
           <a className="legacy-navlink" href="#how-it-works" data-panel="how-it-works" onClick={scrollToHowItWorks}>How it works</a>
+          <a className="legacy-navlink" href="#plans" onClick={scrollToPlans}>Plans</a>
           <a className="legacy-navlink legacy-signin" href="#" data-panel="auth" onClick={(event) => openPanelFromClick(event, "auth")}>Sign in</a>
         </div>
       </div>
@@ -4212,6 +4673,67 @@ export function App() {
                   </div>
                 </details>
               </>
+            ) : openPanel === "auth" ? (
+              <div className="legacy-auth">
+                <div className="legacy-auth-tabs" role="tablist" aria-label="Account">
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={authMode === "signin"}
+                    className={authMode === "signin" ? "is-on" : ""}
+                    onClick={() => setAuthMode("signin")}
+                  >
+                    Sign in
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={authMode === "signup"}
+                    className={authMode === "signup" ? "is-on" : ""}
+                    onClick={() => setAuthMode("signup")}
+                  >
+                    Create an account
+                  </button>
+                </div>
+                <h3>{authMode === "signin" ? "Welcome back." : "Start with one folder."}</h3>
+                <p>
+                  {authMode === "signin"
+                    ? "Your records and every citation are where you left them."
+                    : "Connect a single source and ask it something. Nothing else is indexed until you say so."}
+                </p>
+                <form
+                  className="legacy-auth-form"
+                  action="https://pitar.ai/signin"
+                  method="get"
+                >
+                  <label>
+                    <span>Work email</span>
+                    <input type="email" name="email" autoComplete="email" inputMode="email" placeholder="you@company.com" required />
+                  </label>
+                  <label>
+                    <span>Password</span>
+                    <input
+                      type="password"
+                      name="password"
+                      autoComplete={authMode === "signin" ? "current-password" : "new-password"}
+                      minLength={6}
+                      placeholder="••••••••••"
+                      required
+                    />
+                  </label>
+                  <button className="legacy-auth-submit" type="submit">
+                    {authMode === "signin" ? "Sign in" : "Create account"}
+                  </button>
+                  {authMode === "signin" ? (
+                    <a className="legacy-auth-forgot" href="https://pitar.ai/signin">
+                      Forgot your password?
+                    </a>
+                  ) : null}
+                </form>
+                <div className="legacy-auth-foot">
+                  <p className="legacy-auth-note">Your records stay yours. Disconnect a source and its documents leave the index.</p>
+                </div>
+              </div>
             ) : (
               (panelCopy[openPanel] ?? []).map((text) => <p key={text}>{text}</p>)
             )}
@@ -4476,9 +4998,52 @@ export function App() {
         </div>
       </section>
 
+      <section className="legacy-plans" id="plans" aria-labelledby="plans-title">
+        <div className="legacy-plans-copy">
+          <p>Plans</p>
+          <h2 id="plans-title">Plans for every archive.</h2>
+          <p className="legacy-plans-lede">
+            Pricing is still taking shape. Create an account to be first in, or write care if you need a quote.
+          </p>
+        </div>
+        <div className="legacy-plans-grid">
+          {pitarPlans.map((plan) => (
+            <article className={`legacy-plan${plan.id === "professional" ? " is-featured" : ""}`} key={plan.id}>
+              <header>
+                <span>{plan.kicker}</span>
+                <h3>{plan.name}</h3>
+                <strong>{plan.price}</strong>
+                <p>{plan.blurb}</p>
+              </header>
+              <ul>
+                {plan.points.map((point) => (
+                  <li key={point}>{point}</li>
+                ))}
+              </ul>
+              {plan.action === "care" ? (
+                <a className="legacy-plan-cta" href={CARE_MAIL}>
+                  {plan.cta}
+                </a>
+              ) : (
+                <button className="legacy-plan-cta" type="button" onClick={() => requireAccount("signup")}>
+                  {plan.cta}
+                </button>
+              )}
+            </article>
+          ))}
+        </div>
+        <p className="legacy-plans-care">
+          Questions about a plan?{" "}
+          <a href={CARE_MAIL}>Write care@pitar.ai</a>
+        </p>
+      </section>
+
       <footer className="legacy-footer" id="footer" aria-label="Pitar footer">
         <div className="legacy-footer-frame">
           <section className="legacy-footer-prompt" aria-labelledby="footer-prompt-title">
+            <div className="legacy-visual-beams" aria-hidden="true">
+              <i /><i /><i />
+            </div>
             <div className="legacy-footer-prompt-content">
               <h3 id="footer-prompt-title">Ask what your records know.</h3>
               <p className="legacy-footer-prompt-copy">One question in. One clear answer out, with the exact page that proves it.</p>
@@ -4486,21 +5051,42 @@ export function App() {
                 className="legacy-footer-prompt-form"
                 onSubmit={(event) => {
                   event.preventDefault()
-                  document.getElementById("work")?.scrollIntoView({ behavior: "smooth", block: "start" })
+                  requireAccount("signup")
                 }}
               >
                 <details className="legacy-footer-source-picker">
-                  <summary aria-label="Choose a source" title="Choose a source"><span aria-hidden="true">+</span></summary>
+                  <summary
+                    aria-label="Choose a source"
+                    title="Choose a source"
+                    onClick={(event) => {
+                      event.preventDefault()
+                      requireAccount("signup")
+                    }}
+                  >
+                    <span aria-hidden="true">+</span>
+                  </summary>
                   <div className="legacy-footer-source-menu" role="menu" aria-label="Available sources">
                     {connectors.map(({ label, icon }) => (
-                      <button className="legacy-footer-source-option" type="button" role="menuitem" key={label}>
+                      <button
+                        className="legacy-footer-source-option"
+                        type="button"
+                        role="menuitem"
+                        key={label}
+                        onClick={() => requireAccount("signup")}
+                      >
                         <img src={icon} alt="" />
                         <span>{label}</span>
                       </button>
                     ))}
                   </div>
                 </details>
-                <input type="text" aria-label="Ask Pitar a question" placeholder="Ask a question about your records..." />
+                <input
+                  type="text"
+                  aria-label="Ask Pitar a question"
+                  placeholder="Ask a question about your records..."
+                  onFocus={() => requireAccount("signup")}
+                  onChange={() => requireAccount("signup")}
+                />
                 <button type="submit" aria-label="Send question">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path d="M12 19V5M6.5 10.5 12 5l5.5 5.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
@@ -4526,6 +5112,7 @@ export function App() {
             <nav className="legacy-footer-column" aria-label="Product">
               <h2>Product</h2>
               <a href="#how-it-works">How it works</a>
+              <a href="#plans" onClick={scrollToPlans}>Plans</a>
               <button type="button" onClick={() => setOpenPanel("connections")}>Sources</button>
               <button type="button" onClick={() => setOpenPanel("trust")}>Trust</button>
             </nav>
@@ -4534,7 +5121,7 @@ export function App() {
               <h2>Company</h2>
               <a href="#our-story">Our story</a>
               <a href="#top">Why Pitar</a>
-              <button type="button" onClick={() => setOpenPanel("auth")}>Sign in</button>
+              <button type="button" onClick={() => requireAccount("signin")}>Sign in</button>
             </nav>
 
           </div>
