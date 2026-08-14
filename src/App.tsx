@@ -3,6 +3,7 @@ import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useGSAP } from "@gsap/react"
 import { HeroAskFlow, heroAskBeats, heroAskDuration } from "@/components/hero-ask-flow"
+import { HowReviewFlow } from "@/components/how-review-flow"
 import OrbitingCirclesGlobe from "@/components/ui/orbiting-circles-02"
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
@@ -64,6 +65,10 @@ const howItWorksSteps = [
   },
 ]
 
+const HOW_ORBIT_STEPS = howItWorksSteps.length
+const HOW_ORBIT_GAP = 40
+const HOW_ORBIT_TRAVEL = HOW_ORBIT_GAP * (HOW_ORBIT_STEPS - 1)
+
 const SOURCE_SLOT_COUNT = 6
 const SOURCE_SWAP_MS = 2400
 const SOURCE_ANIM_MS = 520
@@ -101,8 +106,14 @@ export function App() {
   const [heroElapsed, setHeroElapsed] = useState(0)
   const [heroHoverPaused, setHeroHoverPaused] = useState(false)
   const [activeHowStep, setActiveHowStep] = useState(0)
+  const [isDesktopHow, setIsDesktopHow] = useState(() =>
+    typeof window === "undefined" ? true : window.matchMedia("(min-width: 901px)").matches,
+  )
   const [howBeat, setHowBeat] = useState(0)
   const [howElapsed, setHowElapsed] = useState(0)
+  const [reducedMotion, setReducedMotion] = useState(() =>
+    typeof window === "undefined" ? false : window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  )
   const heroElapsedRef = useRef(0)
   const heroPausedRef = useRef(false)
   const heroScrubbingRef = useRef(false)
@@ -110,6 +121,12 @@ export function App() {
   const heroBeatRef = useRef(0)
   const howElapsedRef = useRef(0)
   const howBeatRef = useRef(0)
+  const activeHowStepRef = useRef(0)
+  const howWrapRef = useRef<HTMLDivElement>(null)
+  const howRingFillRef = useRef<SVGCircleElement>(null)
+  const howOrbitRef = useRef<HTMLDivElement>(null)
+  const howPanelsRef = useRef<HTMLDivElement>(null)
+  const howScrollTriggerRef = useRef<ScrollTrigger | null>(null)
   const screenOneMs = 5200
 
   const panelTitle: Record<string, string> = {
@@ -239,6 +256,49 @@ export function App() {
   }, [])
 
   useEffect(() => {
+    const media = window.matchMedia("(min-width: 901px)")
+    const handleChange = () => setIsDesktopHow(media.matches)
+
+    handleChange()
+    media.addEventListener("change", handleChange)
+    return () => media.removeEventListener("change", handleChange)
+  }, [])
+
+  useEffect(() => {
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)")
+    const handleChange = () => setReducedMotion(motion.matches)
+
+    handleChange()
+    motion.addEventListener("change", handleChange)
+    return () => motion.removeEventListener("change", handleChange)
+  }, [])
+
+  useEffect(() => {
+    const items = Array.from(document.querySelectorAll<HTMLElement>(".legacy-how-step"))
+    if (!items.length) return
+
+    const selectClosestStep = () => {
+      const viewportCenter = window.innerHeight / 2
+      const closest = items.reduce((best, item, index) => {
+        const rect = item.getBoundingClientRect()
+        const distance = Math.abs(rect.top + rect.height / 2 - viewportCenter)
+        return distance < best.distance ? { index, distance } : best
+      }, { index: 0, distance: Number.POSITIVE_INFINITY })
+
+      setActiveHowStep(closest.index)
+    }
+
+    const observer = new IntersectionObserver(selectClosestStep, {
+      rootMargin: "-30% 0px -30% 0px",
+      threshold: [0, 0.25, 0.5, 0.75],
+    })
+
+    items.forEach((item) => observer.observe(item))
+    selectClosestStep()
+    return () => observer.disconnect()
+  }, [isDesktopHow])
+
+  useEffect(() => {
     const nav = navRef.current
     if (!nav) return
 
@@ -294,6 +354,92 @@ export function App() {
 
     requestAnimationFrame(() => ScrollTrigger.refresh(true))
   }, { scope: storySectionRef })
+
+  useGSAP(() => {
+    if (!isDesktopHow || reducedMotion) return
+    const wrapper = howWrapRef.current
+    const fill = howRingFillRef.current
+    const orbit = howOrbitRef.current
+    if (!wrapper || !fill || !orbit) return
+
+    const markers = Array.from(orbit.querySelectorAll<HTMLElement>(".legacy-how-marker"))
+    const circ = 2 * Math.PI * 50
+    const lastIndex = HOW_ORBIT_STEPS - 1
+
+    const travelForProgress = (progress: number) => {
+      if (HOW_ORBIT_STEPS <= 1) return 0
+      const local = progress * HOW_ORBIT_STEPS
+      const step = Math.min(lastIndex, Math.floor(local + 1e-6))
+      const frac = Math.min(1, Math.max(0, local - step))
+      const hold = 0.38
+      if (step >= lastIndex) return HOW_ORBIT_TRAVEL
+      if (frac <= hold) return step * HOW_ORBIT_GAP
+      return (step + (frac - hold) / (1 - hold)) * HOW_ORBIT_GAP
+    }
+
+    const stepForProgress = (progress: number) =>
+      Math.min(lastIndex, Math.max(0, Math.round(travelForProgress(progress) / HOW_ORBIT_GAP)))
+
+    const placeOrbit = (progress: number) => {
+      const travel = travelForProgress(progress)
+      const active = stepForProgress(progress)
+      markers.forEach((marker, index) => {
+        const theta = -index * HOW_ORBIT_GAP + travel
+        const rad = (theta * Math.PI) / 180
+        const scale = index === active
+          ? 1.12
+          : 0.42 + 0.58 * Math.max(0, Math.cos((Math.abs(theta) * Math.PI) / 180))
+        gsap.set(marker, {
+          left: `${50 + 50 * Math.cos(rad)}%`,
+          top: `${50 + 50 * Math.sin(rad)}%`,
+          xPercent: -50,
+          yPercent: -50,
+          rotation: index === active ? 0 : theta,
+          scale,
+          autoAlpha: 1,
+        })
+      })
+      fill.setAttribute("stroke-dasharray", `${(travel / 360) * circ} ${circ}`)
+    }
+
+    const buildTimeline = () => {
+      placeOrbit(0)
+
+      const timeline = gsap.timeline({
+        defaults: { ease: "none" },
+        scrollTrigger: {
+          trigger: wrapper,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: true,
+          invalidateOnRefresh: true,
+          toggleActions: "play none none none",
+          onUpdate: (self) => {
+            placeOrbit(self.progress)
+            const step = stepForProgress(self.progress)
+            if (step !== activeHowStepRef.current) {
+              activeHowStepRef.current = step
+              setActiveHowStep(step)
+            }
+          },
+        },
+      })
+
+      howScrollTriggerRef.current = timeline.scrollTrigger as ScrollTrigger | null
+      return timeline
+    }
+
+    ;(window as unknown as Record<string, unknown>).__dbg = { gsap, ScrollTrigger }
+
+    const timeline = buildTimeline()
+    const refresh = window.setTimeout(() => ScrollTrigger.refresh(true), 80)
+
+    return () => {
+      window.clearTimeout(refresh)
+      howScrollTriggerRef.current = null
+      timeline?.kill()
+    }
+  }, { scope: howWrapRef, dependencies: [isDesktopHow, reducedMotion] })
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -456,6 +602,47 @@ export function App() {
 
   const endHeroScrub = () => {
     heroScrubbingRef.current = false
+  }
+
+  const scrollToHowStep = (index: number) => {
+    setActiveHowStep(index)
+    if (!isDesktopHow) {
+      document.querySelectorAll<HTMLElement>(".legacy-how-step")[index]?.scrollIntoView({
+        behavior: reducedMotion ? "auto" : "smooth",
+        block: "center",
+      })
+      return
+    }
+    const st = howScrollTriggerRef.current
+    if (!st) return
+    const progress = (index + 0.5) / howItWorksSteps.length
+    const target = st.start + progress * (st.end - st.start)
+    window.scrollTo({ top: target, behavior: reducedMotion ? "auto" : "smooth" })
+  }
+
+  const renderHowVisual = (index: number) => {
+    if (index === 0) {
+      return (
+        <div className="legacy-how-media-stage" key="connect">
+          <div className="legacy-visual-beams" aria-hidden="true"><i /><i /><i /></div>
+          <div className="legacy-orbit-slot dark"><OrbitingCirclesGlobe paused={false} dimRings={false} /></div>
+        </div>
+      )
+    }
+
+    if (index === 1) {
+      return (
+        <div className="legacy-how-media-stage" key="ask">
+          <HeroAskFlow beatIndex={howBeat} elapsedMs={howElapsed} />
+        </div>
+      )
+    }
+
+    return (
+      <div className="legacy-how-media-stage" key="review">
+        <HowReviewFlow />
+      </div>
+    )
   }
 
   return (
@@ -2451,11 +2638,12 @@ export function App() {
         }
 
         .legacy-how-media-stage {
-          position: absolute;
-          inset: 0;
+          position: relative;
           z-index: 2;
           display: grid;
           place-items: center;
+          width: 100%;
+          height: 100%;
           overflow: hidden;
           animation: legacy-how-media-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
         }
@@ -2465,86 +2653,192 @@ export function App() {
         }
 
         .legacy-how-media-stage .legacy-orbit-slot {
-          position: absolute;
-          inset: 0;
+          position: relative;
+          inset: auto;
+          width: 100%;
+          height: 100%;
         }
 
         .legacy-how-media-stage .legacy-orbit-slot > * {
-          transform: scale(1.62) translateY(38%);
+          transform: scale(1.05);
           transform-origin: center center;
         }
 
         .legacy-how-media-stage .legacy-ask-flow {
-          position: absolute;
-          inset: 0;
-          padding: clamp(24px, 6vw, 48px) clamp(18px, 5vw, 40px);
+          position: relative;
+          inset: auto;
+          width: 100%;
+          height: 100%;
+          padding: clamp(16px, 4vw, 28px);
           transform: none;
         }
 
-        .legacy-lineage {
-          position: relative;
+        .legacy-review-flow {
           display: grid;
-          width: min(78%, 460px);
-          gap: 34px;
-          padding-left: 42px;
+          align-content: center;
+          gap: 10px;
+          width: 100%;
+          height: 100%;
+          padding: 18px 16px;
         }
 
-        .legacy-lineage::before {
-          content: "";
-          position: absolute;
-          top: 18px;
-          bottom: 18px;
-          left: 15px;
-          width: 1px;
-          background: linear-gradient(to bottom, rgba(34, 197, 94, 0.2), #22c55e 45%, rgba(34, 197, 94, 0.2));
-          box-shadow: 0 0 16px rgba(34, 197, 94, 0.35);
+        .legacy-review-block,
+        .legacy-review-load {
+          padding: 0 14px;
         }
 
-        .legacy-lineage-step {
-          position: relative;
-          display: grid;
-          gap: 7px;
-          opacity: 0;
-          animation: legacy-lineage-step 520ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        .legacy-review-block p,
+        .legacy-review-card p,
+        .legacy-review-source blockquote {
+          margin: 6px 0 0;
+          color: var(--ink);
+          font: 400 0.86rem/1.45 var(--sans);
         }
 
-        .legacy-lineage-step:nth-child(2) { animation-delay: 120ms; }
-        .legacy-lineage-step:nth-child(3) { animation-delay: 240ms; }
-        .legacy-lineage-step:nth-child(4) { animation-delay: 360ms; }
-
-        .legacy-lineage-step::before {
-          content: "";
-          position: absolute;
-          top: 8px;
-          left: -34px;
-          width: 14px;
-          height: 14px;
-          border: 1px solid #22c55e;
-          background: #090909;
-          box-shadow: 0 0 12px rgba(34, 197, 94, 0.45);
-          transform: rotate(45deg);
-        }
-
-        .legacy-lineage-step span {
-          color: #4ade80;
+        .legacy-review-block span,
+        .legacy-review-load span,
+        .legacy-review-card span,
+        .legacy-review-source-tag span,
+        .legacy-review-source small {
+          color: var(--acid);
           font: 500 0.56rem/1 var(--mono);
           letter-spacing: 0.14em;
           text-transform: uppercase;
         }
 
-        .legacy-lineage-step strong {
-          color: var(--ink);
-          font: 500 clamp(1rem, 1.7vw, 1.35rem)/1.25 var(--sans);
+        .legacy-review-caret {
+          display: inline-block;
+          width: 1px;
+          height: 0.95em;
+          margin-left: 2px;
+          background: var(--ink);
+          vertical-align: -2px;
+          animation: legacy-review-caret 720ms steps(1) infinite;
         }
 
-        .legacy-lineage-step small {
+        .legacy-review-load {
+          opacity: 0;
+        }
+
+        .legacy-review-load.is-in {
+          opacity: 1;
+        }
+
+        .legacy-review-card {
+          visibility: hidden;
+          transform: translateY(16px);
+        }
+
+        .legacy-review-card.is-in {
+          visibility: visible;
+          transform: none;
+          transition: transform 380ms ease;
+        }
+
+        .legacy-review-source {
+          visibility: hidden;
+        }
+
+        .legacy-review-source.is-in {
+          visibility: visible;
+        }
+
+        .legacy-review-load {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+        }
+
+        .legacy-review-load b {
+          display: flex;
+          gap: 5px;
+        }
+
+        .legacy-review-load b i {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: var(--acid);
+          animation: legacy-review-dot 720ms ease-in-out infinite;
+        }
+
+        .legacy-review-load b i:nth-child(2) { animation-delay: 120ms; }
+        .legacy-review-load b i:nth-child(3) { animation-delay: 240ms; }
+
+        .legacy-review-card {
+          padding: 12px 14px 14px;
+          border: 1px solid rgba(242, 242, 242, 0.16);
+          background: rgba(12, 18, 14, 0.34);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+          -webkit-backdrop-filter: blur(22px) saturate(1.45);
+          backdrop-filter: blur(22px) saturate(1.45);
+        }
+
+        .legacy-review-source {
+          position: relative;
+          padding: 4px 14px 0 0;
+        }
+
+        .legacy-review-source-tag {
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+          gap: 8px;
+          margin-left: 0;
+        }
+
+        .legacy-review-source-logo {
+          display: grid;
+          place-items: center;
+          width: 28px;
+          height: 28px;
+          margin: 0;
+          border: 1px solid rgba(242, 242, 242, 0.16);
+          background: rgba(12, 18, 14, 0.55);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        .legacy-review-source-logo img {
+          width: 16px;
+          height: 16px;
+          object-fit: contain;
+        }
+
+        .legacy-review-source blockquote {
+          margin: 8px 0 0 14px;
+          padding: 0 0 0 12px;
+          border-left: 2px solid var(--line);
           color: var(--muted);
-          font: 400 0.8rem/1.5 var(--sans);
         }
 
-        @keyframes legacy-lineage-step {
-          from { opacity: 0; transform: translateY(12px); }
-          to { opacity: 1; transform: translateY(0); }
+        .legacy-review-source mark {
+          color: inherit;
+          background: transparent;
+          padding: 0;
+        }
+
+        .legacy-review-source mark.is-on {
+          color: #0a0a0a;
+          background: var(--acid);
+          padding: 0 2px;
+          transition: background-color 160ms ease, color 160ms ease;
+        }
+
+        .legacy-review-source small {
+          display: block;
+          margin-top: 8px;
+          color: var(--muted);
+          letter-spacing: 0.08em;
+        }
+
+        @keyframes legacy-review-caret {
+          50% { opacity: 0; }
+        }
+
+        @keyframes legacy-review-dot {
+          0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
+          40% { opacity: 1; transform: translateY(-3px); }
         }
 
         @keyframes legacy-how-media-in {
@@ -2573,21 +2867,188 @@ export function App() {
 
         @media (min-width: 901px) {
           #how-it-works .legacy-how-grid {
-            grid-template-columns: minmax(0, 0.9fr) minmax(440px, 1.1fr);
+            grid-template-columns: minmax(0, 0.92fr) minmax(440px, 1.08fr);
             align-items: start;
             gap: clamp(64px, 9vw, 144px);
           }
 
-          #how-it-works .legacy-story-accordion {
+          #how-it-works .legacy-how-steps {
+            margin-top: -18vh;
+            margin-bottom: -18vh;
+          }
+        }
+
+        @media (min-width: 901px) {
+          .legacy-how-scroll {
+            position: relative;
+            min-height: 300vh;
+          }
+
+          .legacy-how-scroll.is-static {
+            min-height: 0;
+          }
+
+          .legacy-how-viewport {
             position: sticky;
-            top: 96px;
-            align-self: start;
-            padding-top: 2px;
+            top: 0;
+            height: 100vh;
+            overflow: hidden;
+            display: grid;
+            align-items: center;
+            width: 100%;
+          }
+
+          .legacy-how-stage {
+            position: relative;
+            width: 100%;
+            display: grid;
+            grid-template-columns: minmax(240px, 1fr) minmax(280px, 380px);
+            grid-template-areas: "copy media";
+            align-items: center;
+            gap: clamp(20px, 3vw, 36px);
+            padding: clamp(24px, 4vh, 48px) var(--section-inline) clamp(24px, 4vh, 48px) clamp(300px, 34vw, 480px);
+          }
+
+          .legacy-how-orbit { grid-area: unset; }
+          .legacy-how-panels { grid-area: copy; }
+          #how-it-works .legacy-how-media { grid-area: media; }
+
+          .legacy-how-orbit {
+            --how-orbit: min(98vh, 920px);
+            position: absolute;
+            left: calc(var(--how-orbit) * -0.6875);
+            top: 50%;
+            width: var(--how-orbit);
+            height: var(--how-orbit);
+            margin-top: calc(var(--how-orbit) / -2);
+            z-index: 2;
+            pointer-events: none;
+          }
+
+          .legacy-how-ring-svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+          }
+
+          .legacy-how-ring-track,
+          .legacy-how-ring-fill {
+            fill: none;
+          }
+
+          .legacy-how-ring-track {
+            stroke: color-mix(in srgb, var(--ink) 14%, transparent);
+            stroke-width: 0.16;
+          }
+
+          .legacy-how-ring-fill {
+            stroke: var(--ink);
+            stroke-width: 0.38;
+            stroke-linecap: round;
+          }
+
+          .legacy-how-marker {
+            position: absolute;
+            margin: 0;
+            padding: 0;
+            width: clamp(64px, 7.2vh, 78px);
+            aspect-ratio: 1;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            font: 500 clamp(0.95rem, 1.6vh, 1.2rem)/1 var(--sans);
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            pointer-events: auto;
+            background: var(--paper);
+            color: var(--ink);
+            border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
+            z-index: 3;
+            box-shadow: 0 0 0 7px var(--paper);
+          }
+
+          .legacy-how-marker.is-active {
+            background: var(--ink);
+            color: var(--paper);
+            border-color: var(--ink);
+            z-index: 4;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+          }
+
+          .legacy-how-panels {
+            position: relative;
+            min-height: clamp(190px, 26vh, 236px);
+          }
+
+          .legacy-how-panel {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transform: translateY(28px);
+            pointer-events: none;
+          }
+
+          .legacy-how-panel.is-active {
+            opacity: 1;
+            transform: none;
+          }
+
+          .legacy-how-panel > p:first-child {
+            margin: 0 0 12px;
+            color: var(--acid);
+            font: 500 0.66rem/1 var(--mono);
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+          }
+
+          .legacy-how-panel h3 {
+            margin: 0 0 18px;
+            max-width: 20ch;
+            color: var(--ink);
+            font: 500 clamp(1.7rem, 2.6vw, 2.5rem)/1.06 var(--sans);
+            letter-spacing: -0.04em;
+            text-wrap: balance;
+          }
+
+          .legacy-how-panel > p:last-child {
+            margin: 0;
+            max-width: 44ch;
+            color: var(--muted);
+            font: 400 clamp(0.98rem, 1.2vw, 1.12rem)/1.7 var(--sans);
           }
 
           #how-it-works .legacy-how-media {
-            position: sticky;
-            top: 24px;
+            position: relative;
+            top: auto;
+            width: 100%;
+            max-width: 380px;
+            height: min(52vh, 380px);
+            aspect-ratio: 1;
+            align-self: center;
+            justify-self: end;
+            overflow: hidden;
+            isolation: isolate;
+          }
+
+          .legacy-how-scroll.is-static .legacy-how-viewport {
+            height: auto;
+            min-height: 100vh;
+          }
+
+          .legacy-how-scroll.is-static .legacy-how-stage {
+            grid-template-columns: minmax(240px, 1fr) minmax(280px, 380px);
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .legacy-how-marker,
+          .legacy-how-panel {
+            transition: none;
+          }
+
+          .legacy-how-ring-fill {
+            opacity: 0.5;
           }
         }
 
@@ -2632,10 +3093,6 @@ export function App() {
         }
 
         @media (max-width: 900px) {
-          #how-it-works .legacy-how-subtitle {
-            margin-bottom: 24px;
-          }
-
           #our-story {
             text-align: left !important;
             justify-items: start !important;
@@ -2795,14 +3252,25 @@ export function App() {
           border-bottom: 0;
           padding-top: clamp(88px, 11vw, 140px);
           padding-bottom: clamp(88px, 11vw, 140px);
+          padding-left: 0;
+          padding-right: 0;
           display: grid;
-          place-items: center;
+          place-items: stretch;
+          background: #000;
+        }
+
+        #how-it-works .legacy-how-viewport {
+          background: #000;
         }
 
         #how-it-works > div {
-          width: min(100%, 1180px);
+          width: 100%;
           display: grid;
           gap: clamp(48px, 7vh, 84px);
+        }
+
+        #how-it-works .legacy-how-copy {
+          padding-inline: var(--section-inline);
         }
 
         .legacy-how-grid {
@@ -2842,89 +3310,173 @@ export function App() {
           margin-top: 24px;
         }
 
-        .legacy-story details {
+        .legacy-how-steps {
           width: 100%;
+          margin: 0;
+          padding: 0;
+          list-style: none;
+        }
+
+        .legacy-how-step {
+          position: relative;
+          width: 100%;
+          min-height: 70vh;
+          display: flex;
+          align-items: center;
           border-top: 1px solid var(--line);
-          border-bottom: 1px solid transparent;
+          transition: border-color 260ms ease;
         }
 
-        .legacy-story-accordion {
-          display: grid;
+        .legacy-how-step:last-child {
+          border-bottom: 1px solid var(--line);
+        }
+
+        .legacy-how-step::before {
+          content: "";
+          position: absolute;
+          top: -1px;
+          left: 0;
+          width: 0;
+          height: 1px;
+          background: #4ade80;
+          box-shadow: 0 0 14px rgba(34, 197, 94, 0.45);
+          transition: width 520ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .legacy-how-step.is-active::before {
           width: 100%;
-          gap: 0;
         }
 
-        .legacy-story details:last-child {
-          border-bottom-color: var(--line);
+        .legacy-how-step-content {
+          width: 100%;
+          padding: clamp(52px, 8vh, 86px) 0;
+          opacity: 0.38;
+          transform: translateY(12px);
+          transition: opacity 360ms ease, transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        .legacy-story summary {
+        .legacy-how-step.is-active .legacy-how-step-content {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .legacy-how-step-trigger {
+          width: 100%;
           display: grid;
           grid-template-columns: auto 1fr auto;
           align-items: center;
-          gap: 14px;
-          padding: 18px 0;
-          min-height: 56px;
-          cursor: pointer;
-          list-style: none;
-          user-select: none;
-          font-family: var(--mono);
+          gap: 18px;
+          padding: 0;
+          border: 0;
           color: var(--ink);
-          font-size: 0.66rem;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-          line-height: 1;
+          background: transparent;
+          text-align: left;
+          font: inherit;
         }
 
-        .legacy-story summary::-webkit-details-marker {
+        .legacy-how-step-number {
+          color: var(--muted);
+          font: 500 0.72rem/1 var(--mono);
+          letter-spacing: 0.14em;
+          transition: color 260ms ease;
+        }
+
+        .legacy-how-step-title {
+          margin: 0;
+          color: var(--ink);
+          font: 500 clamp(1.65rem, 3vw, 2.65rem)/1.05 var(--sans);
+          letter-spacing: -0.04em;
+          text-wrap: balance;
+        }
+
+        .legacy-how-step-marker {
+          width: 8px;
+          height: 8px;
+          border: 1px solid var(--muted);
+          transform: rotate(45deg);
+          transition: border-color 260ms ease, background 260ms ease, box-shadow 260ms ease;
+        }
+
+        .legacy-how-step.is-active .legacy-how-step-number {
+          color: #4ade80;
+        }
+
+        .legacy-how-step.is-active .legacy-how-step-marker {
+          border-color: #4ade80;
+          background: #4ade80;
+          box-shadow: 0 0 14px rgba(34, 197, 94, 0.6);
+        }
+
+        .legacy-how-step-copy {
+          margin: 28px 0 0 clamp(38px, 4.4vw, 60px) !important;
+          max-width: 48ch !important;
+          color: var(--muted);
+          font: 400 clamp(1rem, 1.35vw, 1.16rem)/1.72 var(--sans) !important;
+        }
+
+        .legacy-how-mobile-media {
           display: none;
         }
 
-        .legacy-story summary::after {
-          content: "";
-          width: 14px;
-          height: 14px;
-          background:
-            linear-gradient(var(--muted), var(--muted)) center / 100% 1px no-repeat,
-            linear-gradient(var(--muted), var(--muted)) center / 1px 100% no-repeat;
-        }
+        @media (max-width: 900px) {
+          #how-it-works .legacy-how-subtitle {
+            margin-bottom: 0;
+          }
 
-        .legacy-story details[open] summary::after {
-          background: linear-gradient(var(--muted), var(--muted)) center / 100% 1px no-repeat;
-        }
+          #how-it-works .legacy-how-copy {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 24px;
+          }
 
-        .legacy-story summary .legacy-story-title {
-          color: var(--ink);
-          margin: 0;
-          align-self: center;
-          font-size: 0.66rem;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-          line-height: 1.2;
-          font-family: var(--mono);
-        }
+          #how-it-works .legacy-how-grid {
+            gap: 0;
+          }
 
-        .legacy-story .legacy-story-step {
-          color: var(--muted);
-          align-self: center;
-          font-size: 0.9rem;
-          margin-right: 8px;
-          font-family: var(--mono);
-        }
+          .legacy-how-step {
+            min-height: 0;
+            display: block;
+            padding: clamp(60px, 14vw, 92px) 0;
+          }
 
-        .legacy-story summary::after {
-          align-self: center;
-        }
+          .legacy-how-step-content,
+          .legacy-how-step.is-active .legacy-how-step-content {
+            padding: 0;
+            opacity: 1;
+            transform: none;
+          }
 
-        .legacy-story-body {
-          margin: 0;
-          padding: 0 0 20px;
-          display: grid;
-          gap: 14px;
-          color: var(--muted);
-          font-size: 1rem;
-          line-height: 1.7;
-          max-width: 58ch;
+          .legacy-how-step-trigger {
+            grid-template-columns: auto 1fr auto;
+            gap: 14px;
+          }
+
+          .legacy-how-step-title {
+            font-size: clamp(1.55rem, 7vw, 2.2rem);
+          }
+
+          .legacy-how-step-copy {
+            margin: 22px 0 32px 0 !important;
+          }
+
+          .legacy-how-mobile-media {
+            position: relative;
+            display: grid;
+            width: 100%;
+            aspect-ratio: 4 / 5;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            background: #090909;
+          }
+
+          .legacy-how-mobile-media::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            pointer-events: none;
+            background: radial-gradient(ellipse 82% 78% at 50% 44%, transparent 58%, #090909 96%);
+          }
         }
 
         .legacy-footer {
@@ -3830,40 +4382,97 @@ export function App() {
             </div>
             <p className="legacy-how-subtitle">Answers come with source evidence. No answer without trace.</p>
           </div>
-          <div className="legacy-how-grid">
-            <div className="legacy-story-accordion">
-              {howItWorksSteps.map(({ step, title, copy }, index) => (
-                <details className="legacy-story-details" key={step} open={activeHowStep === index}>
-                  <summary className="legacy-story-summary" onClick={(event) => { event.preventDefault(); setActiveHowStep(index) }}>
-                    <span className="legacy-story-step">{step}</span>
-                    <h3 className="legacy-story-title">{title}</h3>
-                  </summary>
-                  <p className="legacy-story-body">{copy}</p>
-                </details>
-              ))}
-            </div>
-            <div className="legacy-how-media">
-              {activeHowStep === 0 ? (
-                <div className="legacy-how-media-stage" key="connect">
-                  <div className="legacy-visual-beams" aria-hidden="true"><i /><i /><i /></div>
-                  <div className="legacy-orbit-slot dark"><OrbitingCirclesGlobe paused={false} dimRings={false} /></div>
-                </div>
-              ) : activeHowStep === 1 ? (
-                <div className="legacy-how-media-stage" key="ask">
-                  <HeroAskFlow beatIndex={howBeat} elapsedMs={howElapsed} />
-                </div>
-              ) : (
-                <div className="legacy-how-media-stage" key="review">
-                  <div className="legacy-lineage" aria-label="Answer lineage timeline">
-                    <div className="legacy-lineage-step"><span>Source</span><strong>Google Drive</strong><small>2019 Kaduna lease addendum</small></div>
-                    <div className="legacy-lineage-step"><span>Record</span><strong>Page 2, clause 4.1</strong><small>Warehouse location and agreement reference</small></div>
-                    <div className="legacy-lineage-step"><span>Evidence</span><strong>Kaduna warehouse</strong><small>Matched across the 2016 lease and 2019 addendum</small></div>
-                    <div className="legacy-lineage-step"><span>Answer</span><strong>One sentence, sourced</strong><small>Every claim returns to its exact page</small></div>
+          {isDesktopHow ? (
+            <div
+              ref={howWrapRef}
+              className={`legacy-how-scroll${reducedMotion ? " is-static" : ""}`}
+            >
+              <div className="legacy-how-viewport">
+                <div className="legacy-how-stage">
+                    <div className="legacy-how-orbit" ref={howOrbitRef} aria-hidden="false">
+                      <svg className="legacy-how-ring-svg" viewBox="0 0 100 100" aria-hidden="true">
+                        <circle className="legacy-how-ring-track" cx="50" cy="50" r="50" />
+                        <circle
+                          ref={howRingFillRef}
+                          className="legacy-how-ring-fill"
+                          cx="50"
+                          cy="50"
+                          r="50"
+                          strokeDasharray="0 314.16"
+                        />
+                      </svg>
+                      {howItWorksSteps.map((step, index) => {
+                        const theta = -index * HOW_ORBIT_GAP
+                        const rad = (theta * Math.PI) / 180
+                        return (
+                        <button
+                          key={step.step}
+                          type="button"
+                          className={`legacy-how-marker${activeHowStep === index ? " is-active" : ""}`}
+                          style={{
+                            left: `${50 + 50 * Math.cos(rad)}%`,
+                            top: `${50 + 50 * Math.sin(rad)}%`,
+                            transform: `translate(-50%, -50%) rotate(${theta}deg)`,
+                          }}
+                          aria-label={`Go to step ${index + 1}: ${step.title}`}
+                          aria-pressed={activeHowStep === index}
+                          onClick={() => scrollToHowStep(index)}
+                        >
+                          {step.step}
+                        </button>
+                        )
+                      })}
+                    </div>
+                    <div className="legacy-how-panels" ref={howPanelsRef}>
+                      {howItWorksSteps.map(({ step, title, copy }, index) => (
+                        <div
+                          className={`legacy-how-panel${activeHowStep === index ? " is-active" : ""}`}
+                          key={step}
+                          aria-hidden={activeHowStep !== index}
+                        >
+                          <p>Step {step}</p>
+                          <h3>{title}</h3>
+                          <p>{copy}</p>
+                        </div>
+                      ))}
+                    </div>
+                  <div
+                    className="legacy-how-media"
+                    id="how-it-works-visual"
+                    aria-live="polite"
+                    aria-label={`${howItWorksSteps[activeHowStep].title} visual`}
+                  >
+                    {renderHowVisual(activeHowStep)}
                   </div>
                 </div>
-              )}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="legacy-how-grid">
+              <ol className="legacy-how-steps" aria-label="How Pitar works, step by step">
+                {howItWorksSteps.map(({ step, title, copy }, index) => (
+                  <li className={`legacy-how-step${activeHowStep === index ? " is-active" : ""}`} key={step}>
+                    <div className="legacy-how-step-content">
+                      <button
+                        className="legacy-how-step-trigger"
+                        type="button"
+                        aria-pressed={activeHowStep === index}
+                        onClick={() => scrollToHowStep(index)}
+                      >
+                        <span className="legacy-how-step-number">{step}</span>
+                        <h3 className="legacy-how-step-title">{title}</h3>
+                        <span className="legacy-how-step-marker" aria-hidden="true" />
+                      </button>
+                      <p className="legacy-how-step-copy">{copy}</p>
+                      <div className="legacy-how-mobile-media" aria-label={`${title} visual`}>
+                        {renderHowVisual(index)}
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
         </div>
       </section>
 

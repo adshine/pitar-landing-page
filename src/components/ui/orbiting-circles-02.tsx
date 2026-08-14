@@ -118,14 +118,11 @@ export default function OrbitingCirclesGlobeDemo({ paused = false, dimRings = fa
         }
       `}</style>
 
-      <div className="pointer-events-none absolute top-1/2 left-1/2 z-20 h-[38%] w-[46%] -translate-x-1/2 -translate-y-[70%]">
-        <div className="absolute inset-0 origin-center" style={{ transform: "scaleX(1.14)" }}>
+      <div className="pointer-events-none absolute top-1/2 left-1/2 z-20 size-[38%] -translate-x-1/2 -translate-y-1/2">
+        <div className="absolute inset-0 origin-center">
           <ParticleSphereAnimation key="sphere-soft-green" />
         </div>
-        <div
-          className="absolute inset-0 grid place-items-center overflow-visible [perspective:120px]"
-          style={{ transform: "translate(4px, -4%)" }}
-        >
+        <div className="absolute inset-0 grid place-items-center overflow-visible [perspective:120px]">
           <div
             className="pitar-mark-bounce overflow-visible w-[11.55%]"
             style={{
