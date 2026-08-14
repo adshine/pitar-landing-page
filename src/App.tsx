@@ -177,6 +177,7 @@ export function App() {
   const navRef = useRef<HTMLElement | null>(null)
   const [openPanel, setOpenPanel] = useState<string | null>(null)
   const [authMode, setAuthMode] = useState<"signin" | "signup">("signup")
+  const [trustCite, setTrustCite] = useState(0)
   const [openMobileMenu, setOpenMobileMenu] = useState(false)
   const [navScrolled, setNavScrolled] = useState(false)
   const [heroScreen, setHeroScreen] = useState<1 | 2>(1)
@@ -224,7 +225,10 @@ export function App() {
       "Sign in to your account.",
       "Create an account to connect a source and ask your records.",
     ],
-    trust: ["View how provenance is tracked from source to answer.", "Every answer is anchored with trace metadata."],
+    trust: [
+      "Every answer has to show the page it came from.",
+      "If Pitar cannot point to the file, it does not keep the sentence.",
+    ],
     story: [
       "It started with one man's papers.",
       "The rule was simple: if I could not verify it in the source, I did not want it.",
@@ -1301,7 +1305,8 @@ export function App() {
           border-bottom: 1px solid var(--line);
         }
 
-        .legacy-panel:has(.legacy-auth) .legacy-panel-header {
+        .legacy-panel:has(.legacy-auth) .legacy-panel-header,
+        .legacy-panel:has(.legacy-trust) .legacy-panel-header {
           border-bottom: 0;
         }
 
@@ -1355,9 +1360,11 @@ export function App() {
           font-family: var(--sans);
         }
 
-        .legacy-panel-content:has(.legacy-auth) {
+        .legacy-panel-content:has(.legacy-auth),
+        .legacy-panel-content:has(.legacy-trust) {
           display: flex;
           flex-direction: column;
+          align-items: stretch;
         }
 
         .legacy-panel-content p {
@@ -1467,105 +1474,195 @@ export function App() {
         }
 
         .legacy-trust {
-          display: grid;
-          gap: 20px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          flex: 0 0 auto;
+          min-height: 0;
+          padding-bottom: 8px;
+        }
+
+        .legacy-trust-kicker {
+          margin: 0;
+          color: var(--acid);
+          font: 500 0.56rem/1.45 var(--mono);
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
         }
 
         .legacy-trust h3 {
           margin: 0;
           color: var(--ink);
-          font: 500 1.45rem/1.12 var(--sans);
+          font: 500 2rem/1.08 var(--serif);
           letter-spacing: -0.03em;
         }
 
         .legacy-trust-lead {
           margin: 0;
-          max-width: 36ch;
           color: var(--muted);
-          font: 400 0.92rem/1.55 var(--sans);
+          font: 400 0.95rem/1.55 var(--sans);
+        }
+
+        .legacy-trust-rule {
+          margin: 0;
+          padding: 0 0 0 14px;
+          border-left: 2px solid var(--ink);
+          color: var(--ink);
+          font: 400 0.98rem/1.5 var(--sans);
+        }
+
+        .legacy-trust-mono {
+          margin: 0;
+          color: var(--muted);
+          font: 400 0.78rem/1.55 var(--mono);
+        }
+
+        .legacy-trust-section {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin: 8px 0 0;
+          color: var(--muted);
+          font: 500 0.56rem/1 var(--mono);
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+        }
+
+        .legacy-trust-section::after {
+          content: "";
+          flex: 1;
+          height: 1px;
+          background: rgba(242, 242, 242, 0.12);
         }
 
         .legacy-trust-buys {
           margin: 0;
           padding: 0;
           display: grid;
-          gap: 14px;
+          gap: 12px;
           list-style: none;
         }
 
         .legacy-trust-buys li {
-          display: grid;
-          gap: 4px;
-          padding-top: 14px;
-          border-top: 1px solid rgba(242, 242, 242, 0.08);
+          color: var(--muted);
+          font: 400 0.9rem/1.5 var(--sans);
         }
 
         .legacy-trust-buys strong {
           color: var(--ink);
-          font: 500 0.92rem/1.3 var(--sans);
+          font-weight: 500;
         }
 
-        .legacy-trust-buys span {
-          color: var(--muted);
-          font: 400 0.84rem/1.45 var(--sans);
+        .legacy-trust-answer {
+          padding: 14px;
+          border: 1px solid rgba(242, 242, 242, 0.1);
+          border-radius: 0;
+          background: rgba(255, 255, 255, 0.02);
         }
 
-        .legacy-trust-example {
-          display: grid;
-          gap: 12px;
-          padding-top: 16px;
-          border-top: 1px solid rgba(242, 242, 242, 0.08);
-        }
-
-        .legacy-trust-example-kicker {
-          margin: 0;
+        .legacy-trust-answer span {
+          display: block;
           color: var(--acid);
           font: 500 0.56rem/1 var(--mono);
-          letter-spacing: 0.14em;
+          letter-spacing: 0.12em;
           text-transform: uppercase;
         }
 
-        .legacy-trust-example-body {
-          margin: 0;
+        .legacy-trust-answer span + p {
+          margin: 6px 0 12px;
+        }
+
+        .legacy-trust-answer p {
+          margin: 6px 0 0;
           color: var(--ink);
-          font: 400 0.92rem/1.5 var(--sans);
+          font: 400 0.9rem/1.5 var(--sans);
         }
 
-        .legacy-trust-example ol {
-          margin: 0;
-          padding: 0;
-          display: grid;
-          gap: 12px;
-          list-style: none;
-          counter-reset: cite;
+        .legacy-trust-answer p button {
+          display: inline-block;
+          margin: 0 2px;
+          padding: 1px 5px;
+          border: 1px solid rgba(242, 242, 242, 0.16);
+          background: transparent;
+          color: var(--muted);
+          font: 500 0.62rem/1.4 var(--mono);
+          cursor: pointer;
         }
 
-        .legacy-trust-example li {
+        .legacy-trust-answer p button.is-on {
+          border-color: var(--acid);
+          color: var(--acid);
+        }
+
+        .legacy-trust-cites {
           display: grid;
           gap: 4px;
-          padding-left: 12px;
-          border-left: 1px solid var(--line);
-          counter-increment: cite;
         }
 
-        .legacy-trust-example li p {
+        .legacy-trust-cite {
+          border: 0;
+        }
+
+        .legacy-trust-cite-head {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          width: 100%;
+          padding: 0;
+          border: 0;
+          background: transparent;
+          text-align: left;
+          cursor: pointer;
+        }
+
+        .legacy-trust-cite-logo {
+          display: grid;
+          place-items: center;
+          width: 28px;
+          height: 28px;
           margin: 0;
+          border: 1px solid rgba(242, 242, 242, 0.08);
+          background: rgba(12, 18, 14, 0.55);
+        }
+
+        .legacy-trust-cite-logo img {
+          width: 16px;
+          height: 16px;
+          object-fit: contain;
+        }
+
+        .legacy-trust-cite-head span {
+          color: var(--muted);
+          font: 500 0.62rem/1 var(--mono);
+        }
+
+        .legacy-trust-cite-head em {
+          min-width: 0;
+          overflow: hidden;
+          color: var(--ink);
+          font: 400 0.78rem/1.3 var(--sans);
+          font-style: normal;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .legacy-trust-cite.is-open .legacy-trust-cite-head span {
+          color: var(--acid);
+        }
+
+        .legacy-trust-cite blockquote {
+          margin: 8px 0 10px 14px;
+          padding: 0 0 0 12px;
+          border-left: 2px solid var(--line);
           color: var(--muted);
           font: 400 0.82rem/1.45 var(--sans);
         }
 
-        .legacy-trust-example li p::before {
-          content: counter(cite) ". ";
-          color: var(--acid);
-          font-family: var(--mono);
-          font-size: 0.72em;
-        }
-
-        .legacy-trust-example small {
+        .legacy-trust-cite small {
           display: block;
+          margin-top: 6px;
           color: var(--muted);
-          font: 400 0.68rem/1.4 var(--mono);
-          letter-spacing: 0.03em;
+          font: 400 0.68rem/1.4 var(--sans);
         }
 
         .legacy-connections-intro {
@@ -4729,7 +4826,7 @@ export function App() {
           <span />
         </button>
         <div className="legacy-nav-links">
-          <a className="legacy-navlink" href="#work" data-panel="provenance" onClick={(event) => openPanelFromClick(event, "trust")}>
+          <a className="legacy-navlink" href="#work" data-panel="trust" onClick={(event) => openPanelFromClick(event, "trust")}>
             Why trust us
           </a>
           <a className="legacy-navlink" href="#our-story" data-panel="origin" onClick={scrollToStory}>
@@ -4768,7 +4865,7 @@ export function App() {
           <button type="button" className="legacy-mobile-menu-close" aria-label="Close menu" onClick={closeMobileMenu}>×</button>
         </div>
         <div className="legacy-mobile-menu-links">
-          <a className="legacy-navlink" href="#work" data-panel="provenance" onClick={(event) => openPanelFromClick(event, "trust")}>Why trust us</a>
+          <a className="legacy-navlink" href="#work" data-panel="trust" onClick={(event) => openPanelFromClick(event, "trust")}>Why trust us</a>
           <a className="legacy-navlink" href="#our-story" data-panel="origin" onClick={scrollToStory}>Our Story</a>
           <a className="legacy-navlink" href="#how-it-works" data-panel="how-it-works" onClick={scrollToHowItWorks}>How it works</a>
           <a className="legacy-navlink" href="#plans" onClick={scrollToPlans}>Plans</a>
@@ -4827,42 +4924,88 @@ export function App() {
               </>
             ) : openPanel === "trust" ? (
               <div className="legacy-trust">
+                <p className="legacy-trust-kicker">Backed by provenance. What that means:</p>
                 <h3>No citation, no answer.</h3>
                 <p className="legacy-trust-lead">
-                  A claim without a page is never stored. The link to the source is required, so an uncited line is
-                  rejected when it is saved.
+                  Most systems cite where they can, and hope. Pitar treats an uncited claim as invalid.
                 </p>
+                <blockquote className="legacy-trust-rule">
+                  Every claim is stored with the page it came from. A claim without one is never stored at all.
+                </blockquote>
+                <p className="legacy-trust-mono">
+                  The link from a claim to its page is a required field, so a claim without one is rejected the moment it
+                  is saved, never flagged afterwards.
+                </p>
+                <p className="legacy-trust-section">What that buys you</p>
                 <ul className="legacy-trust-buys">
                   <li>
-                    <strong>You can check it</strong>
-                    <span>Open the citation and land on the page it came from.</span>
+                    <strong>Answers you can check.</strong> Click a citation, land on the page it came from.
                   </li>
                   <li>
-                    <strong>It can say no</strong>
-                    <span>If your records do not support a claim, the claim is dropped.</span>
+                    <strong>Answers that can say no.</strong> If your records do not support a claim, the claim is dropped.
                   </li>
                   <li>
-                    <strong>You can take the evidence</strong>
-                    <span>The file, the page, the date it arrived, and the source it came through.</span>
+                    <strong>Evidence you can export.</strong> The file, the page, the date it arrived, and the source it
+                    came through.
                   </li>
                 </ul>
-                <article className="legacy-trust-example" aria-label="Cited answer example">
-                  <p className="legacy-trust-example-kicker">In an answer</p>
-                  <p className="legacy-trust-example-body">
-                    The 1998 agreement allowed termination for convenience on ninety days' notice (1), but only after
-                    the second renewal (2).
+                <p className="legacy-trust-section">Example</p>
+                <article className="legacy-trust-answer" aria-label="Cited answer example">
+                  <span>Asked</span>
+                  <p className="legacy-trust-question">What notice was required to terminate the 1998 agreement?</p>
+                  <span>Answered</span>
+                  <p>
+                    The 1998 agreement allowed termination for convenience on ninety days' notice{" "}
+                    <button type="button" className={trustCite === 0 ? "is-on" : ""} onClick={() => setTrustCite(0)}>
+                      [1]
+                    </button>
+                    , but only after the second renewal{" "}
+                    <button type="button" className={trustCite === 1 ? "is-on" : ""} onClick={() => setTrustCite(1)}>
+                      [2]
+                    </button>
+                    .
                   </p>
-                  <ol>
-                    <li>
-                      <p>"either party may terminate for convenience upon ninety (90) days written notice"</p>
-                      <small>Supply Agreement 1998.pdf, page 14, Google Drive</small>
-                    </li>
-                    <li>
-                      <p>"the foregoing shall not apply prior to the Second Renewal Term"</p>
-                      <small>Supply Agreement 1998.pdf, page 203, Google Drive</small>
-                    </li>
-                  </ol>
                 </article>
+                <div className="legacy-trust-cites">
+                  {[
+                    {
+                      n: "1",
+                      file: "Supply Agreement 1998.pdf",
+                      meta: "page 14 · Google Drive",
+                      quote: "either party may terminate for convenience upon ninety (90) days written notice",
+                    },
+                    {
+                      n: "2",
+                      file: "Supply Agreement 1998.pdf",
+                      meta: "page 203 · Google Drive",
+                      quote: "the foregoing shall not apply prior to the Second Renewal Term",
+                    },
+                  ].map((cite, index) => {
+                    const open = trustCite === index
+                    return (
+                    <div key={cite.n} className={`legacy-trust-cite${open ? " is-open" : ""}`}>
+                      <button
+                        type="button"
+                        className="legacy-trust-cite-head"
+                        aria-expanded={open}
+                        onClick={() => setTrustCite(open ? -1 : index)}
+                      >
+                        <b className="legacy-trust-cite-logo">
+                          <img src={`${logoBase}googledrive.svg`} alt="" width={16} height={16} />
+                        </b>
+                        <span>[{cite.n}]</span>
+                        <em>{cite.file}</em>
+                      </button>
+                      {open ? (
+                        <blockquote>
+                          "{cite.quote}"
+                          <small>{cite.meta}</small>
+                        </blockquote>
+                      ) : null}
+                    </div>
+                    )
+                  })}
+                </div>
               </div>
             ) : openPanel === "auth" ? (
               <div className="legacy-auth">
