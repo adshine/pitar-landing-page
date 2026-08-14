@@ -210,7 +210,7 @@ export function App() {
   const panelTitle: Record<string, string> = {
     connections: "Connections",
     auth: "Account",
-    trust: "Trust",
+    trust: "Why trust us",
     story: "Our Story",
   }
 
@@ -272,6 +272,49 @@ export function App() {
   const closePanel = () => {
     setOpenPanel(null)
   }
+
+  useEffect(() => {
+    if (!openPanel) return
+    const y = window.scrollY
+    const html = document.documentElement
+    const body = document.body
+    const page = document.querySelector<HTMLElement>(".legacy-page")
+    ScrollTrigger.normalizeScroll(false)
+    html.style.overflow = "hidden"
+    body.style.overflow = "hidden"
+    body.style.position = "fixed"
+    body.style.top = `-${y}px`
+    body.style.left = "0"
+    body.style.right = "0"
+    body.style.width = "100%"
+    if (page) page.style.overflow = "hidden"
+
+    const stopPageScroll = (event: WheelEvent | TouchEvent) => {
+      const panel = panelRef.current
+      if (panel && event.target instanceof Node && panel.contains(event.target)) return
+      event.preventDefault()
+    }
+
+    window.addEventListener("wheel", stopPageScroll, { capture: true, passive: false })
+    window.addEventListener("touchmove", stopPageScroll, { capture: true, passive: false })
+
+    return () => {
+      html.style.overflow = ""
+      body.style.overflow = ""
+      body.style.position = ""
+      body.style.top = ""
+      body.style.left = ""
+      body.style.right = ""
+      body.style.width = ""
+      if (page) page.style.overflow = ""
+      window.scrollTo(0, y)
+      window.removeEventListener("wheel", stopPageScroll, { capture: true })
+      window.removeEventListener("touchmove", stopPageScroll, { capture: true })
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        ScrollTrigger.normalizeScroll(true)
+      }
+    }
+  }, [openPanel])
 
   useEffect(() => {
     if (!openMobileMenu) return
@@ -1187,9 +1230,9 @@ export function App() {
 
         @media (min-width: 901px) {
           .legacy-nav--fixed.is-scrolled {
-            width: var(--nav-compact-width, max-content);
+            width: max-content;
             max-width: calc(100vw - 32px);
-            padding: 10px 14px 10px 14px;
+            padding: 10px 14px;
             background: color-mix(in oklch, var(--paper) 74%, transparent);
             border: 1px solid var(--line);
             border-bottom: 1px solid var(--line);
@@ -1197,6 +1240,12 @@ export function App() {
             -webkit-backdrop-filter: blur(18px) saturate(1.25);
             box-shadow: 0 12px 34px rgba(0, 0, 0, 0.25);
             justify-content: flex-start;
+            gap: 20px;
+          }
+
+          .legacy-nav--fixed.is-scrolled .legacy-nav-links {
+            margin-left: 0;
+            flex: 0 0 auto;
           }
         }
 
@@ -1300,6 +1349,7 @@ export function App() {
           display: grid;
           gap: 10px;
           overflow-y: auto;
+          overscroll-behavior: contain;
           font-size: 13px;
           color: var(--muted);
           font-family: var(--sans);
@@ -1414,6 +1464,108 @@ export function App() {
           color: var(--muted);
           font-size: 0.78rem;
           line-height: 1.5;
+        }
+
+        .legacy-trust {
+          display: grid;
+          gap: 20px;
+        }
+
+        .legacy-trust h3 {
+          margin: 0;
+          color: var(--ink);
+          font: 500 1.45rem/1.12 var(--sans);
+          letter-spacing: -0.03em;
+        }
+
+        .legacy-trust-lead {
+          margin: 0;
+          max-width: 36ch;
+          color: var(--muted);
+          font: 400 0.92rem/1.55 var(--sans);
+        }
+
+        .legacy-trust-buys {
+          margin: 0;
+          padding: 0;
+          display: grid;
+          gap: 14px;
+          list-style: none;
+        }
+
+        .legacy-trust-buys li {
+          display: grid;
+          gap: 4px;
+          padding-top: 14px;
+          border-top: 1px solid rgba(242, 242, 242, 0.08);
+        }
+
+        .legacy-trust-buys strong {
+          color: var(--ink);
+          font: 500 0.92rem/1.3 var(--sans);
+        }
+
+        .legacy-trust-buys span {
+          color: var(--muted);
+          font: 400 0.84rem/1.45 var(--sans);
+        }
+
+        .legacy-trust-example {
+          display: grid;
+          gap: 12px;
+          padding-top: 16px;
+          border-top: 1px solid rgba(242, 242, 242, 0.08);
+        }
+
+        .legacy-trust-example-kicker {
+          margin: 0;
+          color: var(--acid);
+          font: 500 0.56rem/1 var(--mono);
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+        }
+
+        .legacy-trust-example-body {
+          margin: 0;
+          color: var(--ink);
+          font: 400 0.92rem/1.5 var(--sans);
+        }
+
+        .legacy-trust-example ol {
+          margin: 0;
+          padding: 0;
+          display: grid;
+          gap: 12px;
+          list-style: none;
+          counter-reset: cite;
+        }
+
+        .legacy-trust-example li {
+          display: grid;
+          gap: 4px;
+          padding-left: 12px;
+          border-left: 1px solid var(--line);
+          counter-increment: cite;
+        }
+
+        .legacy-trust-example li p {
+          margin: 0;
+          color: var(--muted);
+          font: 400 0.82rem/1.45 var(--sans);
+        }
+
+        .legacy-trust-example li p::before {
+          content: counter(cite) ". ";
+          color: var(--acid);
+          font-family: var(--mono);
+          font-size: 0.72em;
+        }
+
+        .legacy-trust-example small {
+          display: block;
+          color: var(--muted);
+          font: 400 0.68rem/1.4 var(--mono);
+          letter-spacing: 0.03em;
         }
 
         .legacy-connections-intro {
@@ -4578,7 +4730,7 @@ export function App() {
         </button>
         <div className="legacy-nav-links">
           <a className="legacy-navlink" href="#work" data-panel="provenance" onClick={(event) => openPanelFromClick(event, "trust")}>
-            Trust
+            Why trust us
           </a>
           <a className="legacy-navlink" href="#our-story" data-panel="origin" onClick={scrollToStory}>
             Our Story
@@ -4616,7 +4768,7 @@ export function App() {
           <button type="button" className="legacy-mobile-menu-close" aria-label="Close menu" onClick={closeMobileMenu}>×</button>
         </div>
         <div className="legacy-mobile-menu-links">
-          <a className="legacy-navlink" href="#work" data-panel="provenance" onClick={(event) => openPanelFromClick(event, "trust")}>Trust</a>
+          <a className="legacy-navlink" href="#work" data-panel="provenance" onClick={(event) => openPanelFromClick(event, "trust")}>Why trust us</a>
           <a className="legacy-navlink" href="#our-story" data-panel="origin" onClick={scrollToStory}>Our Story</a>
           <a className="legacy-navlink" href="#how-it-works" data-panel="how-it-works" onClick={scrollToHowItWorks}>How it works</a>
           <a className="legacy-navlink" href="#plans" onClick={scrollToPlans}>Plans</a>
@@ -4673,6 +4825,45 @@ export function App() {
                   </div>
                 </details>
               </>
+            ) : openPanel === "trust" ? (
+              <div className="legacy-trust">
+                <h3>No citation, no answer.</h3>
+                <p className="legacy-trust-lead">
+                  A claim without a page is never stored. The link to the source is required, so an uncited line is
+                  rejected when it is saved.
+                </p>
+                <ul className="legacy-trust-buys">
+                  <li>
+                    <strong>You can check it</strong>
+                    <span>Open the citation and land on the page it came from.</span>
+                  </li>
+                  <li>
+                    <strong>It can say no</strong>
+                    <span>If your records do not support a claim, the claim is dropped.</span>
+                  </li>
+                  <li>
+                    <strong>You can take the evidence</strong>
+                    <span>The file, the page, the date it arrived, and the source it came through.</span>
+                  </li>
+                </ul>
+                <article className="legacy-trust-example" aria-label="Cited answer example">
+                  <p className="legacy-trust-example-kicker">In an answer</p>
+                  <p className="legacy-trust-example-body">
+                    The 1998 agreement allowed termination for convenience on ninety days' notice (1), but only after
+                    the second renewal (2).
+                  </p>
+                  <ol>
+                    <li>
+                      <p>"either party may terminate for convenience upon ninety (90) days written notice"</p>
+                      <small>Supply Agreement 1998.pdf, page 14, Google Drive</small>
+                    </li>
+                    <li>
+                      <p>"the foregoing shall not apply prior to the Second Renewal Term"</p>
+                      <small>Supply Agreement 1998.pdf, page 203, Google Drive</small>
+                    </li>
+                  </ol>
+                </article>
+              </div>
             ) : openPanel === "auth" ? (
               <div className="legacy-auth">
                 <div className="legacy-auth-tabs" role="tablist" aria-label="Account">
@@ -5114,7 +5305,7 @@ export function App() {
               <a href="#how-it-works">How it works</a>
               <a href="#plans" onClick={scrollToPlans}>Plans</a>
               <button type="button" onClick={() => setOpenPanel("connections")}>Sources</button>
-              <button type="button" onClick={() => setOpenPanel("trust")}>Trust</button>
+              <button type="button" onClick={() => setOpenPanel("trust")}>Why trust us</button>
             </nav>
 
             <nav className="legacy-footer-column" aria-label="Company">
