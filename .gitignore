@@ -38,3 +38,6 @@ __pycache__/
 
 docs/superpowers/
 public/images/
+
+# Archived/unused media assets
+/docs/videos/unused/
