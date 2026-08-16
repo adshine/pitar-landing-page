@@ -548,8 +548,8 @@ export function App() {
         scrollTrigger: {
           trigger: wrapper,
           start: "top top",
-          end: "+=270vh",
-          scrub: 1.2,
+          end: () => `+=${Math.round(window.innerHeight * 1.2)}`,
+          scrub: 0.55,
           invalidateOnRefresh: true,
           toggleActions: "play none none none",
           onUpdate: (self) => {
@@ -3432,7 +3432,7 @@ export function App() {
         @media (min-width: 901px) {
           .legacy-how-scroll {
             position: relative;
-            min-height: 370vh;
+            min-height: 220vh;
           }
 
           .legacy-how-scroll.is-static {

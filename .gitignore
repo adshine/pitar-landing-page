@@ -33,3 +33,7 @@ output/gleb-motion-analysis/frames/
 output/gleb-motion-analysis/traced-lighting/pixel-lighting-data.npz
 tmp/reference-video/
 tmp/verification/
+
+docs/superpowers/
+public/images/
+
