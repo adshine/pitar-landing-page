@@ -41,3 +41,9 @@ public/images/
 
 # Archived/unused media assets
 /docs/videos/unused/
+
+# Ignore entire top-level docs/scripts/qa folders
+/docs/
+/scripts/
+.qa/
+
