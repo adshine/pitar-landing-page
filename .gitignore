@@ -25,6 +25,7 @@ dist-ssr
 
 # Local/generated analysis caches (rebuild with scripts/)
 .playwright-cli/
+.wrangler/
 output/gleb-full-resolution-analysis/frames/
 output/gleb-full-resolution-analysis/numpy/
 output/gleb-full-resolution-analysis/per-pixel.csv.gz
@@ -33,7 +34,7 @@ output/gleb-motion-analysis/frames/
 output/gleb-motion-analysis/traced-lighting/pixel-lighting-data.npz
 tmp/reference-video/
 tmp/verification/
+__pycache__/
 
 docs/superpowers/
 public/images/
-
