@@ -3,9 +3,8 @@ import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { ScrollToPlugin } from "gsap/ScrollToPlugin"
 import { useGSAP } from "@gsap/react"
-import { HeroAskFlow, heroAskBeats, heroAskDuration } from "@/components/hero-ask-flow"
-import { HowReviewFlow } from "@/components/how-review-flow"
-import OrbitingCirclesGlobe from "@/components/ui/orbiting-circles-02"
+import { HeroAskFlow, HowReviewFlow, heroAskBeats, heroAskDuration } from "@/components/landing"
+import { OrbitingCirclesGlobe } from "@/components/features/orbiting"
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin, useGSAP)
 
@@ -516,7 +515,7 @@ export function App() {
       Math.min(1, Math.max(0, progress)) * HOW_ORBIT_TRAVEL
 
     const stepForProgress = (progress: number) =>
-      Math.min(lastIndex, Math.max(0, Math.floor(Math.min(0.999, progress) * HOW_ORBIT_STEPS)))
+      Math.min(lastIndex, Math.max(0, Math.round(Math.min(1, progress) * lastIndex)))
 
     const placeOrbit = (progress: number) => {
       const travel = travelForProgress(progress)
@@ -530,14 +529,13 @@ export function App() {
         gsap.set(marker, {
           left: `${50 + 50 * Math.cos(rad)}%`,
           top: `${50 + 50 * Math.sin(rad)}%`,
-          xPercent: -50,
-          yPercent: -50,
           rotation: index === active ? 0 : theta,
           scale,
           autoAlpha: 1,
         })
       })
       fill.setAttribute("stroke-dasharray", `${(travel / 360) * circ} ${circ}`)
+      fill.setAttribute("stroke-dashoffset", "0")
     }
 
     const buildTimeline = () => {

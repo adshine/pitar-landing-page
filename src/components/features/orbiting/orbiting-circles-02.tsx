@@ -2,7 +2,7 @@
 
 import type { CSSProperties } from "react"
 
-import ParticleSphereAnimation from "@/components/ui/orbiting-circles-02-utils/particalsphear"
+import ParticleSphereAnimation from "@/components/features/orbiting/particles-sphere"
 
 const logo = (file: string) => `${import.meta.env.BASE_URL}logos/${file}`
 

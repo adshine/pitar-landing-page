@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { heroAskBeats } from "@/components/hero-ask-flow"
+import { heroAskBeats } from "@/components/landing"
 
 const CHAR_MS = 36
 const LOAD_MS = 1200

@@ -1,4 +1,4 @@
-import OrbitingCirclesGlobe from "@/components/ui/orbiting-circles-02"
+import { OrbitingCirclesGlobe } from "@/components/features"
 
 export default function Demo() {
   return (
